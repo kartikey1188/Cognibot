@@ -1,30 +1,16 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from app.models import db
 from flask_restful import Api
-import os
+from app.apis.user import UserResource
+from app.config import Config
 
-# Initialize the extensions
-db = SQLAlchemy()
-migrate = Migrate()
-api = Api()
-
-def create_app(config_class='Config'):
-    # Create the Flask app instance
+def create_app():
     app = Flask(__name__)
+    app.config.from_object(Config)
 
-    # Load configurations from the Config class
-    app.config.from_object(config_class)
-
-    # Initialize the extensions with the app
     db.init_app(app)
-    migrate.init_app(app, db)
-    api.init_app(app)
+    api = Api(app)
 
-    # Register Blueprints for API routes
-    from .apis import api_bp  # Assuming you have created an 'apis' blueprint
-    app.register_blueprint(api_bp, url_prefix='/api')
-
-    # Any other setup, like CORS, middleware, etc.
+    api.add_resource(UserResource, "/api/users")
 
     return app

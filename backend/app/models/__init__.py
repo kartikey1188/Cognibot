@@ -1,1 +1,3 @@
-# we can create separate files for each table in our database
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
