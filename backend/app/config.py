@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from datetime import timedelta
 class Config:
 
     SECRET_KEY = "notakey"
@@ -11,3 +11,6 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = f"sqlite:///{DB_PATH}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    JWT_SECRET_KEY = "supersecretkey123"
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=3) 
+    JWT_VERIFY_SUB=False
