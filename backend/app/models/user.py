@@ -1,5 +1,5 @@
 from enum import Enum
-from .. import db, bcrypt
+from . import db, bcrypt
 
 # class CourseLevel(Enum):
 #     FOUNDATIONAL = 'Foundational'
