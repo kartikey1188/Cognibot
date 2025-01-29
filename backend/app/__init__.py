@@ -1,6 +1,6 @@
 from flask import Flask
 from app.models import db, bcrypt
-from flask_restful import Api
+from app.apis import *
 from app.apis.auth import UserLogin
 from app.apis.user import UserResource
 from app.config import Config
@@ -11,7 +11,8 @@ def create_app():
 
     db.init_app(app)
     bcrypt.init_app(app)
-    api = Api(app)
+    api.init_app(app)
+    jwt.init_app(app)
 
     # Add resources
     api.add_resource(UserLogin, '/login')
