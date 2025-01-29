@@ -1,11 +1,13 @@
 import { Button } from '@mui/material'
+import Login from './pages/Auth/Login'
+import SignUp from './pages/Auth/Signup'
 
 function App() {
 
   return (
     <> 
-      Hello, &nbsp;
-      <Button variant = "contained">World!</Button>
+      {/* <Login></Login>
+      <SignUp></SignUp> */}
     </>
   )
 }
