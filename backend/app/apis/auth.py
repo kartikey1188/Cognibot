@@ -4,7 +4,7 @@ from flask_restful import Resource, reqparse
 from app.models.user import *
 from app.models import *
 
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt, set_access_cookies, unset_jwt_cookies
 from functools import wraps
 from flask import jsonify
 
@@ -32,6 +32,7 @@ def expired_token_callback(jwt_header, jwt_payload):
         "message": "Your session has expired. Please log in again.",
         "error": "token_expired"
     }, 401
+
 
 class UserRegister(Resource):
     parser = reqparse.RequestParser()
@@ -87,8 +88,21 @@ class UserLogin(Resource):
 
         # Create a JWT Token
         access_token = create_access_token(identity=user.id, additional_claims={"role": user.role.value})
-        return {"message": "Login successful", "access_token": access_token}, 200
+        response = jsonify({"msg": "login successful"})
+        set_access_cookies(response, access_token)
+        return response
+
+class UserLogout(Resource):
+    @jwt_required()
+    def get(self):
+        response = jsonify({"msg": "Logout successful"})
+    
+    # Unset (delete) the JWT cookies
+        unset_jwt_cookies(response)
+        
+        return response, 200
 
 
 api.add_resource(UserRegister, "/register")  # Signup
 api.add_resource(UserLogin, "/login")  # Login
+api.add_resource(UserLogout, "/logout")  # Login
