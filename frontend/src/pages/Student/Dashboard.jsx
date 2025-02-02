@@ -1,6 +1,6 @@
 function Dashboard(){
     return (
-        <div></div>
+        <div className="min-h-screen flex items-center">Student</div>
     )
 }
 

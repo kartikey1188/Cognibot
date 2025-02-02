@@ -4,12 +4,13 @@ from flask_restful import Resource, reqparse
 from app.models.user import *
 from app.models import *
 
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt, set_access_cookies, unset_jwt_cookies
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt, set_access_cookies, unset_jwt_cookies, get_jwt_identity
 from functools import wraps
 from flask import jsonify
 
 def role_required(*roles):
     # Implementing RBAC
+
     def decorator(fn):
         @wraps(fn)
         @jwt_required()
@@ -66,7 +67,7 @@ class UserRegister(Resource):
             db.session.commit()
             return {"message": "User registered successfully!"}, 201
         except ValueError:
-            return {"message": "Invalid role provided"}, 400
+            return {"message": "Invalid role provided !"}, 400
 
 
 class UserLogin(Resource):
@@ -84,13 +85,19 @@ class UserLogin(Resource):
         user = User.query.filter_by(email=email).first()
 
         if not user or not user.check_password(password):
-            return {"message": "Invalid email or password"}, 401
+            return {"message": "Invalid email or password !"}, 401
 
         # Create a JWT Token
         access_token = create_access_token(identity=user.id, additional_claims={"role": user.role.value})
-        response = jsonify({"msg": "login successful"})
+        response = jsonify({"name":user.name, "email":user.email, "id":user.id, "role":user.role.value, "message":"Login successful"})
         set_access_cookies(response, access_token)
         return response
+    
+    @jwt_required()
+    def get(self):
+        user_id = get_jwt_identity()
+        user = User.query.filter_by(id = user_id).first()
+        return {"message": "You are logged in."}, 200
 
 class UserLogout(Resource):
     @jwt_required()
@@ -100,7 +107,7 @@ class UserLogout(Resource):
     # Unset (delete) the JWT cookies
         unset_jwt_cookies(response)
         
-        return response, 200
+        return response
 
 
 api.add_resource(UserRegister, "/register")  # Signup
