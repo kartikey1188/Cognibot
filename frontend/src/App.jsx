@@ -1,22 +1,63 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import Login from "./pages/Auth/Login";
-import Signup from "./pages/Auth/Signup";
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import PrivateRoute from './components/PrivateRoute';
+import Dashboard from './pages/Student/Dashboard';
+import Login from './pages/Auth/Login';
+import Signup from './pages/Auth/Signup';
+import { useEffect } from 'react';
+import {useDispatch } from 'react-redux';
+import { Navbar } from './components/Navbar';
+import { setError } from './redux/slice/authSlice';
 
-function App() {
+function AppContent() {
+  const dispatch = useDispatch();
+  const location = useLocation();
+  useEffect(() => {
+    dispatch(setError(""));
+   }, [dispatch, location]);
+
   return (
-    <Router>
-      <nav className="flex fixed top-0 gap-4 p-4 bg-gray-200">
-        <Link to="/login" className="text-blue-500 hover:underline">Login</Link>
-        <Link to="/signup" className="text-blue-500 hover:underline">Sign Up</Link>
-      </nav>
-
+    <>
+      <Navbar />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="*" element={<Login />} /> {/* Redirect unknown routes to Login */}
+        
+        {/* Protected routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute allowedRoles={['student']}>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        {/* Other protected routes for instructors/admin (you can add similar routes for them) */}
+        {/* <Route
+          path="/instructor/*"
+          element={
+            <PrivateRoute allowedRoles={['instructor']}>
+              <InstructorDashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/*"
+          element={
+            <PrivateRoute allowedRoles={['admin']}>
+              <AdminDashboard />
+            </PrivateRoute>
+          }
+        /> */}
       </Routes>
-    </Router>
+    </>
   );
 }
 
-export default App;
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
+}

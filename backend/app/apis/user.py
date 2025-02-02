@@ -1,17 +1,15 @@
+from . import *
 from app.models import db
 from app.models.user import User
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 
+# class UserResource(Resource):
 
-class UserResource(Resource):
-    def get(self):
-        users = User.query.all()
-        if users:
-            return [{"id": user.id, "name": user.name, "email": user.email} for user in users]
-        return {'message': 'No users found!'}
-
-    def post(self):
-        new_user = User(name="John Doe", email="johndoe@example.com")
-        db.session.add(new_user)
-        db.session.commit()
-        return {"message": "User created", "id": new_user.id}, 201
+#     @jwt_required()
+#     def get(self):
+#         user_id = get_jwt_identity()
+#         user = User.query.filter_by(id = user_id).first()
+#         return {"name":user.name, "email":user.email, "id":user_id, "role":user.role.value}, 200
+    
+# api.add_resource(UserResource, "/getuser")
