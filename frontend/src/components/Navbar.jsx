@@ -40,17 +40,17 @@ export const Navbar = () => {
   };
   };
   return (
-    <nav className="bg-blue-800 p-4 fixed w-full top-0">
+    <nav className="p-3 fixed w-full bg-white top-0 border border-b border-gray-300 z-10">
       <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="text-white font-bold">
-          Seek
+        <Link to="/" className="bg-black rounded-full border border-2">
+          <img src="/graduation-cap-circular-button-svgrepo-com.svg" width="40px" alt="" />
         </Link>
         
         <div className="flex gap-4">
           {!user ? (
             <>
-              <Link to="/login" className="text-white">Login</Link>
-              <Link to="/signup" className="text-white">Signup</Link>
+              <Link to="/login" className="text-gray-800 bg-gray-200 px-[1em] py-[0.5em] rounded">Login</Link>
+              <Link to="/signup" className="text-white  bg-black px-[1em] py-[0.5em] rounded">Signup</Link>
             </>
           ) : (
             <> 

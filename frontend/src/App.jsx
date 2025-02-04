@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import {useDispatch } from 'react-redux';
 import { Navbar } from './components/Navbar';
 import { setError } from './redux/slice/authSlice';
+import Layout from './Layout';
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -17,37 +18,38 @@ function AppContent() {
 
   return (
     <>
-      <Navbar />
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        
-        {/* Protected routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute allowedRoles={['student']}>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
-        {/* Other protected routes for instructors/admin (you can add similar routes for them) */}
-        {/* <Route
-          path="/instructor/*"
-          element={
-            <PrivateRoute allowedRoles={['instructor']}>
-              <InstructorDashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin/*"
-          element={
-            <PrivateRoute allowedRoles={['admin']}>
-              <AdminDashboard />
-            </PrivateRoute>
-          }
-        /> */}
+        <Route path="/" element={<Layout/>}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          
+          {/* Protected routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute allowedRoles={['student']}>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          {/* Other protected routes for instructors/admin (you can add similar routes for them) */}
+          {/* <Route
+            path="/instructor/*"
+            element={
+              <PrivateRoute allowedRoles={['instructor']}>
+                <InstructorDashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/*"
+            element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminDashboard />
+              </PrivateRoute>
+            }
+          /> */}
+        </Route>
       </Routes>
     </>
   );

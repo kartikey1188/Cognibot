@@ -37,8 +37,8 @@ def expired_token_callback(jwt_header, jwt_payload):
 
 class UserRegister(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument("name", type=str, required=True, help="Name is required")
     parser.add_argument("email", type=str, required=True, help="Email is required")
+    parser.add_argument("name", type=str, required=True, help="Name is required")
     parser.add_argument("password", type=str, required=True, help="Password is required")
     parser.add_argument("confirm_password", type=str, required=True, help="Confirm Password is required")
     parser.add_argument("role", type=str, required=True, choices=["student", "instructor", "admin"], help="Enter role. Must be either 'student', 'instructor', or 'admin'.")
@@ -53,11 +53,11 @@ class UserRegister(Resource):
         password = data["password"]
         confirm_password = data["confirm_password"]
 
-        if password != confirm_password:
-            return {"message": "Passwords do not match"}, 400
-
         if User.query.filter_by(email=email).first():
             return {"message": "Email already exists"}, 400
+
+        if password != confirm_password:
+            return {"message": "Passwords do not match"}, 400
 
         try:
             new_user = User(name=name, email=email)
