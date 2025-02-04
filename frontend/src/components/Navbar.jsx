@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../redux/slice/authSlice';
 import { Button } from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout';
 export const Navbar = () => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
@@ -11,7 +12,7 @@ export const Navbar = () => {
   };
 
   const studentLinks = [
-    { to: '/dashboard', text: 'Dashboard' },
+    // { to: '/dashboard', text: 'Dashboard' },
     // { to: '/courses', text: 'My Courses' },
   ];
 
@@ -40,13 +41,13 @@ export const Navbar = () => {
   };
   };
   return (
-    <nav className="p-3 fixed w-full bg-white top-0 border border-b border-gray-300 z-10">
+    <nav className="p-3 fixed w-full bg-white top-0 border border-1 border-gray-300 z-10">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="bg-black rounded-full border border-2">
           <img src="/graduation-cap-circular-button-svgrepo-com.svg" width="40px" alt="" />
         </Link>
         
-        <div className="flex gap-4">
+        <div className="flex gap-4 justify-self-start items-center">
           {!user ? (
             <>
               <Link to="/login" className="text-gray-800 bg-gray-200 px-[1em] py-[0.5em] rounded">Login</Link>
@@ -54,12 +55,13 @@ export const Navbar = () => {
             </>
           ) : (
             <> 
+              <div className='text-lg font-bold'>Welcome, {user.name}!</div>
               {getNavLinks().map(link => (
                 <Link key={link.to} to={link.to} className="text-white">
                   {link.text}
                 </Link>
               ))}
-              <Button onClick={handleLogout}>Logout</Button>
+              <Button onClick={handleLogout}  color="secondary" variant="outlined" size="large"><LogoutIcon fontSize="small"></LogoutIcon></Button>
             </>
            )}
         </div>

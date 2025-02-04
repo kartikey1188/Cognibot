@@ -1,13 +1,14 @@
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import PrivateRoute from './components/PrivateRoute';
-import Dashboard from './pages/Student/Dashboard';
+import Courses from './pages/Student/Courses';
+import StudentDashboardLayout from './layouts/StudentDashboardLayout';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
 import { useEffect } from 'react';
 import {useDispatch } from 'react-redux';
 import { Navbar } from './components/Navbar';
 import { setError } from './redux/slice/authSlice';
-import Layout from './Layout';
+import Layout from './layouts/Layout';
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -24,14 +25,16 @@ function AppContent() {
           <Route path="/signup" element={<Signup />} />
           
           {/* Protected routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute allowedRoles={['student']}>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
+          <Route path="/dashboard" element={<StudentDashboardLayout/>}>
+            <Route
+              index
+              element={
+                <PrivateRoute allowedRoles={['student']}>
+                  <Courses />
+                </PrivateRoute>
+              }
+            />
+          </Route>
           {/* Other protected routes for instructors/admin (you can add similar routes for them) */}
           {/* <Route
             path="/instructor/*"

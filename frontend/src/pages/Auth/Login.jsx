@@ -54,7 +54,7 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(formData)
+
     if (!formData.email || !formData.password) {
       dispatch(setError("Oops! Don't forget to fill in all the fields."));
       return;
