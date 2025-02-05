@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../redux/slice/authSlice";
 import { Button } from "@mui/material";
@@ -11,11 +11,17 @@ import { toggleSidebar } from "../redux/slice/uiSlice";
 export const Navbar = () => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+  const isMobile = useMediaQuery("(max-width: 900px)");
+  const location = useLocation();
+  
+  const dashboardPaths = ['/dashboard', '/recommendations', '/profile'];
+  const isDashboardRoute = dashboardPaths.some(path => 
+    location.pathname === path
+  );
 
   const handleLogout = () => {
     dispatch(logoutUser());
   };
-  const isMobile = useMediaQuery("(max-width: 900px)");
 
   const studentLinks = [
     // { to: '/dashboard', text: 'Dashboard' },
@@ -90,7 +96,7 @@ export const Navbar = () => {
               >
                 <LogoutIcon fontSize="small"></LogoutIcon>
               </Button>
-              {isMobile && (
+              {isMobile && isDashboardRoute && (
                 <IconButton
                   color="inherit"
                   edge="start"

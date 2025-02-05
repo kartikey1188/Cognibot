@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Box,
   Drawer,
@@ -23,13 +23,14 @@ import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import { Outlet } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toggleSidebar } from "../redux/slice/uiSlice";
-const drawerWidth = 280;
+const drawerWidth = 300;
 import { useSelector } from "react-redux";
 
 export default function StudentDashboardLayout() {
   const { sidebarOpen } = useSelector((state) => state.ui);
   const isMobile = useMediaQuery("(max-width: 900px)");
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const items = [
     { icon: <BookIcon />, text: "Current Courses", path: "/dashboard" },
@@ -49,8 +50,24 @@ export default function StudentDashboardLayout() {
       <Divider />
       <List>
         {items.map((item, index) => (
-          <ListItem key={index} disablePadding>
-            <ListItemButton component={Link} to={item.path}>
+          <ListItem key={index}>
+            <ListItemButton component={Link} to={item.path}
+            selected={location.pathname === item.path}
+            sx={{
+              '&.Mui-selected': {
+                backgroundColor: '#3db9f2',
+                '&:hover': {
+                  backgroundColor: '#3db9f2',
+                },
+                '& .MuiListItemIcon-root': {
+                  color: 'primary.contrastText',
+                },
+              },
+              '&:hover': {
+                backgroundColor: 'action.hover',
+              },
+            }}
+            >
               <ListItemIcon sx={{minWidth:'40px'}}>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
             </ListItemButton>
