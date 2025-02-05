@@ -1,84 +1,94 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
-import {Link} from 'react-router-dom';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import BookIcon from '@mui/icons-material/Book';
-import RecommendIcon from '@mui/icons-material/Recommend';
-import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
-import { Outlet } from 'react-router-dom';
-const drawerWidth = 240;
+import * as React from "react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  Box,
+  Drawer,
+  CssBaseline,
+  AppBar,
+  Toolbar,
+  IconButton,
+  List,
+  Typography,
+  Divider,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  useMediaQuery,
+} from "@mui/material";
+import BookIcon from "@mui/icons-material/Book";
+import RecommendIcon from "@mui/icons-material/Recommend";
+import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
+import { Outlet } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { toggleSidebar } from "../redux/slice/uiSlice";
+const drawerWidth = 280;
+import { useSelector } from "react-redux";
 
-export default function PermanentDrawerLeft() {
-    const items = [
-        { icon: <BookIcon/>, text: 'Current Courses', path:'/dashboard' },
-        { icon: <RecommendIcon />, text: 'Study Recommendations', path:'/recommendations' },
-        { icon: <AccountCircleRoundedIcon/>, text: 'Profile', path:'/profile' },
-    ]
+export default function StudentDashboardLayout() {
+  const { sidebarOpen } = useSelector((state) => state.ui);
+  const isMobile = useMediaQuery("(max-width: 900px)");
+  const dispatch = useDispatch();
+
+  const items = [
+    { icon: <BookIcon />, text: "Current Courses", path: "/dashboard" },
+    {
+      icon: <RecommendIcon />,
+      text: "Study Recommendations",
+      path: "/recommendations",
+    },
+    { icon: <AccountCircleRoundedIcon />, text: "Profile", path: "/profile" },
+  ];
+
+  const drawerContent = (
+    <Box sx={{ width: 'fit-content' }}>
+      <Typography variant="h6" sx={{ p: 2, textAlign: "center"}}>
+        Dashboard
+      </Typography>
+      <Divider />
+      <List>
+        {items.map((item, index) => (
+          <ListItem key={index} disablePadding>
+            <ListItemButton component={Link} to={item.path}>
+              <ListItemIcon sx={{minWidth:'40px'}}>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
 
   return (
-    <>
-      {/* <Navbar></Navbar> */}
-    <Box sx={{ display: 'flex', zIndex:0,  fontFamily: "'Funnel Display', serif"}}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px`, zIndex:0, paddingBottom:5}}
-      >
-      </AppBar>
       <Drawer
+        variant={isMobile ? "temporary" : "permanent"}
+        open={isMobile ? sidebarOpen : true}
+        onClose={() => dispatch(toggleSidebar())}
+        ModalProps={{
+          keepMounted: true, // Helps with performance on mobile
+        }}
         sx={{
-          width: "max-content",
+          width: drawerWidth,
           flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: "max-content",
-            boxSizing: 'border-box',
-            position: 'fixed',
-            top:68,
-            zIndex:1,
-            wrap: "nowrap",
+          wrap : 'nowrap',
+          [`& .MuiDrawer-paper`]: {
+            width: drawerWidth,
+            boxSizing: "border-box",
+            zIndex: 0,
+           
           },
         }}
-        variant="permanent"
-        anchor="left"
       >
-        {/* <Toolbar /> */}
-        <Divider />
-        <List>
-          {items.map((item, index) => (
-            <ListItem key={index} style={{paddingInline:12, paddingBlock:3}} >
-              <ListItemButton
-              component={Link}
-              to={item.path}
-              sx={{
-                textDecoration: 'none',
-                color: 'inherit',
-              }}
-              >
-                <ListItemIcon style={{minWidth: '40px'}}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+        {drawerContent}
       </Drawer>
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, borderRadius:'2px', bgcolor: '#fcf8f7', p:5, position : 'absolute', top: 100, left: 330, right: 30}}
-      >
+
+      {/* Main Content */}
+      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
         <Outlet></Outlet>
       </Box>
     </Box>
-    </>
   );
 }

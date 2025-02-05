@@ -6,7 +6,8 @@ import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
 import { useEffect } from 'react';
 import {useDispatch } from 'react-redux';
-import { Navbar } from './components/Navbar';
+import CourseLayout from './layouts/CourseLayout';
+import Course from './pages/Student/Course';
 import { setError } from './redux/slice/authSlice';
 import Layout from './layouts/Layout';
 
@@ -34,8 +35,34 @@ function AppContent() {
                 </PrivateRoute>
               }
             />
+            {/* <Route
+              path="/recommendations"
+              element={
+                <PrivateRoute allowedRoles={['student']}>
+                  <Recommendations />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute allowedRoles={['student']}>
+                  <Profile />
+                </PrivateRoute>
+              }
+            /> */}
+  
           </Route>
-          {/* Other protected routes for instructors/admin (you can add similar routes for them) */}
+
+          <Route path="/course" element={<CourseLayout/>}>
+            <Route index element={
+                <PrivateRoute allowedRoles={['student']}>
+                  <Course/>
+                </PrivateRoute>
+              } />
+            {/* <Route></Route> */}
+          </Route>
+
           {/* <Route
             path="/instructor/*"
             element={
