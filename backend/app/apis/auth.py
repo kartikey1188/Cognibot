@@ -76,7 +76,6 @@ class UserLogin(Resource):
     parser.add_argument("password", type=str, required=True, help="Password is required")
 
     def post(self):
-        """Handle User Login with restricted inputs"""
         data = UserLogin.parser.parse_args()
 
         email = data["email"]
@@ -87,7 +86,6 @@ class UserLogin(Resource):
         if not user or not user.check_password(password):
             return {"message": "Invalid email or password !"}, 401
 
-        # Create a JWT Token
         access_token = create_access_token(identity=user.id, additional_claims={"role": user.role.value})
         response = jsonify({"name":user.name, "email":user.email, "id":user.id, "role":user.role.value, "message":"Login successful"})
         set_access_cookies(response, access_token)
@@ -112,4 +110,4 @@ class UserLogout(Resource):
 
 api.add_resource(UserRegister, "/register")  # Signup
 api.add_resource(UserLogin, "/login")  # Login
-api.add_resource(UserLogout, "/logout")  # Login
+api.add_resource(UserLogout, "/logout")  # Logout
