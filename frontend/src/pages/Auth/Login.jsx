@@ -9,16 +9,26 @@ import { setError } from "../../redux/slice/authSlice";
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword((prev) => !prev);
-  const [email, setEmail] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
-  const [password, setPassword] = useState("");
+
+  const [formData, setformData] = useState({
+    email: "",
+    password: "",
+  })
+
+  const handleChange = (e)=>{
+    setformData(formData => ({
+      ...formData,
+      [e.target.name]: e.target.value
+    }))
+  }
   
 
   const fields = [
-    { label: "Email", type: "email", onChange: (e) => setEmail(e.target.value) },
-    { label: "Password", type: "password", showPassword, togglePassword, onChange: (e) => setPassword(e.target.value) }
+    { label: "Email", type: "email", name:"email", onChange: handleChange },
+    { label: "Password", type: "password", showPassword, name:"password",onChange: handleChange, togglePassword }
   ];
 
 
@@ -44,16 +54,17 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
+
+    if (!formData.email || !formData.password) {
       dispatch(setError("Oops! Don't forget to fill in all the fields."));
       return;
     }
-    dispatch(loginUser({ email, password }));
+    dispatch(loginUser( formData ));
   };
 
   return (
     <>
-      <AuthForm title="Log In" fields={fields} buttonText="Log In" onSubmit={handleLogin} />
+      <AuthForm title="LOG IN" fields={fields} buttonText="LOG IN" onSubmit={handleLogin} />
     </>
 );
 }

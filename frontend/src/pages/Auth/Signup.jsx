@@ -10,12 +10,20 @@ function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const togglePassword = () => setShowPassword((prev) => !prev);
   const toggleConfirmPassword = () => setShowConfirmPassword((pre) => !pre);
-  const [name, setName] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirm_password, setConfirmPassword] = useState("")
-  const [email, setEmail] = useState("")
-  const [role, setRole] = useState("student")
+  const [formData, setformData] = useState({
+    email: "",
+    password: "",
+    confirm_password: "",
+    name: "",
+    role: "student"
+  })
 
+  const handleChange = (e)=>{
+    setformData(formData => ({
+      ...formData,
+      [e.target.name]: e.target.value
+    }))
+  }
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -25,11 +33,11 @@ function Signup() {
   ];
 
   const fields = [
-    { label: "Email", type: "email", defaultValue: "", onChange : (e) => setEmail(e.target.value) },
-    { label: "Name", type: "text", defaultValue: "", onChange : (e) => setName(e.target.value) },
-    { label: "Password", type: "password", showPassword: showPassword, togglePassword:togglePassword, onChange : (e) => setPassword(e.target.value) },
-    { label: "Confirm Password", type: "password", showPassword: showConfirmPassword,togglePassword: toggleConfirmPassword, onChange : (e) => setConfirmPassword(e.target.value) },
-    { label: "Sign Up As:", type: "select", options: IamA, defaultValue: "student", onChange : (e)=>setRole(e.target.value) }
+    { label: "Email",  name : "email",type: "email", defaultValue: "", onChange : handleChange },
+    { label: "Name", name : "name",type: "text", defaultValue: "", onChange : handleChange},
+    { label: "Password", name : "password", type: "password", showPassword: showPassword, togglePassword:togglePassword, onChange : handleChange },
+    { label: "Confirm Password", name : "confirm_password",type: "password", showPassword: showConfirmPassword,togglePassword: toggleConfirmPassword, onChange : handleChange },
+    { label: "Sign Up As:", type: "select", name : "role", options: IamA, defaultValue: "student", onChange : handleChange  }
   ];
 
 
@@ -37,12 +45,12 @@ function Signup() {
     e.preventDefault();
     dispatch(setError(""))
     // console.log(email)
-    if (!email || !password || !name || !confirm_password) {
+    if (!formData.email || !formData.password || !formData.confirm_password || !formData.name) {
       dispatch(setError("Oops! Don't forget to fill in all the fields."));
       return;
     }
     try {
-      await axiosInstance.post("/register", {name, email, password, confirm_password, role});
+      await axiosInstance.post("/register", formData);
       navigate("/login"); // Redirect to login page
     } catch (err) {
       
@@ -50,7 +58,7 @@ function Signup() {
     }
   };
 
-  return <AuthForm title="Sign Up" fields={fields} buttonText="Sign Up" onSubmit={handleRegister}/>;
+  return <AuthForm title="SIGN UP" fields={fields} buttonText="Sign Up" onSubmit={handleRegister}/>;
 }
 
 export default Signup;
