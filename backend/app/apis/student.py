@@ -52,14 +52,14 @@ class StudentResource(Resource):
             return {"message": "Unauthorized or Student not found"}, 403
         
         data = request.get_json()
-        if "name" in data and data["name"]:
-            student.user.name = data["name"]
-        if "email" in data and data["email"]:
+        if "name" in data and data["name"].strip():
+            student.user.name = data["name"].strip()
+        if "email" in data and data["email"].strip():
             check = Student.query.filter(Student.user.email==data['email']).first()
             if check:
                 return {"Error":"User with this email already exists"}, 400
             else:
-                student.user.email = data['email']
+                student.user.email = data['email'].strip()
         try:
             db.session.commit()
             return {"message": "Student details updated successfully"}, 200

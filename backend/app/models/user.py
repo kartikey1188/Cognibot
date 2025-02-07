@@ -42,6 +42,7 @@ class User(db.Model):
         return bcrypt.check_password_hash(self.password_hash, password)
     
     student = db.relationship('Student', back_populates='user', uselist=False, cascade="all, delete-orphan")
+    instructor = db.relationship('Instructor', back_populates='user', uselist=False, cascade="all, delete-orphan")
 
 
 
@@ -51,12 +52,12 @@ class Student(db.Model):
     user = db.relationship('User', back_populates='student')
     courses = db.relationship('Course', secondary='student_courses', back_populates='students')
 
-# class Instructor(db.Model):
-#     __tablename__ = 'instructor'
-#     id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True)
-#     user = db.relationship('User', back_populates='instructor')
-#     courses = db.relationship('Course', secondary='instructor_courses', back_populates='instructors') # the courses that this particular instructor teaches
-#     description = db.Column(db.Text) # a description of this instructor, things like educational background or achievements 
+class Instructor(db.Model):
+    __tablename__ = 'instructor'
+    id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
+    user = db.relationship('User', back_populates='instructor')
+    courses = db.relationship('Course', secondary='instructor_courses', back_populates='instructors') # the courses that this particular instructor teaches
+    description = db.Column(db.Text, default="No description provided.") # a description of this instructor, things like educational background or achievements 
 
 class Course(db.Model): 
     __tablename__ = 'course'
@@ -67,7 +68,7 @@ class Course(db.Model):
     level = db.Column(db.Enum(CourseLevel), nullable=False) # level can be 'Foundational' or 'Diploma' or 'Degree'
     type = db.Column(db.Enum(CourseType), nullable=False) # type can be either 'Data Science' or 'Programming' or 'Miscellaneous' 
     image = db.Column(db.String(300)) # whatever image we'd want to associate with the course
-    #instructors = db.relationship('Instructor', secondary='instructor_courses', back_populates='courses') # the instructors teaching this course
+    instructors = db.relationship('Instructor', secondary='instructor_courses', back_populates='courses') # the instructors teaching this course
     students = db.relationship('Student', secondary='student_courses', back_populates='courses') # the students enrolled in this course
     #assignments = db.relationship('Assignment', back_populates='course', cascade="all, delete-orphan") 
 
@@ -80,10 +81,10 @@ class Course(db.Model):
 #     course_id = db.Column(db.Integer, db.ForeignKey('course.course_id', ondelete="CASCADE"), nullable=False)  # foreign key linking the assignment to a Course
 #     course = db.relationship('Course', back_populates='assignments')  # relationship to the Course model
 
-# class InstructorCourses(db.Model): # Implements a many-to-many relationship between Instructor and Course.
-#     __tablename__ = 'instructor_courses'
-#     instructor_id = db.Column(db.Integer, db.ForeignKey('instructor.id', ondelete="CASCADE"), primary_key=True)
-#     course_id = db.Column(db.Integer, db.ForeignKey('course.course_id', ondelete="CASCADE"), primary_key=True)
+class InstructorCourses(db.Model): # Implements a many-to-many relationship between Instructor and Course.
+    __tablename__ = 'instructor_courses'
+    instructor_id = db.Column(db.Integer, db.ForeignKey('instructor.id', ondelete="CASCADE"), primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.course_id', ondelete="CASCADE"), primary_key=True)
 
 class StudentCourses(db.Model): # Implements a many-to-many relationship between Student and Course.
     __tablename__ = 'student_courses'
