@@ -40,13 +40,16 @@ class User(db.Model):
     def check_password(self, password):
         """Verify password during login."""
         return bcrypt.check_password_hash(self.password_hash, password)
+    
+    student = db.relationship('Student', back_populates='user', uselist=False, cascade="all, delete-orphan")
+
 
 
 class Student(db.Model):
     __tablename__ = 'student'
-    id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
     user = db.relationship('User', back_populates='student')
-    courses = db.relationship('Course', secondary='student_courses', back_populates='students', cascade="all, delete-orphan")
+    courses = db.relationship('Course', secondary='student_courses', back_populates='students')
 
 # class Instructor(db.Model):
 #     __tablename__ = 'instructor'
@@ -64,9 +67,9 @@ class Course(db.Model):
     level = db.Column(db.Enum(CourseLevel), nullable=False) # level can be 'Foundational' or 'Diploma' or 'Degree'
     type = db.Column(db.Enum(CourseType), nullable=False) # type can be either 'Data Science' or 'Programming' or 'Miscellaneous' 
     image = db.Column(db.String(300)) # whatever image we'd want to associate with the course
-    instructors = db.relationship('Instructor', secondary='instructor_courses', back_populates='courses') # the instructors teaching this course
+    #instructors = db.relationship('Instructor', secondary='instructor_courses', back_populates='courses') # the instructors teaching this course
     students = db.relationship('Student', secondary='student_courses', back_populates='courses') # the students enrolled in this course
-    assignments = db.relationship('Assignment', back_populates='course', cascade="all, delete-orphan") 
+    #assignments = db.relationship('Assignment', back_populates='course', cascade="all, delete-orphan") 
 
 # class Assignment(db.Model):  # Represents an assignment associated with a course.
 #     __tablename__ = 'assignment'
@@ -86,4 +89,5 @@ class StudentCourses(db.Model): # Implements a many-to-many relationship between
     __tablename__ = 'student_courses'
     student_id = db.Column(db.Integer, db.ForeignKey('student.id', ondelete="CASCADE"), primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey('course.course_id', ondelete="CASCADE"), primary_key=True)
-    grade_obtained = db.Column(db.Enum(GradeObtained), nullable=False, default='NA') # this is the grade obtained by a particular student in a particular course - grade_obtained by default is NA, but can be changed to S,A,B,C and so on (after the result)
+    grade_obtained = db.Column(db.Enum(GradeObtained), nullable=False, default=GradeObtained.NA) # this is the grade obtained by a particular student in a particular course - grade_obtained by default is NA, but can be changed to S,A,B,C and so on (after the result)
+
