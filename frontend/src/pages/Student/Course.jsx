@@ -1,12 +1,18 @@
-import React from 'react'
+import React from "react";
+import { Typography } from "@mui/material";
 
 function Course() {
   return (
-    <div>
-      Lecture 1
-      <iframe width="800" height="500" src="https://www.youtube.com/embed/N9bKBAA22Go" frameborder="0" allowfullscreen></iframe>
-    </div>
-  )
+  <section className="p-3 wrap-none">
+      <Typography variant="h3">Course Name</Typography>
+      <Typography variant="body1">
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quam veniam,
+        quos quidem cupiditate dolor quibusdam quaerat, minus dicta eaque dolore
+        iusto accusantium suscipit neque saepe ipsa impedit, assumenda deserunt
+        itaque.
+      </Typography>
+    </section>
+  );
 }
 
-export default Course
+export default Course;

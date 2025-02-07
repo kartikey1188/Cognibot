@@ -37,9 +37,9 @@ export default function StudentDashboardLayout() {
     {
       icon: <RecommendIcon />,
       text: "Study Recommendations",
-      path: "/recommendations",
+      path: "/dashboard/recommendations",
     },
-    { icon: <AccountCircleRoundedIcon />, text: "Profile", path: "/profile" },
+    { icon: <AccountCircleRoundedIcon />, text: "Profile", path: "/dashboard/profile" },
   ];
 
   const drawerContent = (

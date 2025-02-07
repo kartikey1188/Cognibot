@@ -4,6 +4,8 @@ import Courses from './pages/Student/Courses';
 import StudentDashboardLayout from './layouts/StudentDashboardLayout';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
+import Recommendations from './pages/Student/Recommendations';
+import Profile from './pages/Student/Profile';
 import { useEffect } from 'react';
 import {useDispatch } from 'react-redux';
 import CourseLayout from './layouts/CourseLayout';
@@ -35,8 +37,8 @@ function AppContent() {
                 </PrivateRoute>
               }
             />
-            {/* <Route
-              path="/recommendations"
+            <Route
+              path="/dashboard/recommendations"
               element={
                 <PrivateRoute allowedRoles={['student']}>
                   <Recommendations />
@@ -44,13 +46,13 @@ function AppContent() {
               }
             />
             <Route
-              path="/profile"
+              path="/dashboard/profile"
               element={
                 <PrivateRoute allowedRoles={['student']}>
                   <Profile />
                 </PrivateRoute>
               }
-            /> */}
+            />
   
           </Route>
 
