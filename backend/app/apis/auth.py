@@ -42,6 +42,7 @@ class UserRegister(Resource):
     parser.add_argument("password", type=str, required=True, help="Password is required")
     parser.add_argument("confirm_password", type=str, required=True, help="Confirm Password is required")
     parser.add_argument("role", type=str, required=True, choices=["student", "instructor", "admin"], help="Enter role. Must be either 'student', 'instructor', or 'admin'.")
+    parser.add_argument("description", type=str, required=False, help="Description (for instructors only)")
 
     def post(self):
         # Handle User Registration
@@ -65,6 +66,16 @@ class UserRegister(Resource):
             new_user.set_password(password)  # Hash password
             db.session.add(new_user)
             db.session.commit()
+            if data["role"]=='student':
+                student = Student(id=new_user.id)
+                db.session.add(student)
+                db.session.commit()
+            if data["role"]=='instructor':
+                description = data.get('description')
+                instructor = Instructor(id=new_user.id, description=description)
+                db.session.add(instructor)
+                db.session.commit()
+
             return {"message": "User registered successfully!"}, 201
         except ValueError:
             return {"message": "Invalid role provided !"}, 400
