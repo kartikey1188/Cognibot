@@ -11,6 +11,7 @@ import {useDispatch } from 'react-redux';
 import CourseLayout from './layouts/CourseLayout';
 import Course from './pages/Student/Course';
 import Help from './pages/Student/Help';
+import Assignment from './pages/Student/Assignment';
 import Lecture from './pages/Student/Lecture';
 import { setError } from './redux/slice/authSlice';
 import Layout from './layouts/Layout';
@@ -75,6 +76,11 @@ function AppContent() {
             <Route path="/course/lecture" element={
                 <PrivateRoute allowedRoles={['student']}>
                   <Lecture/>
+                </PrivateRoute>
+              } />
+            <Route path="/course/assignment" element={
+                <PrivateRoute allowedRoles={['student']}>
+                 <Assignment></Assignment>
                 </PrivateRoute>
               } />
           </Route>

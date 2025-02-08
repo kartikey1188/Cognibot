@@ -10,7 +10,7 @@ function Lecture() {
     <section className="lecture-section flex flex-col gap-5">
       <div className="flex flex-wrap gap-2 ">
         <div className="flex-grow-[2]">
-          <Typography variant="h3" fontWeight="bold">
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
             Lecture Name
           </Typography>
           <Box
