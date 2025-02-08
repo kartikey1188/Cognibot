@@ -4,10 +4,15 @@ import Courses from './pages/Student/Courses';
 import StudentDashboardLayout from './layouts/StudentDashboardLayout';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
+import Recommendations from './pages/Student/Recommendations';
+import Profile from './pages/Student/Profile';
 import { useEffect } from 'react';
 import {useDispatch } from 'react-redux';
 import CourseLayout from './layouts/CourseLayout';
 import Course from './pages/Student/Course';
+import Help from './pages/Student/Help';
+import Assignment from './pages/Student/Assignment';
+import Lecture from './pages/Student/Lecture';
 import { setError } from './redux/slice/authSlice';
 import Layout from './layouts/Layout';
 
@@ -35,8 +40,8 @@ function AppContent() {
                 </PrivateRoute>
               }
             />
-            {/* <Route
-              path="/recommendations"
+            <Route
+              path="/dashboard/recommendations"
               element={
                 <PrivateRoute allowedRoles={['student']}>
                   <Recommendations />
@@ -44,13 +49,21 @@ function AppContent() {
               }
             />
             <Route
-              path="/profile"
+              path="/dashboard/profile"
               element={
                 <PrivateRoute allowedRoles={['student']}>
                   <Profile />
                 </PrivateRoute>
               }
-            /> */}
+            />
+            <Route
+              path="/dashboard/help"
+              element={
+                <PrivateRoute allowedRoles={['student']}>
+                  <Help/>
+                </PrivateRoute>
+              }
+            />
   
           </Route>
 
@@ -60,7 +73,16 @@ function AppContent() {
                   <Course/>
                 </PrivateRoute>
               } />
-            {/* <Route></Route> */}
+            <Route path="/course/lecture" element={
+                <PrivateRoute allowedRoles={['student']}>
+                  <Lecture/>
+                </PrivateRoute>
+              } />
+            <Route path="/course/assignment" element={
+                <PrivateRoute allowedRoles={['student']}>
+                 <Assignment></Assignment>
+                </PrivateRoute>
+              } />
           </Route>
 
           {/* <Route

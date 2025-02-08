@@ -83,18 +83,3 @@ body {
 /* *{
   border:1px solid red;
 } */
-
-::-webkit-scrollbar {
-  width: 12px;
-  background-color: #000000;
-  padding : 2px
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: rgb(100, 99, 99);
-  
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: rgb(129, 128, 128);
-}
