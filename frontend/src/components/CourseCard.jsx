@@ -40,22 +40,22 @@ export default function ImgMediaCard() {
         />
         <Typography
           gutterBottom
-          variant="h5"
+          variant="h6"
           component="div"
           sx={{
             position: "absolute",
-            bottom: 18,
-            left: 18,
+            bottom: 10,
+            left: 10,
             color: "white",
             textShadow: "1px 1px 2px rgba(0,0,0,0.6)",
           }}
         >
-          Course Name
+          Programming In Python
         </Typography>
       </Box>
       <CardContent>
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Instructor : Instructor Name
+          Instructor : Sudarshan Iyenagar
         </Typography>
       </CardContent>
       <CardActions>

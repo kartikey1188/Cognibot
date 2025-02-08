@@ -25,6 +25,7 @@ import { useDispatch } from "react-redux";
 import { toggleSidebar } from "../redux/slice/uiSlice";
 const drawerWidth = 300;
 import { useSelector } from "react-redux";
+import HelpIcon from '@mui/icons-material/Help';
 
 export default function StudentDashboardLayout() {
   const { sidebarOpen } = useSelector((state) => state.ui);
@@ -40,6 +41,7 @@ export default function StudentDashboardLayout() {
       path: "/dashboard/recommendations",
     },
     { icon: <AccountCircleRoundedIcon />, text: "Profile", path: "/dashboard/profile" },
+    { icon: <HelpIcon/> , text: "Help", path: "/dashboard/help" },
   ];
 
   const drawerContent = (

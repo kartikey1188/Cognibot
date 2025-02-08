@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import {useDispatch } from 'react-redux';
 import CourseLayout from './layouts/CourseLayout';
 import Course from './pages/Student/Course';
+import Help from './pages/Student/Help';
 import Lecture from './pages/Student/Lecture';
 import { setError } from './redux/slice/authSlice';
 import Layout from './layouts/Layout';
@@ -51,6 +52,14 @@ function AppContent() {
               element={
                 <PrivateRoute allowedRoles={['student']}>
                   <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dashboard/help"
+              element={
+                <PrivateRoute allowedRoles={['student']}>
+                  <Help/>
                 </PrivateRoute>
               }
             />
