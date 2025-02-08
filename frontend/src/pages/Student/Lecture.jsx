@@ -61,7 +61,7 @@ function Lecture() {
       </div>
       <Paper elevation={3} sx={{ p: 2 }}>
             <Typography variant="h5" gutterBottom>
-              Review Lecture
+              Review
             </Typography>
             
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
