@@ -1,64 +1,66 @@
-import { useState, useEffect} from "react";
+import { useState } from "react";
 import AuthForm from "@/components/AuthForm.jsx";
 import axiosInstance from "@/axiosClient.js";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setError } from "../../redux/slice/authSlice";
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const togglePassword = () => setShowPassword((prev) => !prev);
-  const toggleConfirmPassword = () => setShowConfirmPassword((pre) => !pre);
-  const [formData, setformData] = useState({
-    email: "",
-    password: "",
-    confirm_password: "",
-    name: "",
-    role: "student"
-  })
+  const toggleConfirmPassword = () => setShowConfirmPassword((prev) => !prev);
 
-  const handleChange = (e)=>{
-    setformData(formData => ({
-      ...formData,
-      [e.target.name]: e.target.value
-    }))
-  }
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const validationSchema = yup.object({
+    email: yup.string().email("Invalid email format").required("Email is required"),
+    name: yup.string().required("Name is required"),
+    password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+    confirm_password: yup
+      .string()
+      .oneOf([yup.ref("password"), null], "Passwords must match")
+      .required("Confirm Password is required"),
+    role: yup.string().required("Role is required"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+      confirm_password: "",
+      name: "",
+      role: "student",
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      dispatch(setError(""));
+      try {
+        await axiosInstance.post("/register", values);
+        navigate("/login"); // Redirect to login page
+      } catch (err) {
+        dispatch(setError(err?.response?.data?.message));
+      }
+    },
+  });
+
   const IamA = [
     { value: "student", label: "Student" },
-    { value: "instructor", label: "Instructor" }
+    { value: "instructor", label: "Instructor" },
   ];
 
   const fields = [
-    { label: "Email",  name : "email",type: "email", defaultValue: "", onChange : handleChange },
-    { label: "Name", name : "name",type: "text", defaultValue: "", onChange : handleChange},
-    { label: "Password", name : "password", type: "password", showPassword: showPassword, togglePassword:togglePassword, onChange : handleChange },
-    { label: "Confirm Password", name : "confirm_password",type: "password", showPassword: showConfirmPassword,togglePassword: toggleConfirmPassword, onChange : handleChange },
-    { label: "Sign Up As:", type: "select", name : "role", options: IamA, defaultValue: "student", onChange : handleChange  }
+    { label: "Email", name: "email", type: "email", onChange: formik.handleChange, value: formik.values.email, error: formik.errors.email, touched: formik.touched.email },
+    { label: "Name", name: "name", type: "text", onChange: formik.handleChange, value: formik.values.name, error: formik.errors.name, touched: formik.touched.name },
+    { label: "Password", name: "password", type: "password", showPassword, togglePassword, onChange: formik.handleChange, value: formik.values.password, error: formik.errors.password, touched: formik.touched.password },
+    { label: "Confirm Password", name: "confirm_password", type: "password", showPassword: showConfirmPassword, togglePassword: toggleConfirmPassword, onChange: formik.handleChange, value: formik.values.confirm_password, error: formik.errors.confirm_password, touched: formik.touched.confirm_password },
+    { label: "Sign Up As:", type: "select", name: "role", options: IamA, onChange: formik.handleChange, value: formik.values.role, error: formik.errors.role, touched: formik.touched.role },
   ];
 
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    dispatch(setError(""))
-    // console.log(email)
-    if (!formData.email || !formData.password || !formData.confirm_password || !formData.name) {
-      dispatch(setError("Oops! Don't forget to fill in all the fields."));
-      return;
-    }
-    try {
-      await axiosInstance.post("/register", formData);
-      navigate("/login"); // Redirect to login page
-    } catch (err) {
-      
-      dispatch(setError(err?.response?.data?.message ));
-    }
-  };
-
-  return <AuthForm title="SIGN UP" fields={fields} buttonText="Sign Up" onSubmit={handleRegister}/>;
+  return <AuthForm title="SIGN UP" fields={fields} buttonText="Sign Up" onSubmit={formik.handleSubmit} />;
 }
 
 export default Signup;

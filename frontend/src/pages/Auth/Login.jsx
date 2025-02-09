@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AuthForm from "@/components/AuthForm.jsx";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../axiosClient";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser} from "../../redux/slice/authSlice";
-import { setError } from "../../redux/slice/authSlice";
+import { loginUser } from "../../redux/slice/authSlice";
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,41 +13,32 @@ function Login() {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
-  const [formData, setformData] = useState({
-    email: "",
-    password: "",
-  })
+  const validationSchema = yup.object({
+    email: yup.string().email("Invalid email format").required("Email is required"),
+    password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+  });
 
-  const handleChange = (e)=>{
-    setformData(formData => ({
-      ...formData,
-      [e.target.name]: e.target.value
-    }))
-  }
-  
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      dispatch(loginUser(values));
+    },
+  });
 
   const fields = [
-    { label: "Email", type: "email", name:"email", onChange: handleChange },
-    { label: "Password", type: "password", showPassword, name:"password",onChange: handleChange, togglePassword }
+    { label: "Email", type: "email", name: "email", onChange: formik.handleChange, value: formik.values.email, error: formik.errors.email, touched: formik.touched.email },
+    { label: "Password", type: "password", showPassword, name: "password", onChange: formik.handleChange, value: formik.values.password, error: formik.errors.password, touched: formik.touched.password, togglePassword },
   ];
-
-
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-    if (!formData.email || !formData.password) {
-      dispatch(setError("Oops! Don't forget to fill in all the fields."));
-      return;
-    }
-    dispatch(loginUser( formData ));
-  };
 
   return (
     <>
-      <AuthForm title="LOG IN" fields={fields} buttonText="LOG IN" onSubmit={handleLogin} />
+      <AuthForm title="LOG IN" fields={fields} buttonText="LOG IN" onSubmit={formik.handleSubmit} />
     </>
-);
+  );
 }
 
 export default Login;
