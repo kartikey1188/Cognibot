@@ -28,7 +28,7 @@ class CourseResource(Resource):
         return course, 200
 
     @jwt_required()
-    @role_required(Role.ADMIN)
+    @role_required(Role.ADMIN.value)
     def post(self):  # Create a new course
         parser = reqparse.RequestParser()
         parser.add_argument("course_name", type=str, required=True, help="Course name is required")
@@ -63,7 +63,7 @@ class CourseResource(Resource):
             return {"Error": "Failed to create course"}, 500
 
     @jwt_required()
-    @role_required(Role.ADMIN)
+    @role_required(Role.ADMIN.value)
     def put(self, course_id):  # Update an individual course
         parser = reqparse.RequestParser()
         parser.add_argument("course_name", type=str, required=False)
@@ -109,7 +109,7 @@ class CourseResource(Resource):
             return {"Error": "Failed to update course"}, 500
 
     @jwt_required()
-    @role_required(Role.ADMIN)
+    @role_required(Role.ADMIN.value)
     def delete(self, course_id):  # Delete an individual course
         course = Course.query.filter(Course.course_id == course_id).first()
         if not course:
@@ -127,7 +127,7 @@ class CourseResource(Resource):
 class CourseStudentsResource(Resource):  # Get all students in a course
     @marshal_with(marshal_student)
     @jwt_required()
-    @role_required(Role.ADMIN, Role.INSTRUCTOR)
+    @role_required(Role.ADMIN.value, Role.INSTRUCTOR.value)
     def get(self, course_id):
         course = Course.query.filter(Course.course_id == course_id).first()
         if not course:

@@ -13,9 +13,10 @@ from app.apis.all_marshals import marshal_student, marshal_course, marshal_stude
 class GetAllStudents(Resource): # get all students
     @marshal_with(marshal_student)
     @jwt_required()
-    @role_required(Role.ADMIN, Role.INSTRUCTOR)
+    @role_required(Role.ADMIN.value, Role.INSTRUCTOR.value, Role.STUDENT.value)
     def get(self):
         students = Student.query.all()
+        print(Role.STUDENT)
         return students, 200
 
 class StudentResource(Resource): 
@@ -28,7 +29,7 @@ class StudentResource(Resource):
         return student, 200
 
     @jwt_required()
-    @role_required(Role.ADMIN)
+    @role_required(Role.ADMIN.value)
     def delete(self, student_id): # delete an individual student
         student = Student.query.filter(Student.id==student_id).first()
         if not student:
@@ -44,7 +45,7 @@ class StudentResource(Resource):
             return {"Error" : "Failed to delete student"}, 500
 
     @jwt_required()
-    @role_required(Role.STUDENT)
+    @role_required(Role.STUDENT.value)
     def put(self, student_id): # update an individual student 
         student = Student.query.filter_by(id=student_id).first()
         current_user_id = get_jwt_identity()
@@ -72,7 +73,7 @@ class StudentResource(Resource):
 class StudentCoursesResource(Resource):
     @marshal_with(marshal_course)
     @jwt_required()
-    @role_required(Role.STUDENT, Role.ADMIN)
+    @role_required(Role.STUDENT.value, Role.ADMIN.value)
     def get(self, student_id): # get all courses of a particular student 
         student = Student.query.filter(Student.id==student_id).first()
         if not student:
@@ -80,7 +81,7 @@ class StudentCoursesResource(Resource):
         return student.courses, 200
 
     @jwt_required()
-    @role_required(Role.ADMIN)
+    @role_required(Role.ADMIN.value)
     def post(self, student_id, course_id): # enroll a particular student into a particular course
         student = Student.query.filter(Student.id==student_id).first()
         course = Course.query.filter(Course.course_id==course_id).first()
@@ -103,7 +104,7 @@ class StudentCoursesResource(Resource):
             return {"Error" : "Could not enroll this student in course"}, 500
         
     @jwt_required()
-    @role_required(Role.ADMIN)
+    @role_required(Role.ADMIN.value)
     def delete(self, student_id, course_id): # unenroll a particular student from a particular course
         student_course = StudentCourses.query.filter(StudentCourses.student_id==student_id, StudentCourses.course_id==course_id).first()
         if not student_course:
