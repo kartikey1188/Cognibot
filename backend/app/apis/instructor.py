@@ -26,7 +26,7 @@ class InstructorResource(Resource):
         return instructor, 200
 
     @jwt_required()
-    @role_required(Role.ADMIN)
+    @role_required(Role.ADMIN.value)
     def delete(self, instructor_id):  # Delete an individual instructor
         instructor = Instructor.query.filter(Instructor.id == instructor_id).first()
         if not instructor:
@@ -42,7 +42,7 @@ class InstructorResource(Resource):
             return {"Error": "Failed to delete instructor"}, 500
 
     @jwt_required()
-    @role_required(Role.INSTRUCTOR)
+    @role_required(Role.INSTRUCTOR.value)
     def put(self, instructor_id):  # Update an individual instructor
         instructor = Instructor.query.filter(Instructor.id==instructor_id).first()
         current_user_id = get_jwt_identity()
@@ -80,7 +80,7 @@ class InstructorCoursesResource(Resource):
         return instructor.courses, 200
 
     @jwt_required()
-    @role_required(Role.ADMIN)
+    @role_required(Role.ADMIN.value)
     def post(self, instructor_id, course_id):  # Assign an instructor to a course
         instructor = Instructor.query.filter(Instructor.id == instructor_id).first()
         course = Course.query.filter(Course.course_id == course_id).first()
@@ -103,7 +103,7 @@ class InstructorCoursesResource(Resource):
             return {"Error": "Could not assign instructor to course"}, 500
 
     @jwt_required()
-    @role_required(Role.ADMIN)
+    @role_required(Role.ADMIN.value)
     def delete(self, instructor_id, course_id):  # Remove an instructor from a course
         instructor_course = InstructorCourses.query.filter(InstructorCourses.instructor_id == instructor_id, InstructorCourses.course_id == course_id).first()
         if not instructor_course:
