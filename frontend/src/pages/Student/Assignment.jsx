@@ -13,7 +13,8 @@ import {
   Divider,
   TextField,
   Grow,
-  IconButton
+  IconButton,
+  CircularProgress
 } from '@mui/material';
 import { ChatFeed, Message } from 'react-chat-ui';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -53,8 +54,9 @@ const pythonQuestions = [
 function Assignment() {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([
-    new Message({ id: 1, message: 'Welcome to the assignment chat! Feel free to discuss the questions here.' }),
+    new Message({ id: 1, message: 'Welcome to the assignment chat! Feel free to discuss the questions here.', senderName: 'System', timestamp: new Date().toLocaleTimeString() }),
   ]);
   const [newMessage, setNewMessage] = useState('');
   const [chatOpen, setChatOpen] = useState(false);
@@ -96,17 +98,30 @@ function Assignment() {
   const handleSendMessage = useCallback(() => {
     if (newMessage.trim() === '') return;
 
-    const userMessage = new Message({ id: 0, message: newMessage });
+    const userMessage = new Message({ id: 0, message: newMessage, senderName: 'You', timestamp: new Date().toLocaleTimeString() });
     setMessages((prevMessages) => [...prevMessages, userMessage]);
 
     // Simulate an automated response
     setTimeout(() => {
-      const responseMessage = new Message({ id: 1, message: 'Thank you for your message. We will get back to you shortly.' });
+      const responseMessage = new Message({ id: 1, message: 'Thank you for your message. We will get back to you shortly.', senderName: 'System', timestamp: new Date().toLocaleTimeString() });
       setMessages((prevMessages) => [...prevMessages, responseMessage]);
     }, 1000);
 
     setNewMessage('');
   }, [newMessage]);
+
+  const handleSubmit = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setSubmitted(true);
+      setLoading(false);
+    }, 1000);
+  };
+
+  const handleReset = () => {
+    setAnswers({});
+    setSubmitted(false);
+  };
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto' }}>
@@ -189,16 +204,26 @@ function Assignment() {
         ))}
       </Box>
 
-      <Button
-        variant="contained"
-        color="primary"
-        fullWidth
-        onClick={() => setSubmitted(true)}
-        disabled={submitted}
-        sx={{ mt: 2 }}
-      >
-        Submit Quiz
-      </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          disabled={submitted || loading}
+          sx={{ flexGrow: 1, mr: 1 }}
+        >
+          {loading ? <CircularProgress size={24} /> : 'Submit Quiz'}
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={handleReset}
+          disabled={!submitted}
+          sx={{ flexGrow: 1, ml: 1 }}
+        >
+          Reset Quiz
+        </Button>
+      </Box>
 
       {submitted && (
         <Paper sx={{ mt: 3, p: 2, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
