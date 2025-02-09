@@ -54,7 +54,7 @@ const CourseLayout = () => {
           type: "PPA",
           title: "Practice Programming 1",
           icon: TerminalTwoToneIcon,
-          path: "/course/assignment",
+          path: "/course/programming-assignment",
         },
         {
           type: "GRPA",
@@ -215,7 +215,7 @@ const CourseLayout = () => {
         <List
           sx={{
             borderTop: 1,
-            paddingTop : 0,
+            paddingTop: 0,
             borderColor: "divider",
             width: '100%'
           }}
