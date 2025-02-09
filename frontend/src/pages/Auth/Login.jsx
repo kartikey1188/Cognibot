@@ -32,25 +32,6 @@ function Login() {
   ];
 
 
-  useEffect(() => {
-    if(user) {
-      switch (user.role) {
-        case 'student':
-          navigate('/dashboard');
-          break;
-        case 'instructor':
-          navigate('/dashboard/instructor');
-          break;
-        case 'admin':
-          navigate('/dashboard/admin');
-          break;
-        default:
-          navigate('/');
-      }
-    } else {
-      navigate('/login');
-    }
-  }, [user, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
