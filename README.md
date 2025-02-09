@@ -1,9 +1,11 @@
 # soft-engg-project-jan-2025-se-Jan-11
 
 ## Project Overview
+
 This project is a web application that includes a backend built with Flask and a frontend built with React. The backend handles API requests, user authentication, and database interactions, while the frontend provides a user interface for interacting with the application.
 
 ## Directory Structure
+
 ```
 ├── README.md                # Project documentation
 ├── backend/
@@ -86,52 +88,72 @@ This project is a web application that includes a backend built with Flask and a
 ## Getting Started
 
 ### Prerequisites
+
 - Python 3.x
 - Node.js
 - npm or yarn
 
 ### Backend Setup
+
 1. Navigate to the `backend` directory:
+
    ```sh
    cd backend
    ```
+
 2. Create a virtual environment:
+
    ```sh
    python -m venv .venv
    ```
+
 3. Activate the virtual environment:
    - On Windows:
+
      ```sh
      .venv\Scripts\activate
      ```
+
    - On macOS/Linux:
+
      ```sh
      source .venv/bin/activate
      ```
+
 4. Install the dependencies:
+
    ```sh
    pip install -r requirements.txt
    ```
+
 5. Run the Flask application:
+
    ```sh
    python run.py
    ```
 
 ### Frontend Setup
+
 1. Navigate to the `frontend` directory:
+
    ```sh
    cd frontend
    ```
+
 2. Install the dependencies:
+
    ```sh
    npm install
    ```
+
 3. Start the development server:
+
    ```sh
    npm run dev
    ```
 
 ## Contributing
+
 1. Fork the repository.
 2. Create a new branch (`git checkout -b feature-branch`).
 3. Make your changes.
@@ -140,4 +162,5 @@ This project is a web application that includes a backend built with Flask and a
 6. Open a pull request.
 
 ## License
+
 This project is licensed under the MIT License.
