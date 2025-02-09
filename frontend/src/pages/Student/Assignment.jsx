@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   Typography, 
   Box,
@@ -10,8 +10,15 @@ import {
   Button, 
   Paper,
   FormGroup,
-  Divider 
+  Divider,
+  TextField,
+  Grow,
+  IconButton,
+  CircularProgress
 } from '@mui/material';
+import { ChatFeed, Message } from 'react-chat-ui';
+import ChatIcon from '@mui/icons-material/Chat';
+import CloseIcon from '@mui/icons-material/Close';
 
 const pythonQuestions = [
   {
@@ -47,6 +54,12 @@ const pythonQuestions = [
 function Assignment() {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState([
+    new Message({ id: 1, message: 'Welcome to the assignment chat! Feel free to discuss the questions here.', senderName: 'System', timestamp: new Date().toLocaleTimeString() }),
+  ]);
+  const [newMessage, setNewMessage] = useState('');
+  const [chatOpen, setChatOpen] = useState(false);
 
   const handleAnswerChange = (questionId, value, type) => {
     if (type === 'mcq') {
@@ -80,6 +93,34 @@ function Assignment() {
         return score + (isCorrect ? 1 : 0);
       }
     }, 0);
+  };
+
+  const handleSendMessage = useCallback(() => {
+    if (newMessage.trim() === '') return;
+
+    const userMessage = new Message({ id: 0, message: newMessage, senderName: 'You', timestamp: new Date().toLocaleTimeString() });
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
+
+    // Simulate an automated response
+    setTimeout(() => {
+      const responseMessage = new Message({ id: 1, message: 'Thank you for your message. We will get back to you shortly.', senderName: 'System', timestamp: new Date().toLocaleTimeString() });
+      setMessages((prevMessages) => [...prevMessages, responseMessage]);
+    }, 1000);
+
+    setNewMessage('');
+  }, [newMessage]);
+
+  const handleSubmit = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setSubmitted(true);
+      setLoading(false);
+    }, 1000);
+  };
+
+  const handleReset = () => {
+    setAnswers({});
+    setSubmitted(false);
   };
 
   return (
@@ -163,16 +204,26 @@ function Assignment() {
         ))}
       </Box>
 
-      <Button
-        variant="contained"
-        color="primary"
-        fullWidth
-        onClick={() => setSubmitted(true)}
-        disabled={submitted}
-        sx={{ mt: 2 }}
-      >
-        Submit Quiz
-      </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          disabled={submitted || loading}
+          sx={{ flexGrow: 1, mr: 1 }}
+        >
+          {loading ? <CircularProgress size={24} /> : 'Submit Quiz'}
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={handleReset}
+          disabled={!submitted}
+          sx={{ flexGrow: 1, ml: 1 }}
+        >
+          Reset Quiz
+        </Button>
+      </Box>
 
       {submitted && (
         <Paper sx={{ mt: 3, p: 2, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
@@ -180,6 +231,61 @@ function Assignment() {
             Score: {calculateScore()}/{pythonQuestions.length}
           </Typography>
         </Paper>
+      )}
+
+      <Box sx={{ position: 'fixed', bottom: 16, right: 16 }}>
+        <IconButton
+          color="primary"
+          onClick={() => setChatOpen(!chatOpen)}
+          sx={{ bgcolor: 'background.paper', borderRadius: '50%', boxShadow: 3 }}
+        >
+          {chatOpen ? <CloseIcon /> : <ChatIcon />}
+        </IconButton>
+      </Box>
+
+      {chatOpen && (
+        <Grow in>
+          <Paper elevation={3} sx={{ position: 'fixed', bottom: 80, right: 16, width: 300, height: 400, p: 2, borderRadius: 2, backgroundColor: '#fafafa', display: 'flex', flexDirection: 'column' }}>
+            <Typography variant="h6" gutterBottom>
+              Assignment Chat
+            </Typography>
+            <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
+              <ChatFeed
+                messages={messages}
+                showSenderName
+                bubblesCentered={false}
+                bubbleStyles={{
+                  text: {
+                    fontSize: 16
+                  },
+                  chatbubble: {
+                    borderRadius: 20,
+                    padding: 10
+                  }
+                }}
+              />
+            </Box>
+            <Box sx={{ display: 'flex', mt: 2 }}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder="Type your message..."
+                sx={{ mr: 1 }}
+                aria-label="Type your message"
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSendMessage}
+              >
+                Send
+              </Button>
+            </Box>
+          </Paper>
+        </Grow>
       )}
     </Box>
   );

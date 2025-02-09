@@ -7,12 +7,13 @@ import Signup from './pages/Auth/Signup';
 import Recommendations from './pages/Student/Recommendations';
 import Profile from './pages/Student/Profile';
 import { useEffect } from 'react';
-import {useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import CourseLayout from './layouts/CourseLayout';
 import Course from './pages/Student/Course';
 import Help from './pages/Student/Help';
 import Assignment from './pages/Student/Assignment';
 import Lecture from './pages/Student/Lecture';
+import ProgrammingAssignment from './pages/Student/ProgrammingAssignment';
 import { setError } from './redux/slice/authSlice';
 import Layout from './layouts/Layout';
 import PublicRoute from './components/PublicRoute';
@@ -22,26 +23,26 @@ function AppContent() {
   const location = useLocation();
   useEffect(() => {
     dispatch(setError(""));
-   }, [dispatch, location]);
+  }, [dispatch, location]);
 
   return (
     <>
       <Routes>
-        <Route path="/" element={<Layout/>}>
+        <Route path="/" element={<Layout />}>
           <Route path="/login" element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-          } 
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
           />
           <Route path="/signup" element={
             <PublicRoute>
               <Signup />
             </PublicRoute>
           } />
-          
+
           {/* Protected routes */}
-          <Route path="/dashboard" element={<StudentDashboardLayout/>}>
+          <Route path="/dashboard" element={<StudentDashboardLayout />}>
             <Route
               index
               element={
@@ -70,29 +71,34 @@ function AppContent() {
               path="/dashboard/help"
               element={
                 <PrivateRoute allowedRoles={['student']}>
-                  <Help/>
+                  <Help />
                 </PrivateRoute>
               }
             />
-  
+
           </Route>
 
-          <Route path="/course" element={<CourseLayout/>}>
+          <Route path="/course" element={<CourseLayout />}>
             <Route index element={
-                <PrivateRoute allowedRoles={['student']}>
-                  <Course/>
-                </PrivateRoute>
-              } />
+              <PrivateRoute allowedRoles={['student']}>
+                <Course />
+              </PrivateRoute>
+            } />
             <Route path="/course/lecture" element={
-                <PrivateRoute allowedRoles={['student']}>
-                  <Lecture/>
-                </PrivateRoute>
-              } />
+              <PrivateRoute allowedRoles={['student']}>
+                <Lecture />
+              </PrivateRoute>
+            } />
             <Route path="/course/assignment" element={
-                <PrivateRoute allowedRoles={['student']}>
-                 <Assignment></Assignment>
-                </PrivateRoute>
-              } />
+              <PrivateRoute allowedRoles={['student']}>
+                <Assignment />
+              </PrivateRoute>
+            } />
+            <Route path="/course/programming-assignment" element={
+              <PrivateRoute allowedRoles={['student']}>
+                <ProgrammingAssignment />
+              </PrivateRoute>
+            } />
           </Route>
 
           {/* <Route
@@ -116,7 +122,6 @@ function AppContent() {
     </>
   );
 }
-
 
 export default function App() {
   return (

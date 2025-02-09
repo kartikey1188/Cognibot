@@ -1,2 +1,28 @@
+# Python
 backend/.venv
 __pycache__
+*.pyc
+*.pyo
+*.pyd
+*.env
+
+# Node.js
+frontend/node_modules
+frontend/dist
+frontend/.env
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
