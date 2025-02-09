@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   Typography, 
   Box,
@@ -10,8 +10,14 @@ import {
   Button, 
   Paper,
   FormGroup,
-  Divider 
+  Divider,
+  TextField,
+  Grow,
+  IconButton
 } from '@mui/material';
+import { ChatFeed, Message } from 'react-chat-ui';
+import ChatIcon from '@mui/icons-material/Chat';
+import CloseIcon from '@mui/icons-material/Close';
 
 const pythonQuestions = [
   {
@@ -47,6 +53,11 @@ const pythonQuestions = [
 function Assignment() {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [messages, setMessages] = useState([
+    new Message({ id: 1, message: 'Welcome to the assignment chat! Feel free to discuss the questions here.' }),
+  ]);
+  const [newMessage, setNewMessage] = useState('');
+  const [chatOpen, setChatOpen] = useState(false);
 
   const handleAnswerChange = (questionId, value, type) => {
     if (type === 'mcq') {
@@ -81,6 +92,21 @@ function Assignment() {
       }
     }, 0);
   };
+
+  const handleSendMessage = useCallback(() => {
+    if (newMessage.trim() === '') return;
+
+    const userMessage = new Message({ id: 0, message: newMessage });
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
+
+    // Simulate an automated response
+    setTimeout(() => {
+      const responseMessage = new Message({ id: 1, message: 'Thank you for your message. We will get back to you shortly.' });
+      setMessages((prevMessages) => [...prevMessages, responseMessage]);
+    }, 1000);
+
+    setNewMessage('');
+  }, [newMessage]);
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto' }}>
@@ -180,6 +206,61 @@ function Assignment() {
             Score: {calculateScore()}/{pythonQuestions.length}
           </Typography>
         </Paper>
+      )}
+
+      <Box sx={{ position: 'fixed', bottom: 16, right: 16 }}>
+        <IconButton
+          color="primary"
+          onClick={() => setChatOpen(!chatOpen)}
+          sx={{ bgcolor: 'background.paper', borderRadius: '50%', boxShadow: 3 }}
+        >
+          {chatOpen ? <CloseIcon /> : <ChatIcon />}
+        </IconButton>
+      </Box>
+
+      {chatOpen && (
+        <Grow in>
+          <Paper elevation={3} sx={{ position: 'fixed', bottom: 80, right: 16, width: 300, height: 400, p: 2, borderRadius: 2, backgroundColor: '#fafafa', display: 'flex', flexDirection: 'column' }}>
+            <Typography variant="h6" gutterBottom>
+              Assignment Chat
+            </Typography>
+            <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
+              <ChatFeed
+                messages={messages}
+                showSenderName
+                bubblesCentered={false}
+                bubbleStyles={{
+                  text: {
+                    fontSize: 16
+                  },
+                  chatbubble: {
+                    borderRadius: 20,
+                    padding: 10
+                  }
+                }}
+              />
+            </Box>
+            <Box sx={{ display: 'flex', mt: 2 }}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder="Type your message..."
+                sx={{ mr: 1 }}
+                aria-label="Type your message"
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSendMessage}
+              >
+                Send
+              </Button>
+            </Box>
+          </Paper>
+        </Grow>
       )}
     </Box>
   );
