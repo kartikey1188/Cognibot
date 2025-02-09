@@ -15,6 +15,7 @@ import Assignment from './pages/Student/Assignment';
 import Lecture from './pages/Student/Lecture';
 import { setError } from './redux/slice/authSlice';
 import Layout from './layouts/Layout';
+import PublicRoute from './components/PublicRoute';
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -27,8 +28,17 @@ function AppContent() {
     <>
       <Routes>
         <Route path="/" element={<Layout/>}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+          } 
+          />
+          <Route path="/signup" element={
+            <PublicRoute>
+              <Signup />
+            </PublicRoute>
+          } />
           
           {/* Protected routes */}
           <Route path="/dashboard" element={<StudentDashboardLayout/>}>

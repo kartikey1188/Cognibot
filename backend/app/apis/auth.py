@@ -118,7 +118,15 @@ class UserLogout(Resource):
         
         return response
 
+class GetUser(Resource):
+    @jwt_required()
+    def get(self):
+        user_id = get_jwt_identity()
+        user = User.query.filter_by(id = user_id).first()
+        response = jsonify({"name":user.name, "email":user.email, "id":user.id, "role":user.role.value, "message":"Login successful"})
+        return response
 
 api.add_resource(UserRegister, "/register")  # Signup
 api.add_resource(UserLogin, "/login")  # Login
 api.add_resource(UserLogout, "/logout")  # Logout
+api.add_resource(GetUser, "/user")

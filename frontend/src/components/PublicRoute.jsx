@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { fetchUser } from "../redux/slice/authSlice";
 import { Box, CircularProgress } from "@mui/material";
 
-const PrivateRoute = ({ children, allowedRoles }) => {
+const PublicRoute = ({ children }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
@@ -16,13 +16,12 @@ const PrivateRoute = ({ children, allowedRoles }) => {
       dispatch(fetchUser())
         .unwrap()
         .catch(() => {
-          // Handle failed fetch - user will be redirected to login
           fetchAttempted.current = false;
         });
     }
-  }, [dispatch]);
+  }, []);
 
-  if (loading || !fetchAttempted.current) {
+  if (loading) {
     return (
       <Box 
         sx={{ 
@@ -43,15 +42,16 @@ const PrivateRoute = ({ children, allowedRoles }) => {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/unauthorized" />;
+  if (user) {
+    const routes = {
+      student: '/dashboard',
+      instructor: '/instructor/dashboard',
+      admin: '/admin/dashboard'
+    };
+    return <Navigate to={routes[user.role] || '/'} replace />;
   }
 
   return children;
 };
 
-export default PrivateRoute;
+export default PublicRoute;

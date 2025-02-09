@@ -7,6 +7,7 @@ export const loginUser = createAsyncThunk("loginUser", async (data, {rejectWithV
             const response = await axiosInstance.post('/login', data);
             return response.data;
         } catch (error) {
+            console.clear()
             return rejectWithValue(error.response.data.message);
         }
 }); 
@@ -15,6 +16,15 @@ export const loginUser = createAsyncThunk("loginUser", async (data, {rejectWithV
 export const logoutUser = createAsyncThunk("logoutUser", async () => {
     const response = await axiosInstance.get('/logout');
     return;
+})
+
+export const fetchUser = createAsyncThunk("fetchUser", async ()=>{
+    try{
+        const response = await axiosInstance.get("/user")
+        return response.data
+    }catch(error){
+        return rejectWithValue(error.response.data.message);
+    }
 })
 
 const authSlice = createSlice({ 
@@ -55,7 +65,19 @@ const authSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         })
-
+        builder.addCase(fetchUser.pending, (state, action)=>{
+            state.loading = true;
+        })
+        builder.addCase(fetchUser.fulfilled, (state, action)=>{
+            state.loading = false;
+            state.user = action.payload;
+            state.error = ""
+        })
+        builder.addCase(fetchUser.rejected, (state, action)=>{
+            state.loading = false;
+            state.error = action.payload
+            state.user = null
+        })
         // should add more cases for other actions
     }
 
