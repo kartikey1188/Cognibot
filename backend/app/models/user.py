@@ -1,5 +1,6 @@
 from enum import Enum
 from . import db, bcrypt
+from sqlalchemy import UniqueConstraint
 
 class CourseLevel(Enum):
     FOUNDATIONAL = 'Foundational'
@@ -70,7 +71,21 @@ class Course(db.Model):
     image = db.Column(db.String(300)) # whatever image we'd want to associate with the course
     instructors = db.relationship('Instructor', secondary='instructor_courses', back_populates='courses') # the instructors teaching this course
     students = db.relationship('Student', secondary='student_courses', back_populates='courses') # the students enrolled in this course
+    lectures = db.relationship('Lecture', back_populates='course', cascade="all, delete-orphan")
     #assignments = db.relationship('Assignment', back_populates='course', cascade="all, delete-orphan") 
+
+class Lecture(db.Model):
+    __tablename__ = 'lecture'
+    lecture_id=db.Column(db.Integer, primary_key=True, autoincrement=True)
+    course_id=db.Column(db.Integer, db.ForeignKey('course.course_id', ondelete='CASCADE'), nullable = False)
+    lecture_number=db.Column(db.Integer)
+    week=db.Column(db.Integer, nullable=False)
+    title=db.Column(db.String(50), nullable=False) 
+    lecture_link=db.Column(db.Text, nullable=False, unique=True)
+    course = db.relationship('Course', back_populates='lectures')
+
+    # Unique constraint to ensure (course_id, week, lecture_number) is unique:
+    __table_args__ = (UniqueConstraint('course_id', 'week', 'lecture_number', name='uq_course_week_lecture'),)
 
 # class Assignment(db.Model):  # Represents an assignment associated with a course.
 #     __tablename__ = 'assignment'
