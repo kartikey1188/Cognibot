@@ -4,5 +4,5 @@ from flask_jwt_extended import JWTManager
 jwt = JWTManager()
 api = Api()
 
-from . import auth, admin, student, instructor
+from . import auth, admin, student, instructor, ai, course, all_marshals, lecture
 

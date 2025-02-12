@@ -9,7 +9,7 @@ from flask_restful import Resource, marshal_with
 from flask_jwt_extended import jwt_required
 from app.apis.auth import role_required
 from app.models.user import Course, Instructor, Student, Role, StudentCourses, InstructorCourses
-from app.apis.all_marshals import marshal_course, marshal_student, marshal_instructor
+from app.apis.all_marshals import marshal_course, marshal_student, marshal_instructor, marshal_lecture
 
 class GetAllCourses(Resource):  # Get all courses
     @marshal_with(marshal_course)
@@ -28,7 +28,7 @@ class CourseResource(Resource):
         return course, 200
 
     @jwt_required()
-    @role_required(Role.ADMIN.value)
+    @role_required(Role.ADMIN.value, Role.STUDENT.value)
     def post(self):  # Create a new course
         parser = reqparse.RequestParser()
         parser.add_argument("course_name", type=str, required=True, help="Course name is required")
@@ -63,7 +63,7 @@ class CourseResource(Resource):
             return {"Error": "Failed to create course"}, 500
 
     @jwt_required()
-    @role_required(Role.ADMIN.value)
+    @role_required(Role.ADMIN.value, Role.STUDENT.value)
     def put(self, course_id):  # Update an individual course
         parser = reqparse.RequestParser()
         parser.add_argument("course_name", type=str, required=False)
@@ -77,13 +77,13 @@ class CourseResource(Resource):
         if not course:
             return {"message": "Course not found"}, 404
 
-        if "course_name" in data and data["course_name"].strip():
+        if "course_name" in data and data["course_name"]:
             existing_course = Course.query.filter(Course.course_name==data["course_name"], Course.course_id != course.course_id).first()
             if existing_course:
                 return {"message": "Course with this name already exists"}, 400
             else:
                 course.course_name = data["course_name"].strip()
-        if "course_code" in data and data["course_code"].strip():
+        if "course_code" in data and data["course_code"]:
             existing_course = Course.query.filter(Course.course_code==data["course_code"], Course.course_id != course.course_id).first()
             if existing_course:
                 return {"message": "Course with this code already exists"}, 400
@@ -109,7 +109,7 @@ class CourseResource(Resource):
             return {"Error": "Failed to update course"}, 500
 
     @jwt_required()
-    @role_required(Role.ADMIN.value)
+    @role_required(Role.ADMIN.value, Role.STUDENT.value)
     def delete(self, course_id):  # Delete an individual course
         course = Course.query.filter(Course.course_id == course_id).first()
         if not course:
@@ -142,7 +142,116 @@ class CourseInstructorsResource(Resource):  # Get all instructors in a course
         if not course:
             return {"message": "Course not found"}, 404
         return course.instructors, 200
+    
+class LectureResource(Resource):
+    @marshal_with(marshal_lecture)
+    @jwt_required()
+    def get(self, lecture_id):  # Get an individual lecture
+        lecture = Lecture.query.filter(Lecture.lecture_id == lecture_id).first()
+        if not lecture:
+            return {"message": "Lecture not found"}, 404
+        return lecture, 200
 
+    @jwt_required()
+    def post(self):  # Create a new lecture
+        parser = reqparse.RequestParser()
+        parser.add_argument("course_id", type=int, required=True, help="Course ID is required")
+        parser.add_argument("week", type=int, required=True, help="Week number is required")
+        parser.add_argument("lecture_number", type=int, required=False)
+        parser.add_argument("title", type=str, required=True, help="Lecture title is required")
+        parser.add_argument("lecture_link", type=str, required=True, help="Lecture link is required")
+        args = parser.parse_args()
+
+        course = Course.query.filter(Course.course_id == args["course_id"]).first()
+        if not course:
+            return {"message": "Course not found"}, 404
+        
+        # Ensuring (course_id, week, lecture_number) is unique
+        if args["lecture_number"]:
+            existing_lecture = Lecture.query.filter_by(course_id=args["course_id"], week=args["week"], lecture_number=args["lecture_number"]).first()
+            if existing_lecture:
+                return {"message": "A lecture with this course_id, week, and lecture_number already exists"}, 400
+
+        if Lecture.query.filter(Lecture.lecture_link == args["lecture_link"]).first():
+            return {"message": "Lecture with this link already exists"}, 400
+
+        new_lecture = Lecture(
+            course_id=args["course_id"],
+            week=args["week"],
+            lecture_number=args["lecture_number"] if args["lecture_number"] else None,
+            title=args["title"].strip(),
+            lecture_link=args["lecture_link"].strip(),
+        )
+
+        try:
+            db.session.add(new_lecture)
+            db.session.commit()
+            return {"message": "Lecture created successfully", "lecture_id": new_lecture.lecture_id}, 201
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Exception occurred: {e}")
+            app.logger.error(traceback.format_exc())
+            return {"Error": "Failed to create lecture"}, 500
+
+    @jwt_required()
+    def put(self, lecture_id):  # Update an individual lecture
+        parser = reqparse.RequestParser()
+        parser.add_argument("week", type=int, required=False)
+        parser.add_argument("lecture_number", type=int, required=False)
+        parser.add_argument("title", type=str, required=False)
+        parser.add_argument("lecture_link", type=str, required=False)
+        data = parser.parse_args()
+
+        lecture = Lecture.query.filter(Lecture.lecture_id == lecture_id).first()
+        if not lecture:
+            return {"message": "Lecture not found"}, 404
+
+        if "title" in data and data["title"]:
+            lecture.title = data["title"].strip()
+
+        if "lecture_link" in data and data["lecture_link"]:
+            existing_lecture = Lecture.query.filter(Lecture.lecture_link == data["lecture_link"], Lecture.lecture_id != lecture.lecture_id).first()
+            if existing_lecture:
+                return {"message": "Lecture with this link already exists"}, 400
+            else:
+                lecture.lecture_link = data["lecture_link"].strip()
+
+        if "week" in data and data["week"]:
+            lecture.week = data["week"]
+
+        if "lecture_number" in data and data["lecture_number"]:
+            lecture.lecture_number = data["lecture_number"]
+
+        # Ensuring (course_id, week, lecture_number) is unique
+        if Lecture.query.filter_by(course_id=lecture.course_id, week=lecture.week, lecture_number=lecture.lecture_number).filter(Lecture.lecture_id != lecture.lecture_id).first():
+            return {"message": "A lecture with this number already exists for the given course and week"}, 400
+
+        try:
+            db.session.commit()
+            return {"message": "Lecture details updated successfully"}, 200
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Exception occurred: {e}")
+            app.logger.error(traceback.format_exc())
+            return {"Error": "Failed to update lecture"}, 500
+
+    @jwt_required()
+    def delete(self, lecture_id):  # Delete an individual lecture
+        lecture = Lecture.query.filter(Lecture.lecture_id == lecture_id).first()
+        if not lecture:
+            return {"message": "Lecture not found"}, 404
+        try:
+            db.session.delete(lecture)
+            db.session.commit()
+            return {"message": "Lecture deleted successfully"}, 200
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Exception occurred: {e}")
+            app.logger.error(traceback.format_exc())
+            return {"Error": "Failed to delete lecture"}, 500
+
+
+api.add_resource(LectureResource, "/lecture", "/lecture/<int:lecture_id>")
 api.add_resource(GetAllCourses, "/all_courses")
 api.add_resource(CourseResource, "/course", "/course/<int:course_id>")
 api.add_resource(CourseStudentsResource, "/course/<int:course_id>/students")

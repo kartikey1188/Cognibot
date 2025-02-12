@@ -51,3 +51,13 @@ marshal_instructor_course = {
     'instructor_id': fields.Integer,
     'course_id': fields.Integer
 }
+
+marshal_lecture = {
+    'lecture_id': fields.Integer,
+    'course_id': fields.Integer,
+    'week': fields.Integer,
+    'lecture_number': fields.Integer,
+    'title': fields.String,
+    'lecture_link': fields.String,
+    'course': fields.Nested(marshal_course) 
+}
