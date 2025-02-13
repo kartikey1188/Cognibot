@@ -1,0 +1,33 @@
+Here we are concluding week 2. I hope you people 
+enjoyed the most important parts of Python the   syntax per se, beyond this we will be covering 
+this syntax very quickly and we will be talking   only about programs. The first two three weeks 
+we will be talking a lot about the construction   of the language, the grammar of the language, if 
+I may, so things are slightly less interesting,   but it will get more interesting with time.
+But I am sure in week 2, you saw some interesting   aspects as well. You saw how do you declare 
+variables, the bucket s example that I started   off with in the introduction session of week 2. 
+You saw the if loop, how powerful it was, you   even wrote a program for Caesar Cipher, the Cipher 
+that takes, the idea that takes text and shifts   it by a few units and then it looks garbled.
+Nobody can make the sense of what the text is,   but then if you shift it back, it starts making 
+sense and we did a piece of code to do this. So,   and then we went ahead and saw some string related 
+details, very basic ones though, strings are very,   very powerful entities in Python and we will be 
+discussing more of it with time, but as of now   you are now confident about handling strings.
+And finally and very importantly, we did discuss   about this import possibility in Python and I 
+told you a good example, a good analogy would   be going to a library and getting books as in when 
+it is required and not storing all the books that   you would ever require in your life in your home. 
+You will run out of storage space obviously. 
+  So what you do is, you get as in when it is 
+required and that is precisely what the import   functionality does in Python, you say import 
+random, it brings in the library functions from   this book so called book called the function 
+called the random, it is actually a library   function. Once you get that, it means that you 
+have the entire access to all the functions from   this random library and the world is yours.
+If you do not include it, you do not have access   to those libraries, as simple as that. So 
+we introduced you to the random function;   the math library function and I am sure 
+you are comfortable using these library   functions, there are tons and tons of library 
+functions, some of them are built into Python,   some of them are external, you need to install 
+that on your computer and start coding. 
+  You want to analyze Facebook data, you want to 
+analyze Twitter data, you want to analyze let   us say Covid statistics; there are library 
+functions exclusively meant for this things   and we will probably see some of them during the 
+course. I hope you have enjoyed the second week,   there is more to come from third week 
+onwards. In fact, third week will   the crux of the syntax in Python, let us wait 
+and watch what is coming next. Thank you.

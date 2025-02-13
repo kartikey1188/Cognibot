@@ -1,0 +1,88 @@
+Hello Python students. In this lecture, we
+will see two new concepts, namely escape characters and use of quotes supported by the Python
+language. Let us start with escape characters. For example, I want to print a statement like,
+It s a beautiful day. As you can see, I have started with a single quote and I have end
+this particular string with a single quote, which is a valid syntax for a print statement. Let us execute. It says invalid syntax, because
+over here, It s has this apostrophe and computer does not differentiate between this apostrophe
+and the single quote, which we usually use to start a string or stop a string, because
+of that, a computer starts a string with this quote and ends it with this particular quote
+which is actually the part of that sentence. Now the question is how to solve this problem. One easiest solution is to make it, it is
+and it will work. But I do not want to do that, I want to keep it like this and this
+particular problem or this particular error can be fixed using escape character. Escape
+character is a mechanism which allows us to add those specific characters or those specific
+symbols in a string in print, which usually we cannot do, as you can see over here, with
+this single quote. Escape character is written using a backslash followed by the character,
+which you want to insert in that particular string. In this case, I want to insert a single quote.
+Hence, I should use backslash before that single quote. As you can see, as soon as I
+insert a backslash, even the color of that particular statements changes immediately.
+Now we can observe this backslash followed by a single quote has a different color, because
+now, these two characters are not considered as separate characters. Computer will translate this particular character
+as a single entity and it will replace it with a single quote as we want it, just like
+this. It s beautiful day, it s a beautiful day and this particular character is referred
+as escape character. Let us try one more example, print. Now, instead
+of single quotes, I want to use double quotes as we have seen earlier, with respect to print,
+it is absolutely okay to use double quotes instead of single quotes, we are from IIT
+Madras, once again computer rates it is starting of the string and this double quote as ending
+of the string, then it is not able to process this particular term IIT in between followed
+by starting of a string and ending of a string. Because of this computer is giving us an error,
+which says invalid syntax, this escape character will rescue us from this particular invalid
+syntax error, backslash followed by double quote, once again, backslash followed by double
+quotes. Now we are getting the expected output, we are from in double quotes, IIT Madras. This is related to single quotes or double
+quotes. What if I want to do something a little bit different than this? For example, print
+My name is Omkar space, I am from Pune. If you print it, it will print correctly. But
+what if I want to give additional space between these two sentences? Currently, there is only
+one space in between these two sentences. But I want to separate these sentences even
+further. The simplest way, could be to add more spaces,
+but it is not a good practice. So what to do, usually we use tab to give these extra
+spaces. But how to use that in the Python language? Let us retain this quote and copy
+it. Instead of this space if I use something like backslash t, t stands for tab, if you
+can observe the last two lines of the output here, there was only single space. But now you can see more gap between these
+two sentences. If we add one more t over here, it will put more gap between these two sentences
+and now we do not even have to give multiple spaces between two sentences. So this particular
+escape character is called tab. Now there is a sufficient gap between these
+sentences. But still, I am not happy with this particular quote. I want to print these
+sentences on the different lines. A straightforward way is to remove this particular sentence
+from here and add it as a fourth print statement. But we can avoid that by placing one more
+escape character called backslash n. n stands for new line. Let us execute this quote. Now you will see the first sentence is getting
+printed on the third line whereas next sentence is getting printed on the fourth line in the
+output even though these two sentences are actually written as a part of same print statement.
+This is happening because of this specific escape character called backslash n, which
+refers to a new line. Before moving to the next concept let me give
+you a small exercise, let us copy these two lines, I will change the single quotes to
+double quotes and remove this escape characters involved. Similarly, I will make these single
+quotes and remove this particular escape character. Oh, there is a spelling mistake here. That
+is not important part. The exercise is, I will not execute these
+two lines, it is up to you to execute these two lines, see the output and figure out why
+the specific output is coming like that. This is very important concept of strings. But
+as it is very simple, I am leaving it up to you guys to study on your own. Next part of this particular lecture is use
+of quotes supported by the Python language. We have already seen the use of single quote
+and double quote for strings; x is equal to single quote this is a string, y is equal
+to double quotes, this is also a string, print x print y. As expected, it will print these
+two strings. So far it was working. But for example, I want to write a third string which
+says; first line, second line, third line print z. It says EOL while scanning string
+literal. EOL stands for end of the line, it says end
+of the line while scanning string literal. When computer starts scanning this third line;
+starts with z is equal to single code first line. It is still looking for the closing
+of this single quote which it is not able to find as part of this third line. That is
+why we are getting this particular error which means this single quote is useful only when
+a string is stored in a single line. If we divide the string in multiple lines,
+then we cannot use single quotes. Let us try double quotes instead of that, still we are
+getting the same error. Now, the question is how to handle this kind of string? In order to store such a string, which is
+distributed over multiple lines is stored using three quotes. Let us print and try as
+you can see, it says first line, second line, third line. Similarly, we can keep adding
+as many lines as we want, fourth line, fifth line and so on. So, now, we know there are
+three different types of quotes, which are supported by Python language; single quote,
+double quote and then triple quotes, which we studied just now, and it is used for storing
+multiline strings. There is one more advantage is using this
+triple quotes. Earlier we have studied if we use hash, then computer ignores that particular
+line from execution, it did not print x and y, it printed only the variable z, but ignored
+variable x and y which we printed in line number 8 and 9 because the use of this particular
+character hash. As we know hash is used to comment a particular
+quote, which means that particular line will be considered as a comment, not a part of
+Python program. But what if I want to give a comment, which occupies more than one line,
+I can always say, comment 1, comment 2, commend 3 and so on and it should work. But adding this hash every time is not optimum
+solution. The similar problem can be solved once again using these triple quotes. Because
+once again, whenever we use triple quotes, it becomes a comment in Python. So today,
+we have studied a new type of quotes called triple quotes and they can be used for two
+different purposes. First; to define a multiline string and second to give a multiline comment.
+Thank you for watching this lecture. Happy learning!

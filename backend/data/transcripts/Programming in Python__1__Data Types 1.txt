@@ -1,0 +1,99 @@
+Let us say we declare n equals 10 a 
+variable n and then print the value of n.   The output will be as expected 
+as you see the number 10.   Assuming I take another number, let us say r 
+equals 6.3 and then print r, obviously it will   print first 10 and then will print r. Now, the 
+point is what if I said s equals, please note   sudarshan, and then I will print s as well. 
+So, you see what is happening here? 
+  Here is a number without any decimal value, 
+here is a number with a decimal part.   So, it is not just an integer, it 
+is a decimal, it is a fraction,   6.3, and then here this is neither an 
+integer nor is it a decimal number like this.   This is a string, a name. I say print s and 
+sudarshan gets printed. Now the point is   what we may want to note here is let me 
+explain that with an illustration. 
+  When I say print type of n, you 
+will see what this type does,   you see it says class int, do not worry about 
+the, I would say it is a very ugly looking   output, so with less than symbol, greater then 
+symbol, the word class and things like that,   but all that it says is it is an integer 
+type number in n. What if we said print type   r, executed, it says class float and then, 
+so let me just write this for clarity. 
+  I will say the type, n is of type, let us say n 
+is of type, then I say type r, make sense, r is of   type r. So, mind you the letter n 
+here is not a variability, it is just,   I am asking the computer to print the whatever 
+is inside the code, this n is not the value   10 here, this is simply the letter n, which for 
+reference let me just run this and show you,   it will say n is of type class 
+and r is of type class float. 
+  And then I say print s is of type, 
+type s and I will execute this,   you see what happens, s is of type str, 
+we have seen this somewhere before.   So, str is string. What exactly does it mean? What 
+is int here, what is float here, what is str here?   You never specified that anywhere here, you went 
+ahead and said n equals 10, r equals 6.3, s equals   string sudarshan. 
+  But the computer automatically called 
+this as int type, integer, called this   float, the word float simply means 
+something that is more than an integer,   10.171, now that is a floating point, it is called 
+a floating point number. So, in a first course in   computing you will study all these things, I 
+am sure you did if not you can always look up,   it is a very easy thing to understand. 
+Floating point representation of a number   is the way a computer stores a 
+number that is not an integer,   it stores in a very, it is a little too technical 
+to get in right now, but just assume from my side   that this is not an integer and if it is not 
+an integer, if it is beyond an integer it is   called a float for a computer, it is automatically 
+calling it a float and this is called a string.   A computer automatically recognizes the 
+type of data that is being stored. 
+  Why would anyone want something 
+like this? The answer is very simple   if you were to create a vessel where you will 
+put your, let us say rice, look at the shape of   the vessel that you use, a jar rather, what kind 
+of a jar do you use for rice, what kind of a jar   do you use for, let us say to store some liquid, 
+they appear differently. It is not just for the   showy, aesthetics reasons. 
+It is it is simply because   the container that holds rice may have 
+to ensure that it is free from moisture   whereas a container that that stores water 
+you need not to worry about moisture.   So, in a very-very similar way the kind 
+of data that you store, your computer does   some work internally in allocating some 
+memory location for it to be stored. 
+  Now it cannot simply keep the same location for 
+all types of data that you may want to store,   be it string or be it floating point or be it 
+integer. It is not the same mantra for everything.   The computer recognizes what kind of data you 
+are storing and it declares the data type,   this is called data type and it stores the 
+values there and says this is the type integer,   I will store it in this way only, details aside 
+with time you will understand it, but given that   you are new to programming all that you need 
+to know is Python has different data types. 
+  So, with this I will end with a small data type 
+which will be discussed in detail later though,   but right now I will give you a 
+quick glimpse of what this data   type is all about. Let me refresh the screen. 
+So, what if I said what if I said, remove this,   l is equal to let us say 10 comma 20 comma 30. 
+Please note the format here,   I give a variable name here and say is 
+equal to start a big bracket and put   some numbers separated by comma and close 
+the bracket that is it and I say print l.   You can guess the obvious, you will see 
+this same values being printed here.   And the best part is when you say l of 0 
+it displays 10, if you say print l of 1,   0 and 1, it displays the 0th value which is 10,   the first value that is 20. And let 
+us say print of l of 2 will be 30. 
+  Now, what are we trying to say here? A computer 
+always starts naming, assume you go to a   classroom and you start counting people, you 
+start with here, this fellow is the first person,   he is the second person, third person, 
+fourth person, we humans start with 1, 2, 3,   but a computer generally starts with 0, 1, 2. 
+The reason is a little technical we will get there   sometime, but then as of now you please assume 
+that a computer always starts with 0, does not   start with 1. The first element here is called the 
+zeroth element, then the first element, and then   the second element and so on. So, if I were to 
+have more numbers here, let us say 68, 720, 732,   you can put whatever you want, and then you say 
+print of l of 3, you will get 10, 20, 30. And then   the l of 3, which is the fourth element here, 
+which is 68 and so on, this is called a list. 
+  So, let us see print type of l. What kind of data 
+is this? Is this the jar that contains rice or   is this a jar that contains a juice or a jar that 
+contains sugar? The computer stores this as what?   Class list. It calls it a list. It has a very 
+different mechanism, very different way in which   it stores, but that is not important for you right 
+now. All you need to know is Python has different   data types. By data types we mean it has a knack 
+to store what kind of data in what form. 
+  Let us revise whatever we discussed so far, if 
+you say n equals 10 this becomes an integer,   if you say r equals some 6.9, it becomes float, 
+as I said, let us try printing these things,   print n, print r and then we discussed 
+another thing, the last thing was a string,   s equals let us say India and when we 
+say print s, this prints the values,   the first one was type, but what we wanted 
+was type, so I will change this to type here,   type, and then let us say type. 
+And you know the obvious will happen. It is   throwing an error simply because I did not close 
+the brackets. Let us try closing the brackets,   now it says the first one is a list, second is 
+an int, third is a float, fourth is a string.   So, let me try showing you something 
+and leave it as an exercise for you   all to figure out what is happening. 
+What will happen if I were to type, type of l of   2? So, let us say print l of 2 and there is a 
+print type l of 2, and I delete the rest, I remove   this also. Guess what will happen if I execute 
+this. I will execute and show you and I leave   it to you to realize what is happening here. So, 
+with this we end this topic of data types. I hope   it is very clear. Do not break your head much. All 
+that you need to know is computer has a different   way to handle different types of data that you may 
+want to use in your programming show. Thank you!
