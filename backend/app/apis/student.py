@@ -9,6 +9,18 @@ from app.apis.auth import role_required
 from app.models.user import Student, Role, Course, StudentCourses
 from app.apis.all_marshals import marshal_student, marshal_course, marshal_student_course
 
+"""
+THIS FILE HAS THE FOLLOWING API ENDPOINTS:
+
+1) Get all students
+2) Get an individual student
+3) Delete an individual student
+4) Update an individual student
+5) Get all courses of a particular student
+6) Enroll a particular student into a particular course
+7) Unenroll a particular student from a particular course
+8) Get the grade obtained by a particular student in a particular course
+"""
 
 class GetAllStudents(Resource): # get all students
     @marshal_with(marshal_student)

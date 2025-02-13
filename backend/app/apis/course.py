@@ -11,6 +11,22 @@ from app.apis.auth import role_required
 from app.models.user import Course, Instructor, Student, Role, StudentCourses, InstructorCourses
 from app.apis.all_marshals import marshal_course, marshal_student, marshal_instructor, marshal_lecture
 
+"""
+THIS FILE HAS THE FOLLOWING API ENDPOINTS:
+
+1) Get all courses  
+2) Get an individual course  
+3) Create a new course  
+4) Update an individual course  
+5) Delete an individual course  
+6) Get all students in a course  
+7) Get all instructors in a course  
+8) Get an individual lecture  
+9) Create a new lecture  
+10) Update an individual lecture  
+11) Delete an individual lecture
+"""
+
 class GetAllCourses(Resource):  # Get all courses
     @marshal_with(marshal_course)
     @jwt_required()
@@ -145,19 +161,17 @@ class CourseInstructorsResource(Resource):  # Get all instructors in a course
     
 class LectureResource(Resource):
     @marshal_with(marshal_lecture)
-    @jwt_required()
     def get(self, lecture_id):  # Get an individual lecture
         lecture = Lecture.query.filter(Lecture.lecture_id == lecture_id).first()
         if not lecture:
             return {"message": "Lecture not found"}, 404
         return lecture, 200
 
-    @jwt_required()
     def post(self):  # Create a new lecture
         parser = reqparse.RequestParser()
         parser.add_argument("course_id", type=int, required=True, help="Course ID is required")
         parser.add_argument("week", type=int, required=True, help="Week number is required")
-        parser.add_argument("lecture_number", type=int, required=False)
+        parser.add_argument("lecture_number", type=int, required=True, help="Lecture number is required")
         parser.add_argument("title", type=str, required=True, help="Lecture title is required")
         parser.add_argument("lecture_link", type=str, required=True, help="Lecture link is required")
         args = parser.parse_args()
@@ -193,7 +207,6 @@ class LectureResource(Resource):
             app.logger.error(traceback.format_exc())
             return {"Error": "Failed to create lecture"}, 500
 
-    @jwt_required()
     def put(self, lecture_id):  # Update an individual lecture
         parser = reqparse.RequestParser()
         parser.add_argument("week", type=int, required=False)
@@ -235,7 +248,6 @@ class LectureResource(Resource):
             app.logger.error(traceback.format_exc())
             return {"Error": "Failed to update lecture"}, 500
 
-    @jwt_required()
     def delete(self, lecture_id):  # Delete an individual lecture
         lecture = Lecture.query.filter(Lecture.lecture_id == lecture_id).first()
         if not lecture:

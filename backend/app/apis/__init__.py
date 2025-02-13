@@ -7,5 +7,5 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.
 jwt = JWTManager()
 api = Api()
 
-from . import auth, admin, student, instructor, ai, course, all_marshals, lecture
+from . import auth, admin, student, instructor, course, all_marshals, lecture
 from backend.data import transcript_generator, vectordb_generator

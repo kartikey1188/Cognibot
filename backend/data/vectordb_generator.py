@@ -4,14 +4,11 @@ from app.apis import *
 from flask import current_app as app
 from flask_restful import Resource
 from app.models.user import Lecture
-from flask import current_app as app
-import re
 
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores import Chroma
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 # Defining the directory containing the transcript text files and the persistent directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -57,8 +54,7 @@ class GenerateVectorDB(Resource):
 
             # Create embeddings
             print("\n--- Creating embeddings ---")
-            embeddings = HuggingFaceEmbeddings(model="BAAI/bge-small-en")  
-            print("\n--- Finished creating embeddings ---")
+            embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en")
 
             # Create the vector store and persist it
             print("\n--- Creating and persisting vector store ---")

@@ -63,12 +63,12 @@ class GenerateAllTranscripts(Resource):
             return None
         
 
-class GetLectureTranscriptMethod1(Resource): 
-    def get(self, course_id, week, title):
+class GetSingleLectureTranscript(Resource): 
+    def get(self, lecture_id):
         try:
-            lecture = Lecture.query.filter(Lecture.course_id==course_id, Lecture.week==week, Lecture.title==title).first()
+            lecture = Lecture.query.filter(Lecture.lecture_id==lecture_id).first()
             if not lecture:
-                return {"Error":"Could not retrieve the lecture you're trying to access. Check the parameters you have passed carefully."}
+                return {"Error":"Could not retrieve the lecture you're trying to access. Check the parameter you have passed carefully."}
             video_id = self.extract_video_id(lecture.lecture_link)
             if not video_id:
                 return {"Error": "Invalid YouTube link"}, 400
@@ -97,36 +97,7 @@ class GetLectureTranscriptMethod1(Resource):
             return " ".join([t["text"] for t in transcript])
         except Exception:
             return None
-        
-class GetLectureTranscriptMethod2(Resource): 
-    def get(self, course_id, week, title):
-        try:
-            lecture = Lecture.query.filter(Lecture.course_id==course_id, Lecture.week==week, Lecture.title==title).first()
-            if not lecture:
-                return {"Error":"Could not retrieve the lecture you're trying to access. Check the parameters you have passed carefully."}
-            
-            filename = f"{lecture.course.course_name}__{lecture.week}__{lecture.title}.txt"
-            transcript_location = os.path.join(app.config["TRANSCRIPT_FOLDER"], filename)
-
-            transcript = self.read_transcript(transcript_location)
-
-            return {"Transcript": transcript}
-
-        except Exception as e:
-            app.logger.error(f"Exception occurred: {e}")
-            app.logger.error(traceback.format_exc())
-            return {"Error": "Failed to retrieve transcript"}, 500
-        
-    def read_transcript(self, file_path):
-        try:
-            with open(file_path, "r", encoding="utf-8") as file:
-                transcript = file.read()
-            return transcript
-        except FileNotFoundError:
-            print(f"Error: File not found at {file_path}")
-            return None
 
 api.add_resource(GenerateAllTranscripts, "/generate_all_transcripts")
-api.add_resource(GetLectureTranscriptMethod1, "/get_lecture_transcript_method_1/<int:course_id>/<int:week>/<title>")
-api.add_resource(GetLectureTranscriptMethod2, "/get_lecture_transcript_method_2/<int:course_id>/<int:week>/<title>")
+api.add_resource(GetSingleLectureTranscript, "/get_single_lecture_transcript/<int:lecture_id>")
 
