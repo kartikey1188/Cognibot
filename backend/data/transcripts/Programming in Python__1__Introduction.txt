@@ -1,0 +1,54 @@
+We have taken up BSc in programming and data
+sciences and let us pick the word programming from there and ask this question, what is
+programming all about. Why do programming? Programming is all about, let us say you go
+to a place, new country, namely Germany, and to talk to people in Germany you may want
+to know German, go to France, you got to know French to speak to people in France. You come to India, there are so many languages
+spoken here, but then you can manage with Hindi and English to a very good extent. So, if you want to talk to a computer you
+should know a language and just like the languages of our country India, there are umpteen number
+of languages, there are so many languages in computer science and we chose to teach
+you Python particularly for a simple reason, that this language called Python is today
+very widely spoken, number 1. Number 2, it is very easy to learn and number
+3, it is very powerful. Today we are in 2021, where programming with
+time should intuitively become difficult to learn, back in 1970s and today computers have
+advanced tremendously but if you observe the effort involved in learning a programming
+language has diminished tremendously in the sense that it has, it is very easy for one
+to start learning how to code. I would say back then in the 80s or 90s, coding
+was not very easy, Pascal, COBOL, C, C plus plus, it would take a few weeks if not months
+to start writing code and write some not so straightforward code would take at least a
+few weeks of practice but today with Python you can learn programming in less than a few
+hours according to me. In fact, we will teach you, you will be seeing
+that you will be coding from the very first minute of this session, I mean as we progress
+the classes. So, why programming? You need to learn a language to communicate
+with your computer. And why do you choose Python? We chose Python because Python is powerful,
+easy to understand and very much spoken. So, coming to the word programming once again,
+programming we think is fun and you will see that readily as we progress with the classes. Programming is fun because you get to talk
+to the computer to do complex things really fast. There are three things here you may want to
+note, one is you talk to the computer, you make a computer understand to do seemingly
+complex things and really fast, by really fast, I mean, really-really fast. You will see that things that humans do with
+a lot of effort and time is done in a fraction of second, sometimes even at the speed of
+sound or even light for that matter. So, we will go very slowly, we will go step
+by step, we will assume nothing from you, except maybe basic English understanding. We will not assume any computer science knowledge
+from your end, we will start diving into our first program in our very first session that
+is coming ahead. Assume you want to learn how to drive a car,
+what would you do today? You would probably open YouTube videos and
+start watching on the basics of driving a car or maybe you will rent a book, buy a book
+and start reading it, or even browse an article on how to drive? As you know none of these will be of great
+help. So, to learn a car, learn how to drive a car
+you probably should hold the steering and keep your feet on the pedal and start driving,
+probably slowly though, but you should start driving. The point is you cannot be reading books and
+trying to theoretically understand how to drive a car but never drive a car. It does not help. Of course, theoretical knowledge helps to
+some extent to begin with but then your real learning starts when you hold the steering. On very analogously speaking, programming
+also starts when you start touching the keyboard and start coding than keep reading what is
+programming all about. So, we urge, we push, we want to request you
+all to start coding alongside with us as we open the terminal and then teach you how to
+program. The whole of this course will mostly be with
+the terminal and with me and Omkar, trying to code and tell you what is what and we will
+take you step by step incrementally and we suggest that you keep your terminal open and
+code with us. So, during the first week of the course, we
+are going to keep it bare minimum and very simple. All we will be doing is code not beyond, let
+us say half a page size, so I will be explaining what I am typing and I will be telling you
+what the output is and also I will be showing you the output and we will be coding very-very
+slowly. In fact, if you know programming you may even
+find it a little repetitive and even maybe boring but then please bear with us, with
+time you will see the pace pickup. But a word of advice, we would like to see
+you also open a terminal and code alongside as we are coding.

@@ -1,0 +1,84 @@
+Hello Python students. In this lecture we will see 
+some more features of Replit and print command.   Also we will see some common mistakes one may do 
+while writing a Python program. Let us start with   the different features of Replit. If you observe 
+the left side panel, you will see various icons   available over here. Each icon represent a 
+different feature of Replit. Let us first   focus on this first icon, which is files . 
+Inside files you can see there are two different   options at the top called add file and add 
+folder . These two options will allow you to   manage your programs in more systematic 
+way. For example, we can add a new file.   Let us name it new program dot py . You can always 
+go back to the previous file or you can write in   your newly created file. Similarly, we can also 
+create one folder. Let us call it week 1. 
+  Also we can organize these files by simply 
+dragging them inside week 1 folder. So,   inside week 1, we have new program dot py as 
+you can see over here at the top. Similarly,   we can keep adding such files in a folder or 
+outside the folder. This particular feature of   Replit allows us to create multiple programs 
+and organize them in a systematic manner. 
+  Next it has many features like version 
+control, packages, home secrets, settings,   databases, unit tests. But 
+for now we will explore only   one part of it, which is settings . 
+So, if you go to settings the first is   layout, the default layout is side by side, but we 
+can always change it to stacked. It will bring the   place where we write the program at the top 
+whereas the console where we see the output   at the bottom. Also it has two different themes, 
+which is light or it can be dark. Similarly,   we can change the font size and so on. 
+There is one more interesting feature   which you all must explore, which is this 
+last option code intelligence . Let us see   the difference between disabled and enabled code 
+intelligence feature. Let me type print command   currently it is not showing any information 
+regarding this particular command. 
+  Let us enable this code intelligence 
+feature and retype this print command.   If you observe, we are getting 
+various different options   and it also provides the detailed information of 
+this particular print command. We will explore all   these options in detail as we go on, but for 
+now you can read this information, which will   help you to understand this particular command. 
+These many features of Replit are sufficient   for now. Let us move to Python program. 
+If you remember in last lecture you have studied   a print command where you print something like 
+this hello India and executed the program.   Now, I have one question for all of you - Is it 
+necessary to print only one string at a time?   What if I want to print hello India as well 
+as hello world in a single print statement?   Can we do that? Definitely, it is 
+possible, we can write two different   strings or two different messages in the 
+same print command separated by comma,   hello world .  
+Let us execute this,   as you can see it is possible to print different 
+messages using a simple print statement separated   by comma. Similarly, we can add one more command 
+as well, hi Python students . As you can see it   is printing all three messages one after the 
+another in that same order, which means the   order is very important. The first message gets 
+printed first, the second message appears next   to it and then the third message and so on. 
+So, print is pretty flexible with respect to this   where we can print one message at a time or 
+it also allows us to print multiple messages.   Let us ask one more question - Is it 
+necessary to print only messages over here   or can we print some numbers as 
+well? What if I write something like   print 10, what will happen if I write print 
+10? It prints the number 10 as it is. 
+  Which indicates that it is not necessary that we 
+only have to type messages using letters from a   to z, we can also print numbers using print. 
+Now, you all must be thinking is it necessary   to print only whole numbers or can we print 
+fractional numbers as well. Let us try it 20.5.   Let us execute, yes, we can we can print 
+strings, we can print whole numbers or we   can print fractional numbers using print. 
+Now the next obvious question arises is can   we combine all these three things together? 
+Let us try that, let us replace this with 10   and this with 20.5. Let us remove 
+this. Let us try to execute,   yes, we can hello india , 10, 20.5. 
+So, we can conclude that print command   can be used to print multiple messages 
+or multiple values at the same time.   Also it allows us to print string whole numbers 
+as well as fractional numbers together. 
+  Now, let us look into the second part of 
+this particular lecture, which is some common   mistakes which you may do while writing the python 
+program even with as simple statement as print.   Let us look into those common mistakes. Print, 
+first the spelling of word print might be wrong,   which is kind of obvious, but the next part 
+is more critical, you may think all brackets   are same, but when it comes to programming 
+each bracket has a specific meaning. 
+  Usually after print, we use a round bracket. 
+Now, is it necessary to use round bracket   or can we use some other type of a 
+bracket. Let us try it square bracket,   hi, it shows an error message, which 
+means square bracket is not allowed.   Let us try a curly bracket, still an error 
+message. Let us try angular brackets,   again error message, which means in Python, 
+along with print we must use round brackets. 
+  We always type whatever message we want 
+to print in these single quotes. Is it   necessary to have these quotes? Let us try, error 
+message, which means the quotes are required.   Now, the next question is is it necessary to have 
+single quotes or can we use double quotes as well,   like this? What do you think whether the 
+program will execute or it will not? 
+  Let us try, it executes, which means Python is 
+very strict when it comes to brackets, but it   is very flexible when it comes to these quotes. We 
+can use double quotes or we can use single quotes   both works correctly, only requirement is if 
+you open double quotes, then you must close with   double quotes and if you open single quotes then 
+you must close with single quotes. A combination   of single and double quotes will not work. 
+All these various constraints of a language is   generally referred as syntax, which defines how 
+a particular code has to be written in a specific   language. Thank you for watching 
+this lecture. Happy learning!

@@ -9,6 +9,18 @@ from app.apis.auth import role_required
 from app.models.user import Instructor, Role, Course, InstructorCourses
 from app.apis.all_marshals import marshal_instructor, marshal_course
 
+"""
+THIS FILE HAS THE FOLLOWING API ENDPOINTS:
+
+1) Get all instructors
+2) Get an individual instructor
+3) Delete an individual instructor
+4) Update an individual instructor
+5) Get all courses assigned to an instructor
+6) Assign an instructor to a course
+7) Remove an instructor from a course
+"""
+
 class GetAllInstructors(Resource):  # Get all instructors
     @marshal_with(marshal_instructor)
     @jwt_required()
