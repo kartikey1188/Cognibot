@@ -4,7 +4,6 @@ from app.apis import *
 from flask import current_app as app
 from flask_restful import Resource
 from app.models.user import Lecture, Course
-from flask import current_app as app
 from youtube_transcript_api import YouTubeTranscriptApi
 import re
 
