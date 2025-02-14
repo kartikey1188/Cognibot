@@ -30,7 +30,7 @@ class TopicSearch(Resource):
             # Searching the vector database for relevant chunks
             retriever = vector_db.as_retriever(
                 search_type="similarity_score_threshold",
-                search_kwargs={"k": 3, "score_threshold": 0.7},
+                search_kwargs={"k": 3, "score_threshold": 0.6},
             )
 
             relevant_chunks = retriever.invoke(quest)
