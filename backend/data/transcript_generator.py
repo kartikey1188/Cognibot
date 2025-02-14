@@ -26,7 +26,7 @@ class GenerateAllTranscripts(Resource):
 
                 transcript = self.get_youtube_transcript(video_id)
                 if transcript:
-                    filename = sanitize_filename(f"{lecture.course.course_name}__{lecture.week}__{lecture.title}.txt")
+                    filename = sanitize_filename(f"{lecture.course.course_name}__{lecture.week}__{lecture.lecture_id}__{lecture.title}.txt")
                     transcript_location = os.path.join(app.config["TRANSCRIPT_FOLDER"], filename)
                     with open(transcript_location, "w", encoding="utf-8") as f:
                         f.write(transcript)
