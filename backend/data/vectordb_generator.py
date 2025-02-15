@@ -27,6 +27,7 @@ class GenerateVectorDB(Resource):
 
             # Read the text content from each file and store it with metadata
             documents = []
+            count=0
             for transcript in transcript_files:
                 file_path = os.path.join(transcript_dir, transcript)
                 loader = TextLoader(file_path)
@@ -40,13 +41,26 @@ class GenerateVectorDB(Resource):
                         continue  
 
                     parts[-1] = parts[-1].replace(".txt", "")  # Removing ".txt" from Lecture Title
-                        
-                    doc.metadata = {"Name Of Course": parts[0], "Week Number": parts[1], "Lecture Title": parts[2]}
+                    
+                    lecture = Lecture.query.filter(Lecture.lecture_id==parts[2]).first()
+                    if lecture is None:
+                        print(f"Warning: No lecture found for ID {parts[2]}. Skipping.")
+                        continue  # Skipping if no matching lecture
+
+                    doc.metadata = {"Name Of Course": parts[0], "Week Number": parts[1], "Lecture Title": parts[3], "Lecture Link": lecture.lecture_link}
+                    print(f"Saved metadata to a doc belonging to lecture with ID {parts[2]}")
+                    count+=1
                     documents.append(doc)
 
+            print(f"Saved metadata to {count} docs")
             # Split the documents into chunks
             text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=20)
             chunks = text_splitter.split_documents(documents)
+
+
+            if not chunks:
+                print("No chunks to store! Exiting.")
+                return {"Error": "No data to store in vector DB"}, 500
 
             # Display information about the split documents
             print("\n--- Document Chunks Information ---")
@@ -58,8 +72,9 @@ class GenerateVectorDB(Resource):
 
             # Create the vector store and persist it
             print("\n--- Creating and persisting vector store ---")
-            db = Chroma.from_documents(
+            vector_db = Chroma.from_documents(
                 chunks, embeddings, persist_directory=persistent_directory)
+            print("Vector database saved successfully.")
             print("\n--- Finished creating and persisting vector store ---")
 
         except Exception as e:
