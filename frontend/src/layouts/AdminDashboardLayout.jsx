@@ -6,7 +6,7 @@ import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import { Outlet } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toggleSidebar } from "../redux/slice/uiSlice";
-const drawerWidth = 248;
+const drawerWidth = 215;
 import { useSelector } from "react-redux";
 import DataUsageIcon from '@mui/icons-material/DataUsage';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
@@ -25,12 +25,12 @@ export default function AdminDashboardLayout() {
       text: "User Analytics",
       path: "/admin/analytics",
     },
-    {
-      icon: <AccountCircleRoundedIcon />,
-      text: "User Management",
-      path: "/admin/management",
-    },
-    { icon: <SettingsIcon />, text: "System Settings", path: "/admin/settings" },
+    // {
+    //   icon: <AccountCircleRoundedIcon />,
+    //   text: "User Management",
+    //   path: "/admin/management",
+    // },
+    // { icon: <SettingsIcon />, text: "System Settings", path: "/admin/settings" },
   ];
 
   const drawerContent = (
