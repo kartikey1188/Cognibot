@@ -1,24 +1,25 @@
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
-import PrivateRoute from './components/PrivateRoute';
-import Courses from './pages/Student/Courses';
-import StudentDashboardLayout from './layouts/StudentDashboardLayout';
-import Login from './pages/Auth/Login';
-import Signup from './pages/Auth/Signup';
-import Recommendations from './pages/Student/Recommendations';
-import Profile from './pages/Student/Profile';
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import CourseLayout from './layouts/CourseLayout';
-import Course from './pages/Student/Course';
-import Help from './pages/Student/Help';
-import Assignment from './pages/Student/Assignment';
-import Lecture from './pages/Student/Lecture';
-import ProgrammingAssignment from './pages/Student/ProgrammingAssignment';
-import { setError } from './redux/slice/authSlice';
-import Layout from './layouts/Layout';
-import PublicRoute from './components/PublicRoute';
-import AdminDashboardLayout from './layouts/AdminDashboardLayout'
-import QueryLimits from './pages/Admin/QueryLimits';
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import PrivateRoute from "./components/PrivateRoute";
+import Courses from "./pages/Student/Courses";
+import StudentDashboardLayout from "./layouts/StudentDashboardLayout";
+import Login from "./pages/Auth/Login";
+import Signup from "./pages/Auth/Signup";
+import Recommendations from "./pages/Student/Recommendations";
+import Profile from "./pages/Student/Profile";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import CourseLayout from "./layouts/CourseLayout";
+import Course from "./pages/Student/Course";
+import Help from "./pages/Student/Help";
+import Assignment from "./pages/Student/Assignment";
+import Lecture from "./pages/Student/Lecture";
+import ProgrammingAssignment from "./pages/Student/ProgrammingAssignment";
+import { setError } from "./redux/slice/authSlice";
+import Layout from "./layouts/Layout";
+import PublicRoute from "./components/PublicRoute";
+import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
+import QueryLimits from "./pages/Admin/QueryLimits";
+import LandingPage from "./pages/Landing";
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -31,24 +32,37 @@ function AppContent() {
     <>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route path="/login" element={
-            <PublicRoute>
-              <Login />
-            </PublicRoute>
-          }
+          <Route
+            index
+            element={
+              <PublicRoute>
+                <LandingPage></LandingPage>
+              </PublicRoute>
+            }
           />
-          <Route path="/signup" element={
-            <PublicRoute>
-              <Signup />
-            </PublicRoute>
-          } />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <PublicRoute>
+                <Signup />
+              </PublicRoute>
+            }
+          />
 
           {/* Protected routes */}
           <Route path="/dashboard" element={<StudentDashboardLayout />}>
             <Route
               index
               element={
-                <PrivateRoute allowedRoles={['student']}>
+                <PrivateRoute allowedRoles={["student"]}>
                   <Courses />
                 </PrivateRoute>
               }
@@ -56,7 +70,7 @@ function AppContent() {
             <Route
               path="/dashboard/recommendations"
               element={
-                <PrivateRoute allowedRoles={['student']}>
+                <PrivateRoute allowedRoles={["student"]}>
                   <Recommendations />
                 </PrivateRoute>
               }
@@ -64,7 +78,7 @@ function AppContent() {
             <Route
               path="/dashboard/profile"
               element={
-                <PrivateRoute allowedRoles={['student']}>
+                <PrivateRoute allowedRoles={["student"]}>
                   <Profile />
                 </PrivateRoute>
               }
@@ -72,38 +86,49 @@ function AppContent() {
             <Route
               path="/dashboard/help"
               element={
-                <PrivateRoute allowedRoles={['student']}>
+                <PrivateRoute allowedRoles={["student"]}>
                   <Help />
                 </PrivateRoute>
               }
             />
-
           </Route>
 
           <Route path="/course" element={<CourseLayout />}>
-            <Route index element={
-              <PrivateRoute allowedRoles={['student']}>
-                <Course />
-              </PrivateRoute>
-            } />
-            <Route path="/course/lecture" element={
-              <PrivateRoute allowedRoles={['student']}>
-                <Lecture />
-              </PrivateRoute>
-            } />
-            <Route path="/course/assignment" element={
-              <PrivateRoute allowedRoles={['student']}>
-                <Assignment />
-              </PrivateRoute>
-            } />
-            <Route path="/course/programming-assignment" element={
-              <PrivateRoute allowedRoles={['student']}>
-                <ProgrammingAssignment />
-              </PrivateRoute>
-            } />
+            <Route
+              index
+              element={
+                <PrivateRoute allowedRoles={["student"]}>
+                  <Course />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/course/lecture"
+              element={
+                <PrivateRoute allowedRoles={["student"]}>
+                  <Lecture />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/course/assignment"
+              element={
+                <PrivateRoute allowedRoles={["student"]}>
+                  <Assignment />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/course/programming-assignment"
+              element={
+                <PrivateRoute allowedRoles={["student"]}>
+                  <ProgrammingAssignment />
+                </PrivateRoute>
+              }
+            />
           </Route>
 
-           {/* <Route
+          {/* <Route
             path="/instructor/*"
             element={
               <PrivateRoute allowedRoles={['instructor']}>
@@ -111,17 +136,15 @@ function AppContent() {
               </PrivateRoute>
             }
           /> */}
-          <Route
-            path="/admin/*"
-            element={
-                <AdminDashboardLayout />
-            }
-          >
-          <Route index element={
-              <PrivateRoute allowedRoles={['admin']}>
-                <QueryLimits />
-              </PrivateRoute>
-            } />
+          <Route path="/admin/*" element={<AdminDashboardLayout />}>
+            <Route
+              index
+              element={
+                <PrivateRoute allowedRoles={["admin"]}>
+                  <QueryLimits />
+                </PrivateRoute>
+              }
+            />
           </Route>
         </Route>
       </Routes>
