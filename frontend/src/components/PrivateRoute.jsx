@@ -16,7 +16,6 @@ const PrivateRoute = ({ children, allowedRoles }) => {
       dispatch(fetchUser())
         .unwrap()
         .catch(() => {
-          // Handle failed fetch - user will be redirected to login
           fetchAttempted.current = false;
         });
     }
