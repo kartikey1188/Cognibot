@@ -1,7 +1,7 @@
 import React from 'react';
 import { MessageCircle, Send, BookOpen, Clock } from 'lucide-react';
 import AssistantIcon from "@mui/icons-material/Assistant";
-import { ndinuseNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
     const navigate = useNavigate();
