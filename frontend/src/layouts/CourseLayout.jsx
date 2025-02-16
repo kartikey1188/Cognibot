@@ -10,7 +10,6 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import Divider from "@mui/material/Divider";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -21,13 +20,13 @@ import TerminalTwoToneIcon from "@mui/icons-material/TerminalTwoTone";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import MenuIcon from "@mui/icons-material/Menu";
 import AssistantIcon from "@mui/icons-material/Assistant";
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link} from "react-router-dom";
 
 const CourseLayout = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [openWeek, setOpenWeek] = useState(null);
   const drawerWidth = 280;
-  const location = useLocation();
+  const [selectedItem, setSelectedItem] = useState(null);
   const weeks = [
     {
       week: 1,
@@ -37,30 +36,35 @@ const CourseLayout = () => {
           title: "Introduction",
           icon: OndemandVideoIcon,
           path: "/course/lecture",
+          isGraded : false
         },
         {
           type: "PA",
           title: "Practice Assignment 1",
           icon: AssignmentOutlinedIcon,
           path: "/course/assignment",
+          isGraded : false
         },
         {
           type: "GA",
           title: "Graded Assignment 1",
           icon: AssignmentIcon,
           path: "/course/assignment",
+          isGraded : true
         },
         {
           type: "PPA",
           title: "Practice Programming 1",
           icon: TerminalTwoToneIcon,
           path: "/course/programming-assignment",
+          isGraded : false
         },
         {
           type: "GRPA",
           title: "Graded Programming 1",
           icon: TerminalIcon,
           path: "/course/assignment",
+          isGraded : true
         },
       ],
     },
@@ -188,8 +192,12 @@ const CourseLayout = () => {
                         key={idx}
                         sx={{ pl: 4 }}
                         component={Link}
-                        to={item.path}
-                        selected={location.pathname === item.path}
+                        to={{
+                          pathname : item.path,
+                          search: `?isGraded=${item.isGraded}`,
+                        }}
+                        selected={selectedItem === `${week.week}-${idx}`} // Check if selected
+                        onClick={() => setSelectedItem(`${week.week}-${idx}`)}
                       >
                         <ListItemIcon
                           sx={{ transition: "color 0.2s", minWidth: 36 }}
@@ -233,7 +241,7 @@ const CourseLayout = () => {
         sx={{
           flexGrow: 1,
           p: 3,
-          mt: "100px", // match navbar height
+          mt: "100px",
           mx: "10px",
           // backgroundColor: 'yellow',
           transition: "margin-left 0.3s ease-in-out",

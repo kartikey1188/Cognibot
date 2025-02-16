@@ -86,7 +86,7 @@ export default function StudentDashboardLayout() {
         open={isMobile ? sidebarOpen : true}
         onClose={() => dispatch(toggleSidebar())}
         ModalProps={{
-          keepMounted: true, // Helps with performance on mobile
+          keepMounted: true, 
         }}
         sx={{
           width: drawerWidth,
