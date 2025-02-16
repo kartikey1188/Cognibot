@@ -45,8 +45,8 @@ const PublicRoute = ({ children }) => {
   if (user) {
     const routes = {
       student: '/dashboard',
-      instructor: '/instructor/dashboard',
-      admin: '/admin/dashboard'
+      instructor: '/instructor',
+      admin: '/admin'
     };
     return <Navigate to={routes[user.role] || '/'} replace />;
   }

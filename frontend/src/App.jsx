@@ -17,6 +17,8 @@ import ProgrammingAssignment from './pages/Student/ProgrammingAssignment';
 import { setError } from './redux/slice/authSlice';
 import Layout from './layouts/Layout';
 import PublicRoute from './components/PublicRoute';
+import AdminDashboardLayout from './layouts/AdminDashboardLayout'
+import QueryLimits from './pages/Admin/QueryLimits';
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -101,22 +103,26 @@ function AppContent() {
             } />
           </Route>
 
-          {/* <Route
+           {/* <Route
             path="/instructor/*"
             element={
               <PrivateRoute allowedRoles={['instructor']}>
                 <InstructorDashboard />
               </PrivateRoute>
             }
-          />
+          /> */}
           <Route
             path="/admin/*"
             element={
-              <PrivateRoute allowedRoles={['admin']}>
-                <AdminDashboard />
-              </PrivateRoute>
+                <AdminDashboardLayout />
             }
-          /> */}
+          >
+          <Route index element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <QueryLimits />
+              </PrivateRoute>
+            } />
+          </Route>
         </Route>
       </Routes>
     </>
