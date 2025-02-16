@@ -14,10 +14,11 @@ export const Navbar = () => {
   const isMobile = useMediaQuery("(max-width: 900px)");
   const location = useLocation();
   
-  const dashboardPaths = ['/dashboard', '/recommendations', '/profile'];
-  const isDashboardRoute = dashboardPaths.some(path => 
-    location.pathname === path
-  );
+  const dashboardPaths = ['/dashboard', '/recommendations', '/profile','/admin'];
+  const isDashboardRoute = dashboardPaths.some(path => {
+    const pattern = new RegExp(`^${path}`);
+    return pattern.test(location.pathname);
+});
 
   const handleLogout = () => {
     dispatch(logoutUser());

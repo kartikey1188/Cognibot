@@ -1,75 +1,67 @@
 import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
-import {
-  Box,
-  Drawer,
-  CssBaseline,
-  AppBar,
-  Toolbar,
-  IconButton,
-  List,
-  Typography,
-  Divider,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  useMediaQuery,
-} from "@mui/material";
-import BookIcon from "@mui/icons-material/Book";
-import RecommendIcon from "@mui/icons-material/Recommend";
+//prettier-ignore
+import {Box, Drawer,CssBaseline,List,Typography,Divider,ListItem,ListItemButton,ListItemIcon,ListItemText,useMediaQuery,} from "@mui/material";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import { Outlet } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toggleSidebar } from "../redux/slice/uiSlice";
-const drawerWidth = 300;
+const drawerWidth = 248;
 import { useSelector } from "react-redux";
-import HelpIcon from '@mui/icons-material/Help';
+import DataUsageIcon from '@mui/icons-material/DataUsage';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
+import SettingsIcon from '@mui/icons-material/Settings';
 
-export default function StudentDashboardLayout() {
+export default function AdminDashboardLayout() {
   const { sidebarOpen } = useSelector((state) => state.ui);
   const isMobile = useMediaQuery("(max-width: 900px)");
   const dispatch = useDispatch();
   const location = useLocation();
 
   const items = [
-    { icon: <BookIcon />, text: "Current Courses", path: "/dashboard" },
+    { icon: <DataUsageIcon />, text: "Query limits", path: "/admin" },
     {
-      icon: <RecommendIcon />,
-      text: "Study Recommendations",
-      path: "/dashboard/recommendations",
+      icon: <AnalyticsIcon />,
+      text: "User Analytics",
+      path: "/admin/analytics",
     },
-    { icon: <AccountCircleRoundedIcon />, text: "Profile", path: "/dashboard/profile" },
-    { icon: <HelpIcon/> , text: "Help", path: "/dashboard/help" },
+    {
+      icon: <AccountCircleRoundedIcon />,
+      text: "User Management",
+      path: "/admin/management",
+    },
+    { icon: <SettingsIcon />, text: "System Settings", path: "/admin/settings" },
   ];
 
   const drawerContent = (
-    <Box sx={{ width: 'fit-content' }}>
-      <Typography variant="h6" sx={{ p: 2, textAlign: "center"}}>
-        STUDENT
+    <Box sx={{ width: "fit-content" }}>
+      <Typography variant="h6" sx={{ p: 2, textAlign: "center" }}>
+        ADMIN
       </Typography>
       <Divider />
       <List>
         {items.map((item, index) => (
           <ListItem key={index}>
-            <ListItemButton component={Link} to={item.path}
-            selected={location.pathname === item.path}
-            sx={{
-              '&.Mui-selected': {
-                backgroundColor: '#3db9f2',
-                '&:hover': {
-                  backgroundColor: '#3db9f2',
+            <ListItemButton
+              component={Link}
+              to={item.path}
+              selected={location.pathname === item.path}
+              sx={{
+                "&.Mui-selected": {
+                  backgroundColor: "#3db9f2",
+                  "&:hover": {
+                    backgroundColor: "#3db9f2",
+                  },
+                  "& .MuiListItemIcon-root": {
+                    color: "primary.contrastText",
+                  },
                 },
-                '& .MuiListItemIcon-root': {
-                  color: 'primary.contrastText',
+                "&:hover": {
+                  backgroundColor: "action.hover",
                 },
-              },
-              '&:hover': {
-                backgroundColor: 'action.hover',
-              },
-            }}
+              }}
             >
-              <ListItemIcon sx={{minWidth:'40px'}}>{item.icon}</ListItemIcon>
+              <ListItemIcon sx={{ minWidth: "40px" }}>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
             </ListItemButton>
           </ListItem>
@@ -91,12 +83,11 @@ export default function StudentDashboardLayout() {
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          wrap : 'nowrap',
+          wrap: "nowrap",
           [`& .MuiDrawer-paper`]: {
             width: drawerWidth,
             boxSizing: "border-box",
             zIndex: 0,
-           
           },
         }}
       >
