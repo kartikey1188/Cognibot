@@ -239,7 +239,7 @@ const CourseLayout = () => {
             <ListItemIcon>
               <AssistantIcon></AssistantIcon>
             </ListItemIcon>
-            <ListItemText primary="Ai agent" />
+            <ListItemText primary="CogniBot" />
           </ListItemButton>
         </List>
       </Drawer>

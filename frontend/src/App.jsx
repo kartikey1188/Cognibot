@@ -21,6 +21,7 @@ import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
 import QueryLimits from "./pages/Admin/QueryLimits";
 import LandingPage from "./pages/Landing";
 import Analytics from "./pages/Admin/Analytics";
+import InstructorDashboard from "./pages/Instructor/InstructorDashboard";
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -129,14 +130,14 @@ function AppContent() {
             />
           </Route>
 
-          {/* <Route
-            path="/instructor/*"
+          <Route
+            path="/instructor"
             element={
               <PrivateRoute allowedRoles={['instructor']}>
                 <InstructorDashboard />
               </PrivateRoute>
             }
-          /> */}
+          />
           <Route path="/admin" element={<AdminDashboardLayout />}>
             <Route
               index
