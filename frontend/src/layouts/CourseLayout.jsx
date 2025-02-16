@@ -63,7 +63,7 @@ const CourseLayout = () => {
           type: "GRPA",
           title: "Graded Programming 1",
           icon: TerminalIcon,
-          path: "/course/assignment",
+          path: "/course/programming-assignment",
           isGraded : true
         },
       ],

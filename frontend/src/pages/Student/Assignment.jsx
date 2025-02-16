@@ -153,7 +153,7 @@ function Assignment() {
   return (
     <Box sx={{ maxWidth: 800, mx: "auto" }}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Assignment 1
+      {isGraded ? "Graded " : "Practice "} Assignment
       </Typography>
 
       <Box sx={{ mt: 4 }}>
