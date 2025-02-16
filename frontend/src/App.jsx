@@ -20,6 +20,7 @@ import PublicRoute from "./components/PublicRoute";
 import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
 import QueryLimits from "./pages/Admin/QueryLimits";
 import LandingPage from "./pages/Landing";
+import Analytics from "./pages/Admin/Analytics";
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -136,7 +137,7 @@ function AppContent() {
               </PrivateRoute>
             }
           /> */}
-          <Route path="/admin/*" element={<AdminDashboardLayout />}>
+          <Route path="/admin" element={<AdminDashboardLayout />}>
             <Route
               index
               element={
@@ -145,6 +146,12 @@ function AppContent() {
                 </PrivateRoute>
               }
             />
+            <Route path="/admin/analytics" element={
+              <PrivateRoute>
+                <Analytics></Analytics>
+              </PrivateRoute>
+            }>
+            </Route>
           </Route>
         </Route>
       </Routes>

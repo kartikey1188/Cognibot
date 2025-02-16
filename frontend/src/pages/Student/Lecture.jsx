@@ -69,7 +69,7 @@ function Lecture() {
   return (
     <Container maxWidth="lg" sx={styles.container}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Lecture Name
+        Introduction to Vim
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
