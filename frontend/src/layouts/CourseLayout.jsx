@@ -73,35 +73,42 @@ const CourseLayout = () => {
       content: [
         {
           type: "Lecture",
-          title: "Advanced Concepts",
+          title: "Introduction",
           icon: OndemandVideoIcon,
           path: "/course/lecture",
+          isGraded : false
         },
         {
           type: "PA",
-          title: "Practice Assignment 2",
+          title: "Practice Assignment 1",
           icon: AssignmentOutlinedIcon,
+          path: "/course/assignment",
+          isGraded : false
         },
         {
           type: "GA",
-          title: "Graded Assignment 2",
+          title: "Graded Assignment 1",
           icon: AssignmentIcon,
           path: "/course/assignment",
+          isGraded : true
         },
         {
           type: "PPA",
-          title: "Practice Programming 2",
+          title: "Practice Programming 1",
           icon: TerminalTwoToneIcon,
-          path: "/course/assignment",
+          path: "/course/programming-assignment",
+          isGraded : false
         },
         {
           type: "GRPA",
-          title: "Graded Programming 2",
+          title: "Graded Programming 1",
           icon: TerminalIcon,
-          path: "/course/assignment",
+          path: "/course/programming-assignment",
+          isGraded : true
         },
       ],
     },
+    
   ];
 
   return (
@@ -140,7 +147,7 @@ const CourseLayout = () => {
         >
           {isOpen && (
             <Typography variant="subtitle1" component={Link} to="/course">
-              Course Content
+              Course Overview
             </Typography>
           )}
           <IconButton
