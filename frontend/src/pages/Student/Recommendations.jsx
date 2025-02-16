@@ -64,7 +64,7 @@ const Recommendations = () => {
   };
 
   return (
-    <Box sx={{ padding: 3, display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <Box sx={{ padding: 3, display: 'flex', flexDirection: 'column', gap: "1em" }}>
       <Typography variant="h4" component="h1" fontWeight="bold">
         PERSONALIZED RECOMMENDATIONS
       </Typography>
@@ -72,8 +72,8 @@ const Recommendations = () => {
       <Typography variant="body1" color="text.secondary" marginBottom={4}>
         Based on your recent performance and learning patterns, here are your personalized study recommendations.
       </Typography>
-      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center',mt:0, justifyContent: 'flex-end' }}>
-        <Typography variant="caption" color="text.secondary">
+      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center',justifyContent: 'flex-end' }}>
+        <Typography color="text.secondary" component="h2">
           Generated using
         </Typography>
         <Tooltip title="CogniBot AI Agent">

@@ -1,27 +1,44 @@
-import React from 'react'
-import { Typography,  } from '@mui/material'
+import React from 'react';
+import { Typography, Card, CardContent, Avatar, Button, List, ListItem, ListItemText } from '@mui/material';
 
-function Profle() {
+function StudentProfile() {
   return (
-    <section className="flex flex-col gap-4 p-3">
-        <Typography
-        variant="h4"
-        component="div"
-        sx={{ flexGrow: 1, fontWeight: "bold" }}
-      >
-       PROFILE
-      </Typography>
-      
+    <section className="flex flex-col gap-6 p-6 max-w-2xl mx-auto">
+      {/* Profile Header */}
+      <Card className="p-6 shadow-md flex flex-col items-center text-center">
+        <Avatar sx={{ width: 100, height: 100 }} src="https://via.placeholder.com/100" alt="Rashmi" />
+        <Typography variant="h5" className="mt-4 font-bold">
+          Rashmi 
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          rashmi@example.com
+        </Typography>
+        <Typography variant="body2" className="mt-2">
+          Enthusiastic learner passionate about Python and Machine Learning.
+        </Typography>
+        <Button variant="contained" color="primary" className="mt-4">Edit Profile</Button>
+      </Card>
+
+      <Card className="shadow-md">
+        <CardContent>
+          <Typography variant="h6" className="font-bold mb-3">
+            Enrolled Courses
+          </Typography>
+          <List>
+            <ListItem>
+              <ListItemText primary="Programming in Python" secondary="Instructor: Sudarshan Iyenagar" />
+            </ListItem>
+            <ListItem>
+              <ListItemText primary="Machine Learning Practices" secondary="Instructor: Arun Rajkumar" />
+            </ListItem>
+            <ListItem>
+              <ListItemText primary="Software Engineering" secondary="Instructor: Prajish Prasad" />
+            </ListItem>
+          </List>
+        </CardContent>
+      </Card>
     </section>
-  )
+  );
 }
 
-export default Profle
-
-
-
-
-
-
-
-
+export default StudentProfile;
