@@ -24,7 +24,7 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, H
 load_dotenv()
 
 # Firestore setup
-PROJECT_ID = "enter_your_own_project_id_here"
+PROJECT_ID = "softwareengineering-6a9a8"
 COLLECTION_NAME = "doubts_clarification_history"
 
 client = firestore.Client(project=PROJECT_ID)

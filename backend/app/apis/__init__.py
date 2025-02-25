@@ -9,4 +9,4 @@ api = Api()
 
 from . import auth, admin, student, instructor, course, all_marshals, lecture
 from backend.data import transcript_generator, vectordb_generator
-from backend.app.services import lecture_summary, topic_search, clarification
+from backend.app.services import lecture_summary, topic_search, clarification,extra_questions,assignment_feedback
