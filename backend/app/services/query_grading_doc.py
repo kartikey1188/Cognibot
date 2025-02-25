@@ -1,10 +1,7 @@
 import os
-from . import *
-from app.apis import *
-from app.models import db
+from app.apis import api
 from pathlib import Path
 from flask import request
-from flask import current_app as app
 from flask_restful import Resource
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -12,13 +9,11 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate
 
 # Configuration
-PERSISTENT_DIRECTORY = str(Path(__file__).resolve(
-).parent.parent.parent / "data" / "grading_doc_vector_db")
+PERSISTENT_DIRECTORY = str(Path(__file__).resolve().parent.parent.parent / "data" / "grading_document_vector_db")
 EMBEDDING_MODEL = "BAAI/bge-small-en"
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 # Helper function to get the vector DB
-
 
 def get_vector_db():
     embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
@@ -120,3 +115,5 @@ class GradingDocQuery(Resource):
 
 # Register resources
 api.add_resource(GradingDocQuery, '/api/grading/query')
+
+
