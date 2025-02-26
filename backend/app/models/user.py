@@ -119,4 +119,6 @@ class LectureReview(db.Model):
 
     lecture = db.relationship("Lecture", back_populates="reviews")
     user = db.relationship("User")
+Lecture.reviews = db.relationship("LectureReview", back_populates="lecture", cascade="all, delete-orphan")
+
 
