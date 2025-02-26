@@ -29,3 +29,4 @@ class LectureFeedback(Resource):
 
         return {"message": "Feedback submitted successfully"}, 201
 
+api.add_resource(LectureFeedback, "/submit_feedback")
