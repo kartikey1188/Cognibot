@@ -107,3 +107,17 @@ class StudentCourses(db.Model): # Implements a many-to-many relationship between
     course_id = db.Column(db.Integer, db.ForeignKey('course.course_id', ondelete="CASCADE"), primary_key=True)
     grade_obtained = db.Column(db.Enum(GradeObtained), nullable=False, default=GradeObtained.NA) # this is the grade obtained by a particular student in a particular course - grade_obtained by default is NA, but can be changed to S,A,B,C and so on (after the result)
 
+class LectureReview(db.Model):
+    __tablename__ = "lecture_reviews"
+
+    review_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    lecture_id = db.Column(db.Integer, db.ForeignKey("lecture.lecture_id", ondelete="CASCADE"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    feedback = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    lecture = db.relationship("Lecture", back_populates="reviews")
+    user = db.relationship("User")
+
+Lecture.reviews = db.relationship("LectureReview", back_populates="lecture", cascade="all, delete-orphan")
