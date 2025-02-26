@@ -6,3 +6,7 @@ from app.models.user import LectureReview, Lecture
 from app.models import db
 from langchain_google_genai import ChatGoogleGenerativeAI
 from app.apis import api
+
+
+# Initialize AI Model (Gemini)
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
