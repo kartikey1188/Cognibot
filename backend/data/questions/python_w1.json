@@ -1,0 +1,94 @@
+{
+  "questions": [
+    {
+      "question": "What will be the output of the following statement?",
+      "code": "print('15 % 3 * 2 + 2')",
+      "options": {
+        "A": "12",
+        "B": "2",
+        "C": "15 % 3 * 2 + 2",
+        "D": "'15 % 3 * 2 + 2'"
+      },
+      "type": "MCQ",
+      "qid": 1,
+      "answer": ["D"],
+      "points": 1
+    },
+    {
+      "question": "What will be the output of the following statement?",
+      "code": "print(\"a + 'b' + c + '' + d\")",
+      "options": {
+        "A": "a + 'b' + c + '' + d",
+        "B": "\"a + 'b' + c + '' + d\"",
+        "C": "a + b + c + '' + d",
+        "D": "a + ''b'' + c + '' + d"
+      },
+      "type": "MCQ",
+      "qid": 2,
+      "answer": ["B"],
+      "points": 1
+    },
+    {
+      "question": "A snippet of code gives the following output when executed: 1 2 3 4 5",
+      "description": "There is exactly one space between any two consecutive integers. Which of the following options correspond to the correct code snippet? (MSQ).",
+      "options": {
+        "A": "print(1 2 3 4 5)",
+        "B": "print('1 2 3 4 5') # there is a space between consecutive numbers",
+        "C": "print(1)\nprint(2)\nprint(3)\nprint(4)\nprint(5)",
+        "D": "print(1, 2, 3, 4, 5)"
+      },
+      "type": "MSQ",
+      "qid": 3,
+      "answer": ["B", "D"],
+      "points": 1
+    },
+
+    {
+      "question": "Given a string variable word that stores some word in the English language, we wish to create a new string with just two characters:",
+      "description": "The first character in the new string is the first letter in word. The second character in the new string the last letter in word. Assume that word has at least three characters. Which of the following lines of code can be used to create the new string? (MSQ).",
+      "options": {
+        "A": "word[0] + word[1]",
+        "B": "word[0] + word[-1]",
+        "C": "word[0] + word[len(word) - 1]",
+        "D": "word[-1] + word[len(word)]"
+      },
+      "type": "MSQ",
+      "qid": 4,
+      "answer": ["B", "C"],
+      "points": 1
+    },
+    {
+      "question": "Consider the following snippet of code:",
+      "code": "x = int(input())\ny = int(input())\nz = int(input())\navg = (x + y + z) / 3\nprint(avg)",
+      "description": "What is the output of the code given above for the following input? Try to think about the answer without executing the code in an interpreter.",
+      "input": [
+        "10",
+        "11",
+        "12"
+      ],
+      "options": {
+        "A": "11",
+        "B": "11.0",
+        "C": "33",
+        "D": "33.0"
+      },
+      "qid": 5,
+      "answer": ["B"],
+      "type": "MCQ",
+      "points": 1
+    },
+    {
+      "question": "Consider the following snippet of code:",
+      "code": "w1 = input()\nw2 = input()\nprint(w1 + w2)",
+      "description": "What is the output of the code given above for the following input? NAT",
+      "input": [
+        "10",
+        "20"
+      ],
+      "qid": 6,
+      "type": "CAT",
+      "answer": ["1020"]
+    }
+  ]
+}
+
