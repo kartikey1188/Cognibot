@@ -61,3 +61,5 @@ class LectureReviewReport(Resource):
         report = response.content.strip()
 
         return {"course_id": course_id, "week": week, "lecture_review_report": report}, 200
+
+api.add_resource(LectureReviewReport, "/lecture_review_report")
