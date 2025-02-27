@@ -35,135 +35,152 @@ Ensure the feedback is clear, encouraging, and tailored to the student's learnin
 
 class FeedBackAndRecommendations(Resource):
     def post(self):
-        data = load_questions()
-        user_answers = request.json.get('submitted_answers', [])
+        try:
+            # Load questions data
+            data = load_questions()
+            user_answers = request.json.get('submitted_answers', [])
 
-        question_map = {q["qid"]: q for q in data["questions"]}
+            # Input validation
+            if not isinstance(user_answers, list):
+                return jsonify({"error": "submitted_answers must be a list"}), 400
 
-        # Prepare individual question assessments first
-        question_assessments = []
-        correct_count = 0
-        partially_correct_count = 0
-        incorrect_count = 0
+            for ans in user_answers:
+                if not isinstance(ans, dict) or 'qid' not in ans or 'answer' not in ans:
+                    return jsonify({"error": "Each answer must be a dictionary with 'qid' and 'answer'"}), 400
+                if not isinstance(ans['qid'], int):
+                    return jsonify({"error": "qid must be an integer"}), 400
+                if not isinstance(ans['answer'], list) or not all(isinstance(a, str) for a in ans['answer']):
+                    return jsonify({"error": "answer must be a list of strings"}), 400
 
-        for ans in user_answers:
-            qid = ans["qid"]
-            student_answer = ans["answer"]
+            question_map = {q["qid"]: q for q in data["questions"]}
 
-            if qid in question_map:
-                correct_answer = question_map[qid]["answer"]
-                question_type = question_map[qid]["type"]
+            # Prepare individual question assessments first
+            question_assessments = []
+            correct_count = 0
+            partially_correct_count = 0
+            incorrect_count = 0
 
-                # Evaluation logic based on question type
-                if question_type in ["MCQ", "MSQ"]:
-                    is_correct = set(student_answer) == set(correct_answer)
-                    is_partially_correct = (
-                        set(student_answer).issubset(set(correct_answer)) and
-                        len(student_answer) > 0 and
-                        not is_correct
-                    )
-                elif question_type == "CAT":  # Computer Adaptive Test / text input
-                    # For text answers, we do exact matching
-                    is_correct = student_answer[0] == correct_answer[0] if len(
-                        student_answer) > 0 else False
-                    is_partially_correct = False  # No partial credit for text answers
-                else:
-                    # Default case
-                    is_correct = set(student_answer) == set(correct_answer)
-                    is_partially_correct = set(student_answer).issubset(
-                        set(correct_answer)) and not is_correct
+            for ans in user_answers:
+                qid = ans["qid"]
+                student_answer = ans["answer"]
 
-                # Determine accuracy status
-                if is_correct:
-                    accuracy = "Correct"
-                    correct_count += 1
-                elif is_partially_correct:
-                    accuracy = "Partially Correct"
-                    partially_correct_count += 1
-                else:
-                    accuracy = "Incorrect"
-                    incorrect_count += 1
+                if qid in question_map:
+                    correct_answer = question_map[qid]["answer"]
+                    question_type = question_map[qid]["type"]
 
-                # Add to list of assessments with enhanced information
-                question_assessments.append({
-                    "qid": qid,
-                    "question": question_map[qid]["question"],
-                    "question_type": question_type,
-                    "correct_answer": correct_answer,
-                    "student_answer": student_answer,
-                    "accuracy": accuracy
-                })
+                    # Evaluation logic based on question type
+                    if question_type in ["MCQ", "MSQ"]:
+                        is_correct = set(student_answer) == set(correct_answer)
+                        is_partially_correct = (
+                            set(student_answer).issubset(set(correct_answer)) and
+                            len(student_answer) > 0 and
+                            not is_correct
+                        )
+                    elif question_type == "CAT":  # Computer Adaptive Test / text input
+                        # For text answers, we do exact matching
+                        is_correct = student_answer[0] == correct_answer[0] if len(
+                            student_answer) > 0 else False
+                        is_partially_correct = False  # No partial credit for text answers
+                    else:
+                        # Default case
+                        is_correct = set(student_answer) == set(correct_answer)
+                        is_partially_correct = set(student_answer).issubset(
+                            set(correct_answer)) and not is_correct
 
-        # Create a performance summary for all questions
-        total_questions = len(question_assessments)
-        performance_summary = f"Total Questions: {total_questions}\n"
-        performance_summary += f"Correct: {correct_count} ({correct_count/total_questions*100:.1f}%)\n"
-        performance_summary += f"Partially Correct: {partially_correct_count} ({partially_correct_count/total_questions*100:.1f}%)\n"
-        performance_summary += f"Incorrect: {incorrect_count} ({incorrect_count/total_questions*100:.1f}%)\n\n"
+                    # Determine accuracy status
+                    if is_correct:
+                        accuracy = "Correct"
+                        correct_count += 1
+                    elif is_partially_correct:
+                        accuracy = "Partially Correct"
+                        partially_correct_count += 1
+                    else:
+                        accuracy = "Incorrect"
+                        incorrect_count += 1
 
-        # Add detailed question-by-question breakdown with enhanced information
-        performance_summary += "Question-by-Question Breakdown:\n"
-        for i, assessment in enumerate(question_assessments, 1):
-            q_data = question_map[assessment['qid']]
+                    # Add to list of assessments with enhanced information
+                    question_assessments.append({
+                        "qid": qid,
+                        "question": question_map[qid]["question"],
+                        "question_type": question_type,
+                        "correct_answer": correct_answer,
+                        "student_answer": student_answer,
+                        "accuracy": accuracy
+                    })
 
-            performance_summary += f"\nQuestion {i}: {q_data['question']}\n"
+            # Create a performance summary for all questions
+            total_questions = len(question_assessments)
+            performance_summary = f"Total Questions: {total_questions}\n"
+            performance_summary += f"Correct: {correct_count} ({correct_count/total_questions*100:.1f}%)\n"
+            performance_summary += f"Partially Correct: {partially_correct_count} ({partially_correct_count/total_questions*100:.1f}%)\n"
+            performance_summary += f"Incorrect: {incorrect_count} ({incorrect_count/total_questions*100:.1f}%)\n\n"
 
-            # Include code if present
-            if 'code' in q_data:
-                performance_summary += f"Code:\n```python\n{q_data['code']}\n```\n"
+            # Add detailed question-by-question breakdown with enhanced information
+            performance_summary += "Question-by-Question Breakdown:\n"
+            for i, assessment in enumerate(question_assessments, 1):
+                q_data = question_map[assessment['qid']]
 
-            # Include description if present
-            if 'description' in q_data:
-                performance_summary += f"Description: {q_data['description']}\n"
+                performance_summary += f"\nQuestion {i}: {q_data['question']}\n"
 
-            # Include input if present
-            if 'input' in q_data:
-                input_str = '\n'.join(q_data['input'])
-                performance_summary += f"Input:\n{input_str}\n"
+                # Include code if present
+                if 'code' in q_data:
+                    performance_summary += f"Code:\n```python\n{q_data['code']}\n```\n"
 
-            # Include options if present
-            if 'options' in q_data:
-                performance_summary += "Options:\n"
-                for opt_key, opt_value in q_data['options'].items():
-                    performance_summary += f"- {opt_key}: {opt_value}\n"
+                # Include description if present
+                if 'description' in q_data:
+                    performance_summary += f"Description: {q_data['description']}\n"
 
-            performance_summary += f"- Question Type: {q_data['type']}\n"
-            performance_summary += f"- Correct Answer: {q_data['answer']}\n"
-            performance_summary += f"- Student Answer: {assessment['student_answer']}\n"
-            performance_summary += f"- Accuracy: {assessment['accuracy']}\n"
+                # Include input if present
+                if 'input' in q_data:
+                    input_str = '\n'.join(q_data['input'])
+                    performance_summary += f"Input:\n{input_str}\n"
 
-        # Make a single LLM call for comprehensive feedback
-        prompt = ChatPromptTemplate.from_template(template).format(
-            performance_summary=performance_summary
-        )
+                # Include options if present
+                if 'options' in q_data:
+                    performance_summary += "Options:\n"
+                    for opt_key, opt_value in q_data['options'].items():
+                        performance_summary += f"- {opt_key}: {opt_value}\n"
 
-        comprehensive_feedback = gemini_llm.invoke(prompt).content
+                performance_summary += f"- Question Type: {q_data['type']}\n"
+                performance_summary += f"- Correct Answer: {q_data['answer']}\n"
+                performance_summary += f"- Student Answer: {assessment['student_answer']}\n"
+                performance_summary += f"- Accuracy: {assessment['accuracy']}\n"
 
-        # Build enhanced response with both the individual assessments and the comprehensive feedback
-        feedback_response = {
-            "performance_summary": {
-                "total_questions": total_questions,
-                "correct": correct_count,
-                "partially_correct": partially_correct_count,
-                "incorrect": incorrect_count,
-                "percent_correct": correct_count/total_questions*100 if total_questions > 0 else 0
-            },
-            "question_assessments": [
-                {
-                    "qid": assessment["qid"],
-                    "question": assessment["question"],
-                    "question_type": assessment["question_type"],
-                    "correct_answer": assessment["correct_answer"],
-                    "student_answer": assessment["student_answer"],
-                    "is_correct": assessment["accuracy"] == "Correct",
-                    "is_partially_correct": assessment["accuracy"] == "Partially Correct"
-                }
-                for assessment in question_assessments
-            ],
-            "comprehensive_feedback": comprehensive_feedback
-        }
+            # Make a single LLM call for comprehensive feedback
+            prompt = ChatPromptTemplate.from_template(template).format(
+                performance_summary=performance_summary
+            )
 
-        return jsonify(feedback_response)
+            comprehensive_feedback = gemini_llm.invoke(prompt).content
+
+            # Build enhanced response with both the individual assessments and the comprehensive feedback
+            feedback_response = {
+                "performance_summary": {
+                    "total_questions": total_questions,
+                    "correct": correct_count,
+                    "partially_correct": partially_correct_count,
+                    "incorrect": incorrect_count,
+                    "percent_correct": correct_count/total_questions*100 if total_questions > 0 else 0
+                },
+                "question_assessments": [
+                    {
+                        "qid": assessment["qid"],
+                        "question": assessment["question"],
+                        "question_type": assessment["question_type"],
+                        "correct_answer": assessment["correct_answer"],
+                        "student_answer": assessment["student_answer"],
+                        "is_correct": assessment["accuracy"] == "Correct",
+                        "is_partially_correct": assessment["accuracy"] == "Partially Correct"
+                    }
+                    for assessment in question_assessments
+                ],
+                "comprehensive_feedback": comprehensive_feedback
+            }
+
+            return jsonify(feedback_response)
+        
+        except Exception as e:
+            return jsonify({"error": f"Internal server error: {str(e)}"}), 500
 
 
 api.add_resource(FeedBackAndRecommendations, '/api/feedback-recommendations')
