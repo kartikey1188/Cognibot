@@ -12,8 +12,7 @@ from app.apis import api
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
 
 class LectureReviewReport(Resource):
-    @jwt_required()
-    def get(self):
+    def post(self):
         """Generates AI-based lecture review reports for instructors."""
         parser = reqparse.RequestParser()
         parser.add_argument("course_id", type=int, required=True, help="Course ID is required")

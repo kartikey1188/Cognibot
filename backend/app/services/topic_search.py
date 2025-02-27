@@ -16,7 +16,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 persistent_directory  = os.path.abspath(os.path.join(current_dir, "..", "..", "data", "vector_databases"))
 
 class TopicSearch(Resource):
-    def get(self):
+    def post(self):
         try:
             parser = reqparse.RequestParser()
             parser.add_argument("quest", type=str, required=True, help="A query is required")

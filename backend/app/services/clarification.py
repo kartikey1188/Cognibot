@@ -24,7 +24,7 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, H
 load_dotenv()
 
 # Firestore setup
-PROJECT_ID = "softwareengineering-6a9a8"
+PROJECT_ID = "first-project-8101c"
 COLLECTION_NAME = "doubts_clarification_history"
 
 client = firestore.Client(project=PROJECT_ID)
@@ -85,7 +85,7 @@ agent = create_react_agent(llm, tools, custom_prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, handle_parsing_errors=True)
 
 class Clarification(Resource):
-    def get(self):
+    def post(self):
         try:
             parser = reqparse.RequestParser()
             parser.add_argument("user_id", type=int, required=True, help="The user is required")
