@@ -85,7 +85,7 @@ agent = create_react_agent(llm, tools, custom_prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, handle_parsing_errors=True)
 
 class Clarification(Resource):
-    def get(self):
+    def post(self):
         try:
             parser = reqparse.RequestParser()
             parser.add_argument("user_id", type=int, required=True, help="The user is required")
