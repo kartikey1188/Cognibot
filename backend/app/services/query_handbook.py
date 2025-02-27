@@ -96,8 +96,7 @@ class HandbookQuery(Resource):
                 doc_info = {
                     'content': doc.page_content,
                     'source': doc.metadata.get('source', None),
-                    'page_number': doc.metadata.get('page_number', None),
-                    'score': doc.metadata.get('score', None)
+                    'page_number': doc.metadata.get('page_number', None)
                 }
                 documents.append(doc_info)
             
