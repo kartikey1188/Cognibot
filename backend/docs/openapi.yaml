@@ -1,0 +1,666 @@
+openapi: 3.0.3
+info:
+  title: Lecture Summary API
+  description: API to retrieve and summarize lecture transcripts.
+  version: 1.0.0
+
+servers:
+  - url: http://127.0.0.1:5000
+  
+paths:
+  /lecture_summary/{lecture_id}:
+    get:
+      summary: Retrieve a summary of a lecture transcript.
+      description: 
+        Fetches the transcript of a lecture using its ID, summarizes it using Gemini AI, 
+        and returns the key points in a structured format.
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          description: The ID of the lecture whose summary is to be retrieved.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successfully retrieved the lecture summary.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lecture_summary:
+                    type: string
+                    description: A concise summary of the lecture transcript.
+              example:
+                lecture_summary: >
+                  This lecture discusses basic arithmetic operations in programming, 
+                  highlighting the importance of data types and operator precedence...
+        "404":
+          description: Transcript not found or empty.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: Transcript not found or empty
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: Failed to retrieve transcript
+  /clarification:
+    post:
+      summary: Process a user's clarification query
+      description: Takes a user ID and a query as input, retrieves previous chat history from Firestore, processes the query using a LangChain-powered agent, and returns an AI-generated response.
+      operationId: postClarification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - quest
+              properties:
+                user_id:
+                  type: integer
+                  description: Unique identifier for the user.
+                quest:
+                  type: string
+                  description: The user's query or clarification request.
+            examples:
+              user_input:
+                summary: Example input
+                value:
+                  user_id: 125
+                  quest: "What are variables and literals?"
+      responses:
+        "200":
+          description: Successfully retrieved the AI response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query:
+                    type: string
+                    description: The original user query.
+                  response:
+                    type: string
+                    description: The AI-generated response.
+              example:
+                query: "What is the if-else statement?"
+                response: "The if-else statement is a fundamental control flow structure in programming.  It allows you to execute different blocks of code based on whether a condition is true or false.  If the condition is true, the code within the `if` block is executed; otherwise, the code within the `else` block is executed.  The syllabus provides several examples of if-else statements in Python, including checking if a number is even or odd, determining a student's grade based on their marks, and choosing a mode of transportation based on time and price.  These examples demonstrate how to use if-else statements to make decisions and control the flow of your program."
+        "400":
+          description: Bad request, usually due to missing parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "A query is required"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Failed to process request"
+  
+  /topic_search:
+    post:
+      summary: Perform a topic search in the vector database.
+      description: Accepts a query string, searches the Chroma vector database for relevant chunks using an embedding model, and returns metadata from the most relevant results.
+      operationId: postTopicSearch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quest
+              properties:
+                quest:
+                  type: string
+                  description: The query string for topic search.
+            examples:
+              user_input:
+                summary: Example input
+                value:
+                  quest: "Explain machine learning models"
+      responses:
+        "200":
+          description: Successfully retrieved relevant topic information.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  search_query:
+                    type: string
+                    description: The original search query.
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      description: Metadata of relevant retrieved chunks.
+              example:
+                search_query: "Explain machine learning models"
+                results:
+                  - { "title": "Introduction to ML", "source": "lecture_notes.pdf", "page": 12 }
+                  - { "title": "Supervised Learning", "source": "ml_book.pdf", "page": 45 }
+                  - { "title": "Neural Networks", "source": "deep_learning_notes.txt", "page": 8 }
+        "400":
+          description: Bad request, usually due to missing parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "A query is required"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Failed to conclude topic search"
+
+  /lecture_review_report:
+    post:
+      summary: Generate AI-based lecture review reports
+      description: Retrieves student feedback for lectures in a course and generates an AI-powered analysis report.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course_id:
+                  type: integer
+                  description: The ID of the course for which the review report is generated.
+                week:
+                  type: integer
+                  nullable: true
+                  description: The specific week number to filter reviews (optional).
+              required:
+                - course_id
+      responses:
+        200:
+          description: Successfully generated an AI-powered lecture review report.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  course_id:
+                    type: integer
+                    description: The course ID for which the report was generated.
+                  week:
+                    type: integer
+                    nullable: true
+                    description: The week number for the report (if provided).
+                  lecture_review_report:
+                    type: string
+                    description: AI-generated analysis of student feedback, including common issues, suggested improvements, and overall student satisfaction.
+        404:
+          description: No reviews found for the specified course or week.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "No reviews found for the selected course/week"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error processing request: [detailed error message]"
+
+  
+  /api/grading/query:
+    post:
+      summary: Query the grading document database.
+      description: Accepts a user query, retrieves relevant information from a vector database, and generates a response using Gemini AI.
+      operationId: postGradingDocQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: The user's query related to the grading document.
+                k:
+                  type: integer
+                  description: Number of relevant documents to retrieve (default = 3).
+                score_threshold:
+                  type: number
+                  format: float
+                  description: Minimum similarity score for retrieved documents (default = 0.5).
+            examples:
+              user_input:
+                summary: Example input
+                value:
+                  query: "What is the grading criteria for software engineering?"
+                  k: 1
+                  score_threshold: 0.6
+      responses:
+        200:
+          description: Successfully retrieved the query response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    description: AI-generated response based on the grading document.
+                  documents:
+                    type: array
+                    description: List of relevant documents used for llm's context.
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                          description: Extracted text from the relevant grading document chunk.
+                        source:
+                          type: string
+                          nullable: true
+                          description: The source file or reference of the document (if available).
+        400:
+          description: Invalid request due to missing or incorrect parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating the issue with the request.
+                    example: "Query is required"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating an internal processing failure.
+                    example: "Error processing query: [detailed error message]"
+
+  
+  /api/feedback-recommendations:
+    post:
+      summary: Provides feedback and study recommendations based on student answers.
+      description: |
+        This endpoint analyzes a student's answers to practice/graded assignment questions,
+        evaluates correctness, and provides personalized feedback and study recommendations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                submitted_answers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      qid:
+                        type: string
+                        description: Unique identifier for the question.
+                      answer:
+                        type: array
+                        items:
+                          type: string
+                        description: The student's submitted answer(s).
+            example:
+              submitted_answers:
+                - qid: 1
+                  answer: ["D"]
+                - qid: 2
+                  answer: ["B"]
+                - qid: 3
+                  answer: ["B", "D"]
+                - qid: 4
+                  answer: ["B", "C"]
+                - qid: 5
+                  answer: ["B"]
+                - qid: 6
+                  answer: ["1020"]      
+      responses:
+        "200":
+          description: Feedback and recommendations successfully generated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  performance_summary:
+                    type: object
+                    properties:
+                      total_questions:
+                        type: integer
+                      correct:
+                        type: integer
+                      partially_correct:
+                        type: integer
+                      incorrect:
+                        type: integer
+                      percent_correct:
+                        type: number
+                        format: float
+                  question_assessments:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        qid:
+                          type: string
+                        question:
+                          type: string
+                        question_type:
+                          type: string
+                        correct_answer:
+                          type: array
+                          items:
+                            type: string
+                        student_answer:
+                          type: array
+                          items:
+                            type: string
+                        is_correct:
+                          type: boolean
+                        is_partially_correct:
+                          type: boolean
+                  comprehensive_feedback:
+                    type: string
+                    description: AI-generated detailed feedback and study recommendations.
+        "400":
+            description: Invalid request format.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      description: Error message explaining the request format issue.
+                      example: "submitted_answers must be a list"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating an internal processing failure.
+                    example: "Error processing request: [detailed error message]"
+
+  
+  /extra_questions:
+    post:
+      summary: Generate extra practice questions for a lecture
+      description: Retrieves the transcript of a lecture and generates AI-powered multiple-choice questions (MCQs) to test students' understanding.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lecture_id:
+                  type: integer
+                  description: The ID of the lecture for which extra questions are generated.
+              required:
+                - lecture_id
+      responses:
+        200:
+          description: Successfully generated extra practice questions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lecture_id:
+                    type: integer
+                    description: The lecture ID for which the questions were generated.
+                  questions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        question:
+                          type: string
+                          description: The multiple-choice question.
+                        options:
+                          type: object
+                          properties:
+                            A:
+                              type: string
+                            B:
+                              type: string
+                            C:
+                              type: string
+                            D:
+                              type: string
+                          description: The four answer choices.
+                        correct_answer:
+                          type: string
+                          description: The correct answer option (A, B, C, or D).
+        404:
+          description: Transcript not found or empty.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Transcript not found or empty"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Failed to generate extra practice questions"
+
+
+  /assignment_feedback:
+    post:
+      summary: Execute Python code and provide AI-powered feedback
+      description: Safely executes Python code submitted by the user and returns AI-generated feedback on errors, improvements, and best practices.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  description: The ID of the user submitting the code.
+                code:
+                  type: string
+                  description: The Python code to be executed and reviewed.
+              required:
+                - user_id
+                - code
+      responses:
+        200:
+          description: Execution result and AI feedback.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    description: The ID of the user.
+                  execution_result:
+                    type: string
+                    description: The output of the executed Python code.
+                  error:
+                    type: object
+                    nullable: true
+                    description: Details of any execution errors.
+                    properties:
+                      type:
+                        type: string
+                        description: The type of error encountered.
+                      message:
+                        type: string
+                        description: The error message.
+                      traceback:
+                        type: string
+                        description: The full error traceback.
+                  feedback:
+                    type: string
+                    description: AI-generated feedback on the submitted code.
+        400:
+          description: Invalid input, such as missing required fields.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Code cannot be empty"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "An unexpected error occurred."
+
+  /api/handbook/query:
+    post:
+      summary: Query the handbook using AI
+      description: Retrieves relevant information from the institution's handbook and generates an AI-powered response based on the context.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: The user's question related to the handbook.
+                k:
+                  type: integer
+                  description: The number of top relevant documents to retrieve (default is 3).
+                  example: 3
+                score_threshold:
+                  type: number
+                  format: float
+                  description: The minimum similarity score threshold for document retrieval (default is 0.5).
+                  example: 0.5
+              required:
+                - query
+            examples:
+              user_input:
+                summary: Example input
+                value:
+                  query: "What are the system requirements to attend the programme?"
+                  k: 1
+                  score_threshold: 0.6
+          
+      responses:
+        200:
+          description: Successfully retrieved an AI-generated answer based on the handbook.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    description: The AI-generated response to the query.
+                  documents:
+                    type: array
+                    description: List of relevant documents retrieved from the handbook.
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                          description: Extracted text from the relevant document.
+                        source:
+                          type: string
+                          nullable: true
+                          description: The source file or reference of the document (if available).
+                        page_number:
+                          type: integer
+                          nullable: true
+                          description: The page number of the document (if available).
+        400:
+          description: Invalid request due to missing or incorrect parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating the issue with the request.
+                    example: "Query is required"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating an internal processing failure.
+                    example: "Error processing query: [detailed error message]"
