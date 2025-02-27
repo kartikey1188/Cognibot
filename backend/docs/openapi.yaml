@@ -1,16 +1,26 @@
 openapi: 3.0.3
 info:
-  title: Lecture Summary API
+  title: Team 11 - API Endpoints
   description: API to retrieve and summarize lecture transcripts.
   version: 1.0.0
 
 servers:
   - url: http://127.0.0.1:5000
+
+tags:
+  - name: User Story Related API Endpoints
+  - name: Non - User Story Related API Endpoints
+
   
 paths:
+
+#### User Story Related API Endpoints:
+
   /lecture_summary/{lecture_id}:
     get:
       summary: Retrieve a summary of a lecture transcript.
+      tags:
+        - User Story Related API Endpoints
       description: 
         Fetches the transcript of a lecture using its ID, summarizes it using Gemini AI, 
         and returns the key points in a structured format.
@@ -59,6 +69,8 @@ paths:
   /clarification:
     post:
       summary: Process a user's clarification query
+      tags:
+        - User Story Related API Endpoints
       description: Takes a user ID and a query as input, retrieves previous chat history from Firestore, processes the query using a LangChain-powered agent, and returns an AI-generated response.
       operationId: postClarification
       requestBody:
@@ -124,6 +136,8 @@ paths:
   /topic_search:
     post:
       summary: Perform a topic search in the vector database.
+      tags:
+        - User Story Related API Endpoints
       description: Accepts a query string, searches the Chroma vector database for relevant chunks using an embedding model, and returns metadata from the most relevant results.
       operationId: postTopicSearch
       requestBody:
@@ -189,6 +203,8 @@ paths:
   /lecture_review_report:
     post:
       summary: Generate AI-based lecture review reports
+      tags:
+        - User Story Related API Endpoints
       description: Retrieves student feedback for lectures in a course and generates an AI-powered analysis report.
       requestBody:
         required: true
@@ -249,6 +265,8 @@ paths:
   /api/grading/query:
     post:
       summary: Query the grading document database (User Story 2.9)
+      tags:
+        - User Story Related API Endpoints
       description: Accepts a user query, retrieves relevant information from a vector database, and generates a response using Gemini AI.
       operationId: postGradingDocQuery
       requestBody:
@@ -328,6 +346,8 @@ paths:
   /api/feedback-recommendations:
     post:
       summary: Provides feedback and study recommendations based on student answers (User Story 2.1)
+      tags:
+        - User Story Related API Endpoints
       description: |
         This endpoint analyzes a student's answers to practice/graded assignment questions,
         evaluates correctness, and provides personalized feedback and study recommendations.
@@ -440,6 +460,8 @@ paths:
   /extra_questions:
     post:
       summary: Generate extra practice questions for a lecture
+      tags:
+        - User Story Related API Endpoints
       description: Retrieves the transcript of a lecture and generates AI-powered multiple-choice questions (MCQs) to test students' understanding.
       requestBody:
         required: true
@@ -512,6 +534,8 @@ paths:
   /assignment_feedback:
     post:
       summary: Execute Python code and provide AI-powered feedback
+      tags:
+        - User Story Related API Endpoints
       description: Safely executes Python code submitted by the user and returns AI-generated feedback on errors, improvements, and best practices.
       requestBody:
         required: true
@@ -584,6 +608,8 @@ paths:
   /api/handbook/query:
     post:
       summary: Query the handbook using AI (User Story 2.8)
+      tags:
+        - User Story Related API Endpoints
       description: Retrieves relevant information from the institution's handbook and generates an AI-powered response based on the context.
       requestBody:
         required: true
@@ -664,3 +690,1100 @@ paths:
                     type: string
                     description: Error message indicating an internal processing failure.
                     example: "Error processing query: [detailed error message]"
+
+
+#### Non - User Story Related API Endpoints:
+
+# Student API Endpoints
+  /all_students:
+    get:
+      summary: Get all students
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieve a list of all students.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successfully retrieved all students.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Student"
+        401:
+          description: Unauthorized access.
+        403:
+          description: Forbidden access.
+
+  /student/{student_id}:
+    get:
+      summary: Get a student by ID
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieve details of a specific student.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Student details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+        404:
+          description: Student not found.
+    delete:
+      summary: Delete a student
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Deletes a specific student (Admin only).
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Student deleted successfully.
+        404:
+          description: Student not found.
+        500:
+          description: Failed to delete student.
+    put:
+      summary: Update student details
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Update a student's name or email (Student only).
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+      responses:
+        200:
+          description: Student updated successfully.
+        400:
+          description: Email already exists.
+        403:
+          description: Unauthorized access.
+        500:
+          description: Failed to update student.
+
+  /student/{student_id}/courses:
+    get:
+      summary: Get all courses of a student
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieve all courses that a student is enrolled in.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successfully retrieved courses.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Course"
+        404:
+          description: Student not found.
+
+  /student/{student_id}/course/{course_id}:
+    post:
+      summary: Enroll a student in a course
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Enroll a student into a course (Admin only).
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        201:
+          description: Student enrolled successfully.
+        400:
+          description: Student already enrolled.
+        404:
+          description: Student or Course not found.
+        500:
+          description: Failed to enroll student.
+
+    delete:
+      summary: Unenroll a student from a course
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Remove a student from a course (Admin only).
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Student unenrolled successfully.
+        404:
+          description: Enrollment record not found.
+        500:
+          description: Failed to unenroll student.
+
+  /student/{student_id}/course/{course_id}/grade:
+    get:
+      summary: Get student grade in a course
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieve the grade obtained by a student in a specific course.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successfully retrieved student grade.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  grade_obtained:
+                    type: string
+        404:
+          description: Enrollment record not found.
+
+
+  /lectures/{course_id}:
+    get:
+      summary: Get all lectures of a specific course
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieves all lectures for a given course.
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the course.
+      responses:
+        "200":
+          description: Successfully retrieved all lectures.
+        "404":
+          description: Course not found or no lectures available.
+
+  /lectures/{course_id}/{week}:
+    get:
+      summary: Get all lectures of a particular week of a particular course
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieves all lectures for a given week in a specific course.
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the course.
+        - name: week
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The week number.
+      responses:
+        "200":
+          description: Successfully retrieved lectures.
+        "404":
+          description: Course not found or no lectures for this week.
+
+  /get_lecture_by_number/{course_id}/{week}/{lecture_number}:
+    get:
+      summary: Get a specific lecture using course ID, week, and lecture number
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieves a specific lecture based on the course ID, week, and lecture number.
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the course.
+        - name: week
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The week number.
+        - name: lecture_number
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The lecture number.
+      responses:
+        "200":
+          description: Successfully retrieved the lecture.
+        "404":
+          description: Lecture not found.
+
+  /get_lecture_by_id/{lecture_id}:
+    get:
+      summary: Get a specific lecture using lecture ID
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieves a specific lecture based on its lecture ID.
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the lecture.
+      responses:
+        "200":
+          description: Successfully retrieved the lecture.
+        "404":
+          description: Lecture not found.
+  
+  /all_instructors:
+    get:
+      summary: Get all instructors
+      tags:
+        - Non - User Story Related API Endpoints
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: List of all instructors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Instructor"
+
+  /instructor/{instructor_id}:
+    get:
+      summary: Get an individual instructor
+      tags:
+        - Non - User Story Related API Endpoints
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: instructor_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Instructor details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Instructor"
+        404:
+          description: Instructor not found
+
+    put:
+      summary: Update an instructor's details
+      tags:
+        - Non - User Story Related API Endpoints
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: instructor_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                description:
+                  type: string
+      responses:
+        200:
+          description: Instructor details updated successfully
+        400:
+          description: User with this email already exists
+        403:
+          description: Unauthorized or Instructor not found
+        500:
+          description: Failed to update instructor
+
+    delete:
+      summary: Delete an instructor
+      tags:
+        - Non - User Story Related API Endpoints
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: instructor_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Instructor deleted successfully
+        404:
+          description: Instructor not found
+        500:
+          description: Failed to delete instructor
+
+  /instructor/{instructor_id}/courses:
+    get:
+      summary: Get all courses assigned to an instructor
+      tags:
+        - Non - User Story Related API Endpoints
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: instructor_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: List of courses assigned to the instructor
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Course"
+        404:
+          description: Instructor not found
+
+  /instructor/{instructor_id}/course/{course_id}:
+    post:
+      summary: Assign an instructor to a course
+      tags:
+        - Non - User Story Related API Endpoints
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: instructor_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        201:
+          description: Instructor assigned to course successfully
+        400:
+          description: Instructor is already assigned to this course
+        404:
+          description: Instructor or Course not found
+        500:
+          description: Could not assign instructor to course
+
+    delete:
+      summary: Remove an instructor from a course
+      tags:
+        - Non - User Story Related API Endpoints
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: instructor_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Instructor removed from course successfully
+        404:
+          description: Assignment record not found
+        500:
+          description: Could not remove instructor from course
+
+  
+  /all_courses:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Get all courses
+      description: Retrieves a list of all available courses.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: List of courses retrieved successfully
+
+  /course/{course_id}:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Get an individual course
+      description: Retrieves details of a specific course by its ID.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          description: ID of the course
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Course details retrieved successfully
+        404:
+          description: Course not found
+
+    put:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Update an individual course
+      description: Updates the details of a specific course.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          description: ID of the course
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Course updated successfully
+        400:
+          description: Course with this name or code already exists
+        404:
+          description: Course not found
+        500:
+          description: Failed to update course
+
+    delete:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Delete an individual course
+      description: Deletes a specific course by its ID.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          description: ID of the course
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Course deleted successfully
+        404:
+          description: Course not found
+        500:
+          description: Failed to delete course
+
+  /course:
+    post:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Create a new course
+      description: Creates a new course with the provided details.
+      security:
+        - BearerAuth: []
+      responses:
+        201:
+          description: Course created successfully
+        400:
+          description: Course with this name or code already exists
+        500:
+          description: Failed to create course
+
+  /course/{course_id}/students:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Get all students in a course
+      description: Retrieves a list of students enrolled in a specific course.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          description: ID of the course
+          schema:
+            type: integer
+      responses:
+        200:
+          description: List of students retrieved successfully
+        404:
+          description: Course not found
+
+  /course/{course_id}/instructors:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Get all instructors in a course
+      description: Retrieves a list of instructors assigned to a specific course.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          description: ID of the course
+          schema:
+            type: integer
+      responses:
+        200:
+          description: List of instructors retrieved successfully
+        404:
+          description: Course not found
+
+  /lecture/{lecture_id}:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Get an individual lecture
+      description: Retrieves details of a specific lecture by its ID.
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          description: ID of the lecture
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Lecture details retrieved successfully
+        404:
+          description: Lecture not found
+
+    put:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Update an individual lecture
+      description: Updates the details of a specific lecture.
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          description: ID of the lecture
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Lecture updated successfully
+        400:
+          description: Lecture with this link already exists or duplicate week/lecture_number
+        404:
+          description: Lecture not found
+        500:
+          description: Failed to update lecture
+
+    delete:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Delete an individual lecture
+      description: Deletes a specific lecture by its ID.
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          description: ID of the lecture
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Lecture deleted successfully
+        404:
+          description: Lecture not found
+        500:
+          description: Failed to delete lecture
+
+  /lecture:
+    post:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Create a new lecture
+      description: Creates a new lecture and assigns it to a course.
+      responses:
+        201:
+          description: Lecture created successfully
+        400:
+          description: Lecture with this link or duplicate week/lecture_number already exists
+        404:
+          description: Course not found
+        500:
+          description: Failed to create lecture
+
+  
+  /submit_feedback:
+    post:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Submit feedback for a lecture
+      description: Allows students to submit feedback for a specific lecture, including a rating and a textual review.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - lecture_id
+                - rating
+                - feedback
+              properties:
+                lecture_id:
+                  type: integer
+                  description: ID of the lecture being reviewed
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                  description: Rating between 1 and 5
+                feedback:
+                  type: string
+                  description: Textual feedback about the lecture
+      responses:
+        201:
+          description: Feedback submitted successfully
+        400:
+          description: Invalid input data
+        404:
+          description: Lecture not found
+        500:
+          description: Failed to submit feedback
+
+
+  
+  /admin:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Admin-only access
+      description: Allows access only to users with the 'admin' role.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Admin access granted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Hello, admin"
+        403:
+          description: Access forbidden (insufficient permissions)
+        401:
+          description: Unauthorized (invalid or missing token)
+
+  
+
+
+  /api/questions:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Get all questions
+      description: Retrieves a list of questions from the system.
+      responses:
+        200:
+          description: List of questions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  questions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Unique ID of the question
+                        text:
+                          type: string
+                          description: The question text
+                        options:
+                          type: array
+                          items:
+                            type: string
+                          description: List of possible answer options
+  
+  /register:
+    post:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: User Registration
+      description: Allows users to register as students, instructors, or admins.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - name
+                - password
+                - confirm_password
+                - role
+              properties:
+                email:
+                  type: string
+                  description: User's email address
+                name:
+                  type: string
+                  description: User's full name
+                password:
+                  type: string
+                  format: password
+                  description: User's password
+                confirm_password:
+                  type: string
+                  format: password
+                  description: Password confirmation
+                role:
+                  type: string
+                  enum: [student, instructor, admin]
+                  description: Role of the user
+                description:
+                  type: string
+                  description: Optional description for instructors
+      responses:
+        201:
+          description: User registered successfully
+        400:
+          description: Invalid input (email exists, passwords do not match, or invalid role)
+
+  /login:
+    post:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: User Login
+      description: Authenticates the user and returns an access token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  description: User's email address
+                password:
+                  type: string
+                  format: password
+                  description: User's password
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: User's full name
+                  email:
+                    type: string
+                    description: User's email
+                  id:
+                    type: integer
+                    description: User ID
+                  role:
+                    type: string
+                    description: User role
+                  message:
+                    type: string
+                    example: Login successful
+        401:
+          description: Invalid email or password
+
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Check User Login Status
+      description: Checks if the user is logged in.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: User is logged in
+        401:
+          description: Unauthorized (invalid or missing token)
+
+  /logout:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: User Logout
+      description: Logs out the user and removes authentication cookies.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Logout successful
+
+  /user:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Get User Information
+      description: Retrieves details about the currently logged-in user.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: User details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: User's full name
+                  email:
+                    type: string
+                    description: User's email
+                  id:
+                    type: integer
+                    description: User ID
+                  role:
+                    type: string
+                    description: User role
+                  message:
+                    type: string
+                    example: Login successful
+        401:
+          description: Unauthorized (invalid or missing token)
+
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        role:
+          type: string
+          enum: ["student", "instructor", "admin"]
+        name:
+          type: string
+        email:
+          type: string
+        password_hash:
+          type: string
+
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+        user:
+          $ref: "#/components/schemas/User"
+        courses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Course"
+
+    Instructor:
+      type: object
+      properties:
+        id:
+          type: integer
+        user:
+          $ref: "#/components/schemas/User"
+        courses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Course"
+        description:
+          type: string
+          default: "No description provided."
+
+    Course:
+      type: object
+      properties:
+        course_id:
+          type: integer
+        course_name:
+          type: string
+        course_code:
+          type: string
+        description:
+          type: string
+        level:
+          type: string
+          enum: ["Foundational", "Diploma", "Degree"]
+        type:
+          type: string
+          enum: ["Data Science", "Programming", "Miscellaneous"]
+        image:
+          type: string
+        instructors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Instructor"
+        students:
+          type: array
+          items:
+            $ref: "#/components/schemas/Student"
+        lectures:
+          type: array
+          items:
+            $ref: "#/components/schemas/Lecture"
+
+    Lecture:
+      type: object
+      properties:
+        lecture_id:
+          type: integer
+        course_id:
+          type: integer
+        lecture_number:
+          type: integer
+        week:
+          type: integer
+        title:
+          type: string
+        lecture_link:
+          type: string
+        reviews:
+          type: array
+          items:
+            $ref: "#/components/schemas/LectureReview"
+
+    LectureReview:
+      type: object
+      properties:
+        review_id:
+          type: integer
+        lecture_id:
+          type: integer
+        user_id:
+          type: integer
+        rating:
+          type: integer
+        feedback:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    InstructorCourses:
+      type: object
+      properties:
+        instructor_id:
+          type: integer
+        course_id:
+          type: integer
+
+    StudentCourses:
+      type: object
+      properties:
+        student_id:
+          type: integer
+        course_id:
+          type: integer
+        grade_obtained:
+          type: string
+          enum: ["NA", "S", "A", "B", "C", "D", "E"]
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
+
+  
