@@ -14,7 +14,7 @@ slt = GetSingleLectureTranscript()
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
 
 class ExtraPracticeQuestions(Resource):
-    def get(self):
+    def post(self):
         try:
             parser = reqparse.RequestParser()
             parser.add_argument("lecture_id", type=int, required=True, help="A lecture ID is required")
