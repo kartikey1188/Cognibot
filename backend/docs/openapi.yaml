@@ -248,7 +248,7 @@ paths:
   
   /api/grading/query:
     post:
-      summary: Query the grading document database.
+      summary: Query the grading document database (User Story 2.9)
       description: Accepts a user query, retrieves relevant information from a vector database, and generates a response using Gemini AI.
       operationId: postGradingDocQuery
       requestBody:
@@ -327,7 +327,7 @@ paths:
   
   /api/feedback-recommendations:
     post:
-      summary: Provides feedback and study recommendations based on student answers.
+      summary: Provides feedback and study recommendations based on student answers (User Story 2.1)
       description: |
         This endpoint analyzes a student's answers to practice/graded assignment questions,
         evaluates correctness, and provides personalized feedback and study recommendations.
@@ -583,7 +583,7 @@ paths:
 
   /api/handbook/query:
     post:
-      summary: Query the handbook using AI
+      summary: Query the handbook using AI (User Story 2.8)
       description: Retrieves relevant information from the institution's handbook and generates an AI-powered response based on the context.
       requestBody:
         required: true
