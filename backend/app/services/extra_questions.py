@@ -1,5 +1,6 @@
 import os
 import traceback
+import json
 from . import *
 from app.apis import *
 from flask import current_app as app
@@ -65,7 +66,17 @@ class ExtraPracticeQuestions(Resource):
             response = llm.invoke(prompt)
             response_text = response.content.strip()
 
-            return {"lecture_id": lecture_id, "questions": response_text}, 200
+            # Clean the response: Remove Markdown code block syntax if present
+            if response_text.startswith("```json"):
+                response_text = response_text[7:-3].strip()  # Remove ```json and trailing ```
+            
+            # Parse the cleaned JSON
+            try:
+                questions_json = json.loads(response_text)
+            except json.JSONDecodeError:
+                return {"Error": "Invalid JSON format received from AI"}, 500
+
+            return questions_json, 200
 
         except Exception as e:
             app.logger.error(f"Exception occurred: {e}")
