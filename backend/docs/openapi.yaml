@@ -622,10 +622,13 @@ paths:
 
   /assignment_feedback:
     post:
-      summary: Execute Python code and provide AI-powered feedback
+      summary: "[User Story 2.7] Execute Python code and provide AI-powered feedback"
+      description: >
+        Safely executes Python code submitted by the user and returns AI-generated feedback on errors, 
+        suggested improvements, and best practices, without giving the exact correct solution.
+        This implements User Story 2.7: Programming Assignment Feedback.
       tags:
         - User Story Related API Endpoints
-      description: Safely executes Python code submitted by the user and returns AI-generated feedback on errors, improvements, and best practices.
       requestBody:
         required: true
         content:
@@ -642,57 +645,20 @@ paths:
               required:
                 - user_id
                 - code
+            example:
+              user_id: 1
+              code: |
+                def add(a, b)
+                    return a + b
+
+                print(add(5, 3))
       responses:
-        200:
+        "200":
           description: Execution result and AI feedback.
           content:
             application/json:
               schema:
                 type: object
-                properties:
-                  user_id:
-                    type: integer
-                    description: The ID of the user.
-                  execution_result:
-                    type: string
-                    description: The output of the executed Python code.
-                  error:
-                    type: object
-                    nullable: true
-                    description: Details of any execution errors.
-                    properties:
-                      type:
-                        type: string
-                        description: The type of error encountered.
-                      message:
-                        type: string
-                        description: The error message.
-                      traceback:
-                        type: string
-                        description: The full error traceback.
-                  feedback:
-                    type: string
-                    description: AI-generated feedback on the submitted code.
-        400:
-          description: Invalid input, such as missing required fields.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Code cannot be empty"
-        500:
-          description: Internal server error.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "An unexpected error occurred."
 
   /api/handbook/query:
     post:
