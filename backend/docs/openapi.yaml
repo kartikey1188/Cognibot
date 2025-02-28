@@ -1552,51 +1552,82 @@ paths:
   
   /submit_feedback:
     post:
+      summary: "Submit lecture feedback"
+      description: >
+        Allows a student to submit feedback for a lecture, including a numerical rating (1 to 5)
+        and a textual review. The submitted feedback is stored in the database for further analysis.
       tags:
-        - Non - User Story Related API Endpoints
-      summary: Submit feedback for a lecture
-      description: Allows students to submit feedback for a specific lecture, including a rating and a textual review.
-      security:
-        - BearerAuth: []
+        - "Non - User Story Related API Endpoints"
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              properties:
+                lecture_id:
+                  type: integer
+                  description: "The unique ID of the lecture for which feedback is being submitted."
+                rating:
+                  type: integer
+                  description: "The student's rating for the lecture (1 to 5)."
+                feedback:
+                  type: string
+                  description: "The feedback text provided by the student."
               required:
                 - lecture_id
                 - rating
                 - feedback
-              properties:
-                lecture_id:
-                  type: integer
-                  description: ID of the lecture being reviewed
-                rating:
-                  type: integer
-                  minimum: 1
-                  maximum: 5
-                  description: Rating between 1 and 5
-                feedback:
-                  type: string
-                  description: Textual feedback about the lecture
-            examples:
-              user_input:
-                summary: Example input
-                value:
-                  lecture_id: 22
-                  rating: 5
-                  feedback: "Nice lecture"
+            example:
+              lecture_id: 2
+              rating: 4
+              feedback: "The lecture was well-structured but could use clearer examples."
       responses:
-        201:
-          description: Feedback submitted successfully
-        400:
-          description: Invalid input data
-        404:
-          description: Lecture not found
-        500:
-          description: Failed to submit feedback
-
+        "201":
+          description: "Feedback submitted successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: "Confirmation message that feedback was submitted."
+              example:
+                message: "Feedback submitted successfully"
+        "404":
+          description: "Lecture not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Lecture not found"
+        "400":
+          description: "Bad request due to missing or invalid fields."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Invalid input: rating must be between 1 and 5"
+        "500":
+          description: "Internal server error."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Failed to submit feedback"
 
   /api/questions:
     get:
