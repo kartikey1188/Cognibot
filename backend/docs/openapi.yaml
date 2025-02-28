@@ -199,6 +199,60 @@ paths:
                   Error:
                     type: string
                     example: "Failed to conclude topic search"
+  
+  /faq_suggestions/{lecture_id}:
+    get:
+      summary: Retrieve FAQ suggestions based on student doubts for a lecture.
+      tags:
+        - User Story Related API Endpoints
+      description: >
+        Fetches a list of doubts/questions asked by students for a specific lecture from Firestore,
+        generates comprehensive suggestions using Gemini AI for addressing the frequently asked questions,
+        and returns the suggestions in a structured format.
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          description: The ID of the lecture for which FAQ suggestions are to be retrieved.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successfully retrieved the FAQ suggestions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lecture_id:
+                    type: integer
+                    description: The ID of the lecture.
+                  faq_suggestions:
+                    type: string
+                    description: AI-generated suggestions for addressing student doubts/questions.
+              example:
+                lecture_id: 101
+                faq_suggestions: "To address the frequently asked questions regarding recursion, it's helpful to provide step-by-step explanations with visual aids."
+        "404":
+          description: No doubts or questions were found for the lecture.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "No questions/doubts asked by the students for this lecture."
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Failed to retrieve suggestions on frequently asked questions."
 
   /lecture_review_report:
     post:
@@ -701,8 +755,7 @@ paths:
       tags:
         - Non - User Story Related API Endpoints
       description: Retrieve a list of all students.
-      security:
-        - BearerAuth: []
+
       responses:
         200:
           description: Successfully retrieved all students.
@@ -723,8 +776,7 @@ paths:
       tags:
         - Non - User Story Related API Endpoints
       description: Retrieve details of a specific student.
-      security:
-        - BearerAuth: []
+     
       parameters:
         - name: student_id
           in: path
@@ -744,9 +796,8 @@ paths:
       summary: Delete a student
       tags:
         - Non - User Story Related API Endpoints
-      description: Deletes a specific student (Admin only).
-      security:
-        - BearerAuth: []
+      description: Deletes a specific student.
+      
       parameters:
         - name: student_id
           in: path
@@ -764,9 +815,8 @@ paths:
       summary: Update student details
       tags:
         - Non - User Story Related API Endpoints
-      description: Update a student's name or email (Student only).
-      security:
-        - BearerAuth: []
+      description: Update a student's name or email.
+    
       parameters:
         - name: student_id
           in: path
@@ -800,8 +850,7 @@ paths:
       tags:
         - Non - User Story Related API Endpoints
       description: Retrieve all courses that a student is enrolled in.
-      security:
-        - BearerAuth: []
+      
       parameters:
         - name: student_id
           in: path
@@ -826,8 +875,7 @@ paths:
       tags:
         - Non - User Story Related API Endpoints
       description: Enroll a student into a course (Admin only).
-      security:
-        - BearerAuth: []
+     
       parameters:
         - name: student_id
           in: path
@@ -854,8 +902,7 @@ paths:
       tags:
         - Non - User Story Related API Endpoints
       description: Remove a student from a course (Admin only).
-      security:
-        - BearerAuth: []
+      
       parameters:
         - name: student_id
           in: path
@@ -881,8 +928,7 @@ paths:
       tags:
         - Non - User Story Related API Endpoints
       description: Retrieve the grade obtained by a student in a specific course.
-      security:
-        - BearerAuth: []
+      
       parameters:
         - name: student_id
           in: path
@@ -907,6 +953,67 @@ paths:
         404:
           description: Enrollment record not found.
 
+  /receive_doubt:
+    post:
+      summary: Receive a doubt/question from a student.
+      tags:
+        - Non - User Story Related API Endpoints
+      description: >
+        Accepts a doubt or question from a student for a specific lecture and stores it in Firestore.
+      operationId: postReceiveDoubt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - lecture_id
+                - doubt
+              properties:
+                lecture_id:
+                  type: integer
+                  description: The ID of the lecture for which the doubt is being asked.
+                doubt:
+                  type: string
+                  description: The student's doubt or question.
+            examples:
+              user_input:
+                summary: Example input
+                value:
+                  lecture_id: 22
+                  doubt: "Can the if-else statements be used inside of loops?"
+      responses:
+        "201":
+          description: Successfully received the doubt/question.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                    example: "Question/Doubt received successfully"
+        "400":
+          description: Bad request, usually due to missing parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Lecture ID and doubt are required."
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Failed to receive question/doubt."
 
   /lectures/{course_id}:
     get:
@@ -1007,8 +1114,7 @@ paths:
       summary: Get all instructors
       tags:
         - Non - User Story Related API Endpoints
-      security:
-        - BearerAuth: []
+     
       responses:
         200:
           description: List of all instructors
@@ -1024,8 +1130,7 @@ paths:
       summary: Get an individual instructor
       tags:
         - Non - User Story Related API Endpoints
-      security:
-        - BearerAuth: []
+      
       parameters:
         - name: instructor_id
           in: path
@@ -1046,8 +1151,7 @@ paths:
       summary: Update an instructor's details
       tags:
         - Non - User Story Related API Endpoints
-      security:
-        - BearerAuth: []
+     
       parameters:
         - name: instructor_id
           in: path
@@ -1081,8 +1185,7 @@ paths:
       summary: Delete an instructor
       tags:
         - Non - User Story Related API Endpoints
-      security:
-        - BearerAuth: []
+      
       parameters:
         - name: instructor_id
           in: path
@@ -1102,8 +1205,7 @@ paths:
       summary: Get all courses assigned to an instructor
       tags:
         - Non - User Story Related API Endpoints
-      security:
-        - BearerAuth: []
+      
       parameters:
         - name: instructor_id
           in: path
@@ -1127,8 +1229,7 @@ paths:
       summary: Assign an instructor to a course
       tags:
         - Non - User Story Related API Endpoints
-      security:
-        - BearerAuth: []
+     
       parameters:
         - name: instructor_id
           in: path
@@ -1154,8 +1255,7 @@ paths:
       summary: Remove an instructor from a course
       tags:
         - Non - User Story Related API Endpoints
-      security:
-        - BearerAuth: []
+      
       parameters:
         - name: instructor_id
           in: path
@@ -1182,8 +1282,7 @@ paths:
         - Non - User Story Related API Endpoints
       summary: Get all courses
       description: Retrieves a list of all available courses.
-      security:
-        - BearerAuth: []
+      
       responses:
         200:
           description: List of courses retrieved successfully
@@ -1194,8 +1293,7 @@ paths:
         - Non - User Story Related API Endpoints
       summary: Get an individual course
       description: Retrieves details of a specific course by its ID.
-      security:
-        - BearerAuth: []
+      
       parameters:
         - name: course_id
           in: path
@@ -1208,52 +1306,52 @@ paths:
           description: Course details retrieved successfully
         404:
           description: Course not found
-
-    put:
-      tags:
-        - Non - User Story Related API Endpoints
-      summary: Update an individual course
-      description: Updates the details of a specific course.
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: course_id
-          in: path
-          required: true
-          description: ID of the course
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Course updated successfully
-        400:
-          description: Course with this name or code already exists
-        404:
-          description: Course not found
-        500:
-          description: Failed to update course
-
+    
     delete:
       tags:
         - Non - User Story Related API Endpoints
-      summary: Delete an individual course
-      description: Deletes a specific course by its ID.
-      security:
-        - BearerAuth: []
+      summary: Delete a course
+      description: Deletes a course by its ID.
       parameters:
         - name: course_id
           in: path
           required: true
-          description: ID of the course
+          description: The ID of the course to be deleted.
           schema:
             type: integer
+            example: 1
       responses:
         200:
           description: Course deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Course deleted successfully"
         404:
           description: Course not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Course not found"
         500:
           description: Failed to delete course
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to delete course due to server error."
+
 
   /course:
     post:
@@ -1261,15 +1359,77 @@ paths:
         - Non - User Story Related API Endpoints
       summary: Create a new course
       description: Creates a new course with the provided details.
-      security:
-        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - course_name
+                - course_code
+                - level
+                - type
+              properties:
+                course_name:
+                  type: string
+                  description: The name of the course.
+                  example: "Java"
+                course_code:
+                  type: string
+                  description: The unique code for the course.
+                  example: "BSCCS3009"
+                level:
+                  type: string
+                  enum: ["Foundational", "Diploma", "Degree"]
+                  description: The academic level of the course.
+                type:
+                  type: string
+                  enum: ["Data Science", "Programming", "Miscellaneous"]
+                  description: The category of the course.
+                description:
+                  type: string
+                  description: A short description of the course. Defaults to "No description".
+                  example: "An introduction to Java."
+                image:
+                  type: string
+                  description: URL or path to an image representing the course.
+                  example: "https://example.com/course-image.png"
       responses:
         201:
           description: Course created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Course created successfully"
+                  course_id:
+                    type: integer
+                    example: 1
         400:
           description: Course with this name or code already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Course with this code already exists"
         500:
           description: Failed to create course
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to create course due to server error."
+
 
   /course/{course_id}/students:
     get:
@@ -1277,8 +1437,7 @@ paths:
         - Non - User Story Related API Endpoints
       summary: Get all students in a course
       description: Retrieves a list of students enrolled in a specific course.
-      security:
-        - BearerAuth: []
+      
       parameters:
         - name: course_id
           in: path
@@ -1298,8 +1457,7 @@ paths:
         - Non - User Story Related API Endpoints
       summary: Get all instructors in a course
       description: Retrieves a list of instructors assigned to a specific course.
-      security:
-        - BearerAuth: []
+      
       parameters:
         - name: course_id
           in: path
@@ -1421,6 +1579,13 @@ paths:
                 feedback:
                   type: string
                   description: Textual feedback about the lecture
+            examples:
+              user_input:
+                summary: Example input
+                value:
+                  lecture_id: 22
+                  rating: 5
+                  feedback: "Nice lecture"
       responses:
         201:
           description: Feedback submitted successfully
@@ -1430,34 +1595,6 @@ paths:
           description: Lecture not found
         500:
           description: Failed to submit feedback
-
-
-  
-  /admin:
-    get:
-      tags:
-        - Non - User Story Related API Endpoints
-      summary: Admin-only access
-      description: Allows access only to users with the 'admin' role.
-      security:
-        - BearerAuth: []
-      responses:
-        200:
-          description: Admin access granted
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Hello, admin"
-        403:
-          description: Access forbidden (insufficient permissions)
-        401:
-          description: Unauthorized (invalid or missing token)
-
-  
 
 
   /api/questions:
@@ -1642,6 +1779,31 @@ paths:
                   message:
                     type: string
                     example: Login successful
+        401:
+          description: Unauthorized (invalid or missing token)
+
+  
+  /admin:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Admin-only access
+      description: Allows access only to users with the 'admin' role.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Admin access granted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Hello, admin"
+        403:
+          description: Access forbidden (insufficient permissions)
         401:
           description: Unauthorized (invalid or missing token)
 

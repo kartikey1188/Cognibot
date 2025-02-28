@@ -6,7 +6,7 @@ from flask import request
 from flask_restful import Resource, marshal_with
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.apis.auth import role_required
-from app.models.user import Student, Role, Course, StudentCourses
+from app.models.user import Student, Role, Course, StudentCourses, User
 from app.apis.all_marshals import marshal_student, marshal_course, marshal_student_course
 
 """
@@ -24,8 +24,6 @@ THIS FILE HAS THE FOLLOWING API ENDPOINTS:
 
 class GetAllStudents(Resource): # get all students
     @marshal_with(marshal_student)
-    @jwt_required()
-    @role_required(Role.ADMIN.value, Role.INSTRUCTOR.value, Role.STUDENT.value)
     def get(self):
         students = Student.query.all()
         print(Role.STUDENT)
@@ -33,15 +31,12 @@ class GetAllStudents(Resource): # get all students
 
 class StudentResource(Resource): 
     @marshal_with(marshal_student)
-    @jwt_required()
     def get(self, student_id): # get an individual student 
         student = Student.query.filter(Student.id==student_id).first()
         if not student:
             return {"message": "Student not found"}, 404
         return student, 200
 
-    @jwt_required()
-    @role_required(Role.ADMIN.value)
     def delete(self, student_id): # delete an individual student
         student = Student.query.filter(Student.id==student_id).first()
         if not student:
@@ -56,19 +51,17 @@ class StudentResource(Resource):
             app.logger.error(traceback.format_exc())
             return {"Error" : "Failed to delete student"}, 500
 
-    @jwt_required()
-    @role_required(Role.STUDENT.value)
     def put(self, student_id): # update an individual student 
         student = Student.query.filter_by(id=student_id).first()
-        current_user_id = get_jwt_identity()
-        if not student or student.user.id != current_user_id:
+        #current_user_id = get_jwt_identity()
+        if not student:
             return {"message": "Unauthorized or Student not found"}, 403
         
         data = request.get_json()
         if "name" in data and data["name"].strip():
             student.user.name = data["name"].strip()
         if "email" in data and data["email"].strip():
-            check = Student.query.filter(Student.user.email==data['email']).first()
+            check = Student.query.join(User).filter(User.email == data["email"]).first()
             if check:
                 return {"Error":"User with this email already exists"}, 400
             else:
@@ -84,16 +77,12 @@ class StudentResource(Resource):
 
 class StudentCoursesResource(Resource):
     @marshal_with(marshal_course)
-    @jwt_required()
-    @role_required(Role.STUDENT.value, Role.ADMIN.value)
     def get(self, student_id): # get all courses of a particular student 
         student = Student.query.filter(Student.id==student_id).first()
         if not student:
             return {"message": "Student not found"}, 404
         return student.courses, 200
 
-    @jwt_required()
-    @role_required(Role.ADMIN.value)
     def post(self, student_id, course_id): # enroll a particular student into a particular course
         student = Student.query.filter(Student.id==student_id).first()
         course = Course.query.filter(Course.course_id==course_id).first()
@@ -115,8 +104,6 @@ class StudentCoursesResource(Resource):
             app.logger.error(traceback.format_exc())
             return {"Error" : "Could not enroll this student in course"}, 500
         
-    @jwt_required()
-    @role_required(Role.ADMIN.value)
     def delete(self, student_id, course_id): # unenroll a particular student from a particular course
         student_course = StudentCourses.query.filter(StudentCourses.student_id==student_id, StudentCourses.course_id==course_id).first()
         if not student_course:
@@ -132,7 +119,6 @@ class StudentCoursesResource(Resource):
             return {"Error" : "Could not unenroll this student from course"}, 500
 
 class StudentGradeInACourse(Resource):
-    @jwt_required()
     def get(self, student_id, course_id): # the grade obtained by a particular student in a particular course
         student_course = StudentCourses.query.filter(StudentCourses.student_id==student_id, StudentCourses.course_id==course_id).first()
         if not student_course:
