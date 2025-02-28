@@ -99,8 +99,7 @@ class GradingDocQuery(Resource):
             for doc in relevant_docs:
                 doc_info = {
                     'content': doc.page_content,
-                    'source': doc.metadata.get('source', None),
-                    'score': doc.metadata.get('score', None)
+                    'source': doc.metadata.get('source', None)
                 }
                 documents.append(doc_info)
 
