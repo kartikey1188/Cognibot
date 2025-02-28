@@ -10,7 +10,6 @@ from app.apis import api
 # Initialize AI Model (Gemini)
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
 
-
 class CodeReview(Resource):
     def post(self):
         """Executes Python code safely and provides AI-powered feedback."""
@@ -30,8 +29,7 @@ class CodeReview(Resource):
         stderr_capture = io.StringIO()
 
         result = {
-            "success": True,
-            "output": "",
+            "execution_result": "",
             "error": None
         }
 
@@ -41,16 +39,13 @@ class CodeReview(Resource):
                 exec_globals = {"__builtins__": {"print": print, "len": len, "range": range}}
                 exec(submitted_code, exec_globals, {})
 
-            result["output"] = stdout_capture.getvalue()
+            result["execution_result"] = stdout_capture.getvalue().strip()
 
         except Exception as e:
-            result["success"] = False
             result["error"] = {
                 "type": type(e).__name__,
-                "message": str(e),
-                "traceback": traceback.format_exc()
+                "message": str(e)
             }
-            result["output"] = stdout_capture.getvalue()
 
         # AI Feedback Prompt
         prompt = f"""
@@ -61,7 +56,7 @@ class CodeReview(Resource):
         ```
 
         **Execution Result:**
-        {result["output"] if result["success"] else result["error"]}
+        {result["execution_result"] if not result["error"] else "Execution Failed"}
 
         **Task:**
         - Identify **syntax, indentation, and runtime errors**.
@@ -77,15 +72,9 @@ class CodeReview(Resource):
 
         # Get AI-generated feedback
         ai_response = llm.invoke(prompt)
-        feedback = ai_response.content.strip()
+        result["feedback"] = ai_response.content.strip()
 
-        return {
-            "user_id": user_id,
-            "execution_result": result["output"] if result["success"] else "Execution Failed",
-            "error": result["error"],
-            "feedback": feedback
-        }, 200
-
+        return result, 200
 
 # Register API route
 api.add_resource(CodeReview, "/assignment_feedback")
