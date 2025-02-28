@@ -256,10 +256,13 @@ paths:
 
   /lecture_review_report:
     post:
-      summary: Generate AI-based lecture review reports
+      summary: "[User Story 3.1] Generate AI-based lecture review reports"
+      description: >
+        Retrieves student feedback for lectures in a course and generates an AI-powered analysis report,
+        highlighting common issues, suggested improvements, and overall student satisfaction. 
+        This implements User Story 3.1: Lecture Review Reports.
       tags:
         - User Story Related API Endpoints
-      description: Retrieves student feedback for lectures in a course and generates an AI-powered analysis report.
       requestBody:
         required: true
         content:
@@ -276,8 +279,11 @@ paths:
                   description: The specific week number to filter reviews (optional).
               required:
                 - course_id
+            example:
+              course_id: 1
+              week: 1
       responses:
-        200:
+        "200":
           description: Successfully generated an AI-powered lecture review report.
           content:
             application/json:
@@ -293,8 +299,15 @@ paths:
                     description: The week number for the report (if provided).
                   lecture_review_report:
                     type: string
-                    description: AI-generated analysis of student feedback, including common issues, suggested improvements, and overall student satisfaction.
-        404:
+                    description: AI-generated analysis including common issues, suggested improvements, and overall student satisfaction.
+              example:
+                course_id: 1
+                week: 2
+                lecture_review_report: |
+                  Common Issues: Many students reported unclear examples and fast pacing.
+                  Suggested Improvements: Include more real-world examples and slow down explanations.
+                  Overall Student Satisfaction: Average rating is 3.8/5.
+        "404":
           description: No reviews found for the specified course or week.
           content:
             application/json:
@@ -304,7 +317,7 @@ paths:
                   message:
                     type: string
                     example: "No reviews found for the selected course/week"
-        500:
+        "500":
           description: Internal server error.
           content:
             application/json:
