@@ -1200,82 +1200,6 @@ paths:
         500:
           description: Failed to delete instructor
 
-  /instructor/{instructor_id}/courses:
-    get:
-      summary: Get all courses assigned to an instructor
-      tags:
-        - Non - User Story Related API Endpoints
-      
-      parameters:
-        - name: instructor_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        200:
-          description: List of courses assigned to the instructor
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Course"
-        404:
-          description: Instructor not found
-
-  /instructor/{instructor_id}/course/{course_id}:
-    post:
-      summary: Assign an instructor to a course
-      tags:
-        - Non - User Story Related API Endpoints
-     
-      parameters:
-        - name: instructor_id
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: course_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        201:
-          description: Instructor assigned to course successfully
-        400:
-          description: Instructor is already assigned to this course
-        404:
-          description: Instructor or Course not found
-        500:
-          description: Could not assign instructor to course
-
-    delete:
-      summary: Remove an instructor from a course
-      tags:
-        - Non - User Story Related API Endpoints
-      
-      parameters:
-        - name: instructor_id
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: course_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Instructor removed from course successfully
-        404:
-          description: Assignment record not found
-        500:
-          description: Could not remove instructor from course
-
-  
   /all_courses:
     get:
       tags:
@@ -1502,6 +1426,26 @@ paths:
           description: ID of the lecture
           schema:
             type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                week:
+                  type: integer
+                lecture_number:
+                  type: integer
+                title:
+                  type: string
+                lecture_link:
+                  type: string
+              example:
+                week: 3
+                lecture_number: 2
+                title: "Updated Lecture Title"
+                lecture_link: "https://example.com/new-lecture-link"
       responses:
         200:
           description: Lecture updated successfully
@@ -1538,6 +1482,35 @@ paths:
         - Non - User Story Related API Endpoints
       summary: Create a new lecture
       description: Creates a new lecture and assigns it to a course.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course_id:
+                  type: integer
+                week:
+                  type: integer
+                lecture_number:
+                  type: integer
+                title:
+                  type: string
+                lecture_link:
+                  type: string
+              required:
+                - course_id
+                - week
+                - lecture_number
+                - title
+                - lecture_link
+              example:
+                course_id: 1
+                week: 2
+                lecture_number: 1
+                title: "Introduction to AI"
+                lecture_link: "https://example.com/lecture-link"
       responses:
         201:
           description: Lecture created successfully
