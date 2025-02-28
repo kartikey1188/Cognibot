@@ -526,10 +526,12 @@ paths:
   
   /extra_questions:
     post:
-      summary: Generate extra practice questions for a lecture
+      summary: "[User Story 2.6] Generate extra practice questions for a lecture"
+      description: >
+        Retrieves the transcript of a lecture and generates AI-powered multiple-choice questions (MCQs) 
+        to test students' understanding. This implements User Story 2.6: Extra Practice Questions.
       tags:
         - User Story Related API Endpoints
-      description: Retrieves the transcript of a lecture and generates AI-powered multiple-choice questions (MCQs) to test students' understanding.
       requestBody:
         required: true
         content:
@@ -542,8 +544,10 @@ paths:
                   description: The ID of the lecture for which extra questions are generated.
               required:
                 - lecture_id
+            example:
+              lecture_id: 2
       responses:
-        200:
+        "200":
           description: Successfully generated extra practice questions.
           content:
             application/json:
@@ -555,6 +559,7 @@ paths:
                     description: The lecture ID for which the questions were generated.
                   questions:
                     type: array
+                    description: A list of generated multiple-choice questions.
                     items:
                       type: object
                       properties:
@@ -563,6 +568,7 @@ paths:
                           description: The multiple-choice question.
                         options:
                           type: object
+                          description: The four answer choices.
                           properties:
                             A:
                               type: string
@@ -572,28 +578,44 @@ paths:
                               type: string
                             D:
                               type: string
-                          description: The four answer choices.
                         correct_answer:
                           type: string
                           description: The correct answer option (A, B, C, or D).
-        404:
+              example:
+                lecture_id: 5
+                questions:
+                  - question: "What is the primary purpose of a for-loop in Python?"
+                    options:
+                      A: "To define a function"
+                      B: "To iterate over a sequence"
+                      C: "To declare a variable"
+                      D: "To create a new list"
+                    correct_answer: "B"
+                  - question: "Which data structure follows the Last In, First Out (LIFO) principle?"
+                    options:
+                      A: "Queue"
+                      B: "Stack"
+                      C: "Array"
+                      D: "Dictionary"
+                    correct_answer: "B"
+        "404":
           description: Transcript not found or empty.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  Error:
+                  error:
                     type: string
                     example: "Transcript not found or empty"
-        500:
+        "500":
           description: Internal server error.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  Error:
+                  error:
                     type: string
                     example: "Failed to generate extra practice questions"
 
