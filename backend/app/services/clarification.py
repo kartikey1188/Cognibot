@@ -24,7 +24,7 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, H
 load_dotenv()
 
 # Firestore setup
-PROJECT_ID = "first-project-8101c"
+PROJECT_ID = os.getenv("PROJECT_ID")
 COLLECTION_NAME = "doubts_clarification_history"
 
 client = firestore.Client(project=PROJECT_ID)

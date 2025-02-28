@@ -13,7 +13,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 load_dotenv()
 
 # Firestore setup
-PROJECT_ID = "first-project-8101c"
+PROJECT_ID = os.getenv("PROJECT_ID")
 COLLECTION_NAME = "faq"
 
 client = firestore.Client(project=PROJECT_ID)

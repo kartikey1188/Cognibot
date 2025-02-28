@@ -3,7 +3,7 @@ import traceback
 from app.models import db
 from flask import current_app as app
 from flask import request
-from flask_restful import Resource, marshal_with
+from flask_restful import Resource, marshal_with, marshal
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.apis.auth import role_required
 from app.models.user import Student, Role, Course, StudentCourses, User
@@ -30,12 +30,11 @@ class GetAllStudents(Resource): # get all students
         return students, 200
 
 class StudentResource(Resource): 
-    @marshal_with(marshal_student)
     def get(self, student_id): # get an individual student 
         student = Student.query.filter(Student.id==student_id).first()
         if not student:
             return {"message": "Student not found"}, 404
-        return student, 200
+        return marshal(student, marshal_student), 200
 
     def delete(self, student_id): # delete an individual student
         student = Student.query.filter(Student.id==student_id).first()

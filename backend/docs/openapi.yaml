@@ -923,37 +923,6 @@ paths:
         500:
           description: Failed to unenroll student.
 
-  /student/{student_id}/course/{course_id}/grade:
-    get:
-      summary: Get student grade in a course
-      tags:
-        - Non - User Story Related API Endpoints
-      description: Retrieve the grade obtained by a student in a specific course.
-      
-      parameters:
-        - name: student_id
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: course_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Successfully retrieved student grade.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  grade_obtained:
-                    type: string
-        404:
-          description: Enrollment record not found.
-
   /receive_doubt:
     post:
       summary: Receive a doubt/question from a student.
@@ -1152,7 +1121,8 @@ paths:
       summary: Update an instructor's details
       tags:
         - Non - User Story Related API Endpoints
-     
+      security:
+        - BearerAuth: []
       parameters:
         - name: instructor_id
           in: path
@@ -1376,26 +1346,6 @@ paths:
         404:
           description: Course not found
 
-  /course/{course_id}/instructors:
-    get:
-      tags:
-        - Non - User Story Related API Endpoints
-      summary: Get all instructors in a course
-      description: Retrieves a list of instructors assigned to a specific course.
-      
-      parameters:
-        - name: course_id
-          in: path
-          required: true
-          description: ID of the course
-          schema:
-            type: integer
-      responses:
-        200:
-          description: List of instructors retrieved successfully
-        404:
-          description: Course not found
-
   /lecture/{lecture_id}:
     get:
       tags:
@@ -1531,6 +1481,8 @@ paths:
         and a textual review. The submitted feedback is stored in the database for further analysis.
       tags:
         - "Non - User Story Related API Endpoints"
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:

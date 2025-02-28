@@ -4,7 +4,7 @@ from app.models import db
 from app.models.user import Course, Lecture
 from flask_restful import reqparse
 from flask import current_app as app
-from flask_restful import Resource, marshal_with
+from flask_restful import Resource, marshal_with, marshal
 from flask_jwt_extended import jwt_required
 from app.apis.all_marshals import marshal_lecture
 
@@ -31,7 +31,6 @@ class GetLecturesByWeek(Resource): # Get all lectures of a particular week of a 
         return lectures, 200
     
 class GetSpecificLectureByNumber(Resource): # Get a specific lecture using the course_id, week and lecture_number
-    @marshal_with(marshal_lecture)
     def get(self, course_id, week, lecture_number):
         course = Course.query.filter(Course.course_id == course_id).first()
         if not course:
@@ -46,10 +45,9 @@ class GetSpecificLectureByNumber(Resource): # Get a specific lecture using the c
         if not lecture:
             return {"message": "Lecture not found"}, 404
 
-        return lecture, 200
+        return marshal(lecture,marshal_lecture), 200
     
 class GetSpecificLectureByID(Resource): # Get a specific lecture using lecture_id
-    @marshal_with(marshal_lecture)
     def get(self, lecture_id):
 
         lecture = Lecture.query.filter(Lecture.lecture_id == lecture_id).first()
@@ -57,7 +55,7 @@ class GetSpecificLectureByID(Resource): # Get a specific lecture using lecture_i
         if not lecture:
             return {"message": "Lecture not found"}, 404
 
-        return lecture, 200
+        return marshal(lecture,marshal_lecture), 200
     
     
 class GetAllLectures(Resource):  # Get all lectures of a specific course
