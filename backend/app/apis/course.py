@@ -29,22 +29,18 @@ THIS FILE HAS THE FOLLOWING API ENDPOINTS:
 
 class GetAllCourses(Resource):  # Get all courses
     @marshal_with(marshal_course)
-    @jwt_required()
     def get(self):
         courses = Course.query.all()
         return courses, 200
 
 class CourseResource(Resource):
     @marshal_with(marshal_course)
-    @jwt_required()
     def get(self, course_id):  # Get an individual course
         course = Course.query.filter(Course.course_id == course_id).first()
         if not course:
             return {"message": "Course not found"}, 404
         return course, 200
 
-    @jwt_required()
-    @role_required(Role.ADMIN.value, Role.STUDENT.value)
     def post(self):  # Create a new course
         parser = reqparse.RequestParser()
         parser.add_argument("course_name", type=str, required=True, help="Course name is required")
@@ -78,8 +74,6 @@ class CourseResource(Resource):
             app.logger.error(traceback.format_exc())
             return {"Error": "Failed to create course"}, 500
 
-    @jwt_required()
-    @role_required(Role.ADMIN.value, Role.STUDENT.value)
     def put(self, course_id):  # Update an individual course
         parser = reqparse.RequestParser()
         parser.add_argument("course_name", type=str, required=False)
@@ -124,8 +118,6 @@ class CourseResource(Resource):
             app.logger.error(traceback.format_exc())
             return {"Error": "Failed to update course"}, 500
 
-    @jwt_required()
-    @role_required(Role.ADMIN.value, Role.STUDENT.value)
     def delete(self, course_id):  # Delete an individual course
         course = Course.query.filter(Course.course_id == course_id).first()
         if not course:
@@ -142,8 +134,6 @@ class CourseResource(Resource):
 
 class CourseStudentsResource(Resource):  # Get all students in a course
     @marshal_with(marshal_student)
-    @jwt_required()
-    @role_required(Role.ADMIN.value, Role.INSTRUCTOR.value)
     def get(self, course_id):
         course = Course.query.filter(Course.course_id == course_id).first()
         if not course:
@@ -152,7 +142,6 @@ class CourseStudentsResource(Resource):  # Get all students in a course
 
 class CourseInstructorsResource(Resource):  # Get all instructors in a course
     @marshal_with(marshal_instructor)
-    @jwt_required()
     def get(self, course_id):
         course = Course.query.filter(Course.course_id == course_id).first()
         if not course:

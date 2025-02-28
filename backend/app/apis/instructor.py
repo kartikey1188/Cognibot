@@ -23,22 +23,18 @@ THIS FILE HAS THE FOLLOWING API ENDPOINTS:
 
 class GetAllInstructors(Resource):  # Get all instructors
     @marshal_with(marshal_instructor)
-    @jwt_required()
     def get(self):
         instructors = Instructor.query.all()
         return instructors, 200
 
 class InstructorResource(Resource):
     @marshal_with(marshal_instructor)
-    @jwt_required()
     def get(self, instructor_id):  # Get an individual instructor
         instructor = Instructor.query.filter(Instructor.id == instructor_id).first()
         if not instructor:
             return {"message": "Instructor not found"}, 404
         return instructor, 200
 
-    @jwt_required()
-    @role_required(Role.ADMIN.value)
     def delete(self, instructor_id):  # Delete an individual instructor
         instructor = Instructor.query.filter(Instructor.id == instructor_id).first()
         if not instructor:
@@ -53,8 +49,6 @@ class InstructorResource(Resource):
             app.logger.error(traceback.format_exc())
             return {"Error": "Failed to delete instructor"}, 500
 
-    @jwt_required()
-    @role_required(Role.INSTRUCTOR.value)
     def put(self, instructor_id):  # Update an individual instructor
         instructor = Instructor.query.filter(Instructor.id==instructor_id).first()
         current_user_id = get_jwt_identity()
@@ -84,15 +78,12 @@ class InstructorResource(Resource):
 
 class InstructorCoursesResource(Resource):
     @marshal_with(marshal_course)
-    @jwt_required()
     def get(self, instructor_id):  # Get all courses taught by a particular instructor
         instructor = Instructor.query.filter(Instructor.id == instructor_id).first()
         if not instructor:
             return {"message": "Instructor not found"}, 404
         return instructor.courses, 200
 
-    @jwt_required()
-    @role_required(Role.ADMIN.value)
     def post(self, instructor_id, course_id):  # Assign an instructor to a course
         instructor = Instructor.query.filter(Instructor.id == instructor_id).first()
         course = Course.query.filter(Course.course_id == course_id).first()
@@ -114,8 +105,6 @@ class InstructorCoursesResource(Resource):
             app.logger.error(traceback.format_exc())
             return {"Error": "Could not assign instructor to course"}, 500
 
-    @jwt_required()
-    @role_required(Role.ADMIN.value)
     def delete(self, instructor_id, course_id):  # Remove an instructor from a course
         instructor_course = InstructorCourses.query.filter(InstructorCourses.instructor_id == instructor_id, InstructorCourses.course_id == course_id).first()
         if not instructor_course:
