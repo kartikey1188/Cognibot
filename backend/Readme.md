@@ -23,7 +23,7 @@ Ensure you have the following installed on your machine:
 1. **Create a Firebase Project:**
 
    - Go to [Firebase Console](https://console.firebase.google.com/u/0/).
-   - Click **"Add project"** and follow the on-screen instructions to create a new project.
+   - Click **"Create a project"** and follow the on-screen instructions to create a new project.
 
 2. **Obtain the Project ID:**
 
