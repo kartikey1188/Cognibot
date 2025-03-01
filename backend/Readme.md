@@ -45,7 +45,7 @@ Ensure you have the following installed on your machine:
 1. **Select Your Project:**
 
    - Visit [Google Cloud Console](https://console.cloud.google.com/).
-   - Select the project you created in Firebase using the Project ID.
+   - Select the project you created in Firebase using the Project ID.(Beside Google Cloud Icon)
 
 2. **Enable the Gemini API:**
 
