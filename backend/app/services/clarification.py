@@ -10,7 +10,7 @@ from flask_restful import Api, Resource, reqparse
 from google.cloud import firestore
 from flask_jwt_extended import get_jwt_identity
 from app.services.custom_templates import *
-
+from app.services import *
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.vectorstores import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -25,10 +25,6 @@ load_dotenv()
 
 # Firestore setup
 #PROJECT_ID = os.getenv("PROJECT_ID")
-
-# Firestore setup (Automatic Authentication using Service Account JSON)
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service-account.json"
-client = firestore.Client()
 
 COLLECTION_NAME = "doubts_clarification_history"
 

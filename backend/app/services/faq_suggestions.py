@@ -4,19 +4,13 @@ from flask import current_app as app
 import traceback
 from dotenv import load_dotenv
 from flask_restful import Resource, reqparse
-
+from app.services import *
 from google.cloud import firestore
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage
 
 # Load environment variables
 load_dotenv()
-
-# Firestore setup
-#PROJECT_ID = os.getenv("PROJECT_ID")
-
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service-account.json"
-client = firestore.Client()
 
 COLLECTION_NAME = "faq"
 
