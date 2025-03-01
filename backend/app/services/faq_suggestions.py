@@ -13,10 +13,12 @@ from langchain_core.messages import HumanMessage, SystemMessage
 load_dotenv()
 
 # Firestore setup
-PROJECT_ID = os.getenv("PROJECT_ID")
-COLLECTION_NAME = "faq"
+#PROJECT_ID = os.getenv("PROJECT_ID")
 
-client = firestore.Client(project=PROJECT_ID)
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service-account.json"
+client = firestore.Client()
+
+COLLECTION_NAME = "faq"
 
 # LLM setup (Gemini)
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")

@@ -24,10 +24,13 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, H
 load_dotenv()
 
 # Firestore setup
-PROJECT_ID = os.getenv("PROJECT_ID")
-COLLECTION_NAME = "doubts_clarification_history"
+#PROJECT_ID = os.getenv("PROJECT_ID")
 
-client = firestore.Client(project=PROJECT_ID)
+# Firestore setup (Automatic Authentication using Service Account JSON)
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service-account.json"
+client = firestore.Client()
+
+COLLECTION_NAME = "doubts_clarification_history"
 
 # Vector DB setup
 current_dir = os.path.dirname(os.path.abspath(__file__))
