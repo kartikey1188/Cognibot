@@ -5,7 +5,7 @@ from app.models.user import *
 from flask_restful import reqparse
 from flask import current_app as app
 from flask import request
-from flask_restful import Resource, marshal_with
+from flask_restful import Resource, marshal_with, marshal
 from flask_jwt_extended import jwt_required
 from app.apis.auth import role_required
 from app.models.user import Course, Instructor, Student, Role, StudentCourses, InstructorCourses
@@ -34,12 +34,11 @@ class GetAllCourses(Resource):  # Get all courses
         return courses, 200
 
 class CourseResource(Resource):
-    @marshal_with(marshal_course)
     def get(self, course_id):  # Get an individual course
         course = Course.query.filter(Course.course_id == course_id).first()
         if not course:
             return {"message": "Course not found"}, 404
-        return course, 200
+        return marshal(course, marshal_course), 200
 
     def post(self):  # Create a new course
         parser = reqparse.RequestParser()
@@ -149,12 +148,11 @@ class CourseInstructorsResource(Resource):  # Get all instructors in a course
         return course.instructors, 200
     
 class LectureResource(Resource):
-    @marshal_with(marshal_lecture)
     def get(self, lecture_id):  # Get an individual lecture
         lecture = Lecture.query.filter(Lecture.lecture_id == lecture_id).first()
         if not lecture:
             return {"message": "Lecture not found"}, 404
-        return lecture, 200
+        return marshal(lecture, marshal_lecture), 200
 
     def post(self):  # Create a new lecture
         parser = reqparse.RequestParser()

@@ -10,9 +10,9 @@ from flask_restful import Api, Resource, reqparse
 from google.cloud import firestore
 from flask_jwt_extended import get_jwt_identity
 from app.services.custom_templates import *
-
+from app.services import *
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_firestore import FirestoreChatMessageHistory
 from langchain_core.prompts import PromptTemplate
@@ -24,10 +24,9 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, H
 load_dotenv()
 
 # Firestore setup
-PROJECT_ID = "first-project-8101c"
-COLLECTION_NAME = "doubts_clarification_history"
+#PROJECT_ID = os.getenv("PROJECT_ID")
 
-client = firestore.Client(project=PROJECT_ID)
+COLLECTION_NAME = "doubts_clarification_history"
 
 # Vector DB setup
 current_dir = os.path.dirname(os.path.abspath(__file__))

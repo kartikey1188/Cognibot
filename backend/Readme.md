@@ -10,11 +10,11 @@ This README provides detailed, step-by-step instructions for setting up and runn
 
 Ensure you have the following installed on your machine:
 
-- **Python 3.8+**
+- **Python Version equal to or less than 3.11 (If you have Python version greater than 3.11, delete it before installing Python Version equal to or less than 3.11)**
 - **Git**
 - **Google Cloud SDK**
 - A terminal (Command Prompt, PowerShell, or Git Bash)
-- An internet connection to access Firebase and Google Cloud Console
+- An internet connection to access Firestore and Google Cloud Console
 
 ---
 
@@ -32,7 +32,7 @@ Ensure you have the following installed on your machine:
 
 3. **Update Environment Variables:**
 
-   - Open the `.env` file in the project root.
+   - Create and open a `.env` file in the root folder.
    - Set your Firebase Project ID:
      ```
      PROJECT_ID=your_firebase_project_id

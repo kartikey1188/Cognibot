@@ -31,3 +31,7 @@ Thumbs.db
 
 # transcripts 
 # backend/data/transcripts
+
+backend/service-account.json
+
+backend/data/transcripts

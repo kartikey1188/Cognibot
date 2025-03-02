@@ -1,0 +1,23 @@
+FROM python:3.11-slim
+
+# Set the working directory
+WORKDIR /backend
+
+# Install dependencies in a virtual environment for better isolation
+COPY requirements.txt .
+RUN python -m venv venv \
+    && . venv/bin/activate \
+    && pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# Copy the application files
+COPY . .
+
+# Set the PYTHONPATH environment variable to include the backend directory
+ENV PYTHONPATH=/backend
+
+# Expose the port the Flask app runs on
+EXPOSE 5000
+
+# Use a virtual environment when running the application
+CMD ["sh", "-c", ". venv/bin/activate && python ../backend/run.py"]

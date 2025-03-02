@@ -3,7 +3,7 @@ import traceback
 from app.models import db
 from flask import current_app as app
 from flask import request
-from flask_restful import Resource, marshal_with
+from flask_restful import Resource, marshal_with, marshal
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.apis.auth import role_required
 from app.models.user import Instructor, Role, Course, InstructorCourses
@@ -28,12 +28,11 @@ class GetAllInstructors(Resource):  # Get all instructors
         return instructors, 200
 
 class InstructorResource(Resource):
-    @marshal_with(marshal_instructor)
     def get(self, instructor_id):  # Get an individual instructor
         instructor = Instructor.query.filter(Instructor.id == instructor_id).first()
         if not instructor:
             return {"message": "Instructor not found"}, 404
-        return instructor, 200
+        return marshal(instructor,marshal_instructor), 200
 
     def delete(self, instructor_id):  # Delete an individual instructor
         instructor = Instructor.query.filter(Instructor.id == instructor_id).first()
@@ -48,7 +47,8 @@ class InstructorResource(Resource):
             app.logger.error(f"Exception occurred: {e}")
             app.logger.error(traceback.format_exc())
             return {"Error": "Failed to delete instructor"}, 500
-
+        
+    @jwt_required()
     def put(self, instructor_id):  # Update an individual instructor
         instructor = Instructor.query.filter(Instructor.id==instructor_id).first()
         current_user_id = get_jwt_identity()

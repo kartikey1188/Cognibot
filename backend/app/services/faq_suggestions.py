@@ -4,7 +4,7 @@ from flask import current_app as app
 import traceback
 from dotenv import load_dotenv
 from flask_restful import Resource, reqparse
-
+from app.services import *
 from google.cloud import firestore
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -12,11 +12,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 # Load environment variables
 load_dotenv()
 
-# Firestore setup
-PROJECT_ID = "first-project-8101c"
 COLLECTION_NAME = "faq"
-
-client = firestore.Client(project=PROJECT_ID)
 
 # LLM setup (Gemini)
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
