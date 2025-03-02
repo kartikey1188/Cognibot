@@ -7,6 +7,7 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 import warnings
+from dotenv import load_dotenv
 
 # Suppress specific warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="langchain")
@@ -14,6 +15,8 @@ warnings.filterwarnings("ignore", category=UserWarning, module="langsmith")
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="langchain_community.vectorstores")
 
 app = create_app()
+
+load_dotenv()
 
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
@@ -48,4 +51,4 @@ if __name__ == "__main__":
 
         
     
-    app.run(debug=True, port = 5000)
+    app.run(host='0.0.0.0', debug=True, port = 5000)
