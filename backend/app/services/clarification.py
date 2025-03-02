@@ -12,7 +12,7 @@ from flask_jwt_extended import get_jwt_identity
 from app.services.custom_templates import *
 from app.services import *
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_firestore import FirestoreChatMessageHistory
 from langchain_core.prompts import PromptTemplate

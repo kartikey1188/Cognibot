@@ -1,0 +1,21 @@
+FROM python:3.11-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Install dependencies in a virtual environment for better isolation
+COPY requirements.txt .
+RUN python -m venv venv \
+    && . venv/bin/activate \
+    && pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# Copy only necessary application files first to leverage Docker caching
+COPY . .
+
+# Expose the port the Flask app runs on
+EXPOSE 5000
+
+# Use a virtual environment when running the application
+#CMD ["venv/bin/python", "run.py"]
+CMD ["sh", "-c", ". venv/bin/activate && python run.py"]
