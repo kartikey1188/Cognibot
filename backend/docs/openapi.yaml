@@ -305,10 +305,13 @@ paths:
   /lecture_review_report:
     post:
       summary: "[User Story 3.1] Generate AI-based lecture review reports"
-      description: >
-        Retrieves student feedback for lectures in a course and generates an AI-powered analysis report,
-        highlighting common issues, suggested improvements, and overall student satisfaction. 
-        This implements User Story 3.1: Lecture Review Reports.
+      description: |
+        **Corresponding User Story:** 3.1
+        
+        **What the endpoint does:** Retrieves student feedback for lectures in a course (optionally filtered by week) and generates an AI-powered analysis report.
+       
+        **How it does it:**  It queries the database to collect lecture reviews, formats the feedback, and then uses the Gemini AI model to analyze the reviews—returning insights on common issues, suggested improvements, and overall student satisfaction.
+
       tags:
         - User Story Related API Endpoints
       requestBody:
@@ -575,9 +578,12 @@ paths:
   /extra_questions:
     post:
       summary: "[User Story 2.6] Generate extra practice questions for a lecture"
-      description: >
-        Retrieves the transcript of a lecture and generates AI-powered multiple-choice questions (MCQs) 
-        to test students' understanding. This implements User Story 2.6: Extra Practice Questions.
+      description: |
+        **Corresponding User Story:** 2.6
+
+        **What the endpoint does:** Retrieves the transcript of a lecture and generates AI-powered multiple-choice questions (MCQs) to test students' understanding.
+       
+        **How it does it:** It fetches the transcript from the vector database, passes it to the Gemini AI model which processes the transcript to generate 5 unique MCQs (each with 4 answer options and the correct answer), and returns the questions in JSON format.
       tags:
         - User Story Related API Endpoints
       requestBody:
@@ -671,10 +677,13 @@ paths:
   /assignment_feedback:
     post:
       summary: "[User Story 2.7] Execute Python code and provide AI-powered feedback"
-      description: >
-        Safely executes Python code submitted by the user and returns AI-generated feedback on errors, 
-        suggested improvements, and best practices, without giving the exact correct solution.
-        This implements User Story 2.7: Programming Assignment Feedback.
+      description: |
+        **Corresponding User Story:** 2.7
+        
+        **What the endpoint does:** Safely executes Python code submitted by the user and returns AI-generated feedback on errors, suggested improvements, and best practices without providing the exact solution.
+        
+        **How it does it:** It executes the provided code in a restricted environment to capture output and errors, then passes the execution result to the Gemini AI model, which returns feedback for the student.
+
       tags:
         - User Story Related API Endpoints
       requestBody:
