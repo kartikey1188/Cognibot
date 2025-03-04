@@ -23,9 +23,13 @@ Ensure you have the following installed on your machine:
    - Go to [Firebase Console](https://console.firebase.google.com/u/0/).
    - Click **"Create a project"** and follow the on-screen instructions to create a new project.
 
-2. **Create and Use `service-account.json`:**
+2. **Create a Firestore Database:**
 
-   - In the Firebase Console, go to **Project Settings → Service accounts**.
+   - Go to **Project Overview → Cloud Firestore → Create Database** and follow the on-screen instructions to create a new Firestore Database (Test Mode).
+
+3. **Create and Use `service-account.json`:**
+
+   - In the Firebase Console, go to **Project Settings (the Settings Icon next to Project Overview) → Service accounts**.
    - Under 'Admin SDK configuration snippet' select Python, click on **"Generate new private key"** and a file will be downloaded automatically. Rename the downloaded file to `service-account.json`.
    - Place the `service-account.json` file in the root of the project directory.
 
