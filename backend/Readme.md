@@ -1,6 +1,6 @@
 # Team 11 - Software Engineering Project Backend
 
-This repository contains the backend API for the Software Engineering Project. The backend is built using Flask and integrates with Firebase and Google Cloud’s Gemini API (Generative Language API) to implement various user stories.
+This repository contains the backend API for the Team 11 Software Engineering Project. The backend is built using Flask and integrates with Firebase and Google Cloud’s Gemini API (Generative Language API) to implement various user stories.
 
 This README provides detailed, step-by-step instructions for setting up and running the backend, as well as configuring Firebase and the Gemini API.
 
@@ -10,33 +10,24 @@ This README provides detailed, step-by-step instructions for setting up and runn
 
 Ensure you have the following installed on your machine:
 
-- **Python Version equal to or less than 3.11 (If you have Python version greater than 3.11, delete it before installing Python Version equal to or less than 3.11)**
-- **Git**
-- **Google Cloud SDK**
+- **Python Version 3.11 or lower (If you have a Python version higher than 3.11, uninstall it before installing Python 3.11 or lower)**
 - A terminal (Command Prompt, PowerShell, or Git Bash)
 - An internet connection to access Firestore and Google Cloud Console
 
 ---
 
-## Firebase Setup
+## Firebase Firestore Setup
 
 1. **Create a Firebase Project:**
 
    - Go to [Firebase Console](https://console.firebase.google.com/u/0/).
    - Click **"Create a project"** and follow the on-screen instructions to create a new project.
 
-2. **Obtain the Project ID:**
+2. **Create and Use `service-account.json`:**
 
-   - Once your project is created, click the **gear icon (Project Settings)**.
-   - Under the **"General"** tab, locate your **Project ID**.
-
-3. **Update Environment Variables:**
-
-   - Create and open a `.env` file in the root folder.
-   - Set your Firebase Project ID:
-     ```
-     PROJECT_ID=your_firebase_project_id
-     ```
+   - In the Firebase Console, go to **Project Settings → Service accounts**.
+   - Under 'Admin SDK configuration snippet' select Python, click on **"Generate new private key"** and a file will be downloaded automatically. Rename the downloaded file to `service-account.json`.
+   - Place the `service-account.json` file in the root of the project directory.
 
 ---
 
@@ -45,7 +36,7 @@ Ensure you have the following installed on your machine:
 1. **Select Your Project:**
 
    - Visit [Google Cloud Console](https://console.cloud.google.com/).
-   - Select the project you created in Firebase using the Project ID.(Beside Google Cloud Icon)
+   - Select the project you created in Firebase using the Project ID (located beside the Google Cloud icon).
 
 2. **Enable the Gemini API:**
 
@@ -58,21 +49,9 @@ Ensure you have the following installed on your machine:
    - Click **"Create Credentials"** and select **"API Key"**.
    - Copy the created API key.
 
-4. **Install and Authenticate Google Cloud SDK:**
+4. **Update Environment Variables:**
 
-   - Install Google Cloud SDK from [here](https://cloud.google.com/sdk/docs/install).
-   - Open a terminal and authenticate your account:
-     ```bash
-     gcloud auth login
-     ```
-   - Set the active project:
-     ```bash
-     gcloud config set project your_firebase_project_id
-     ```
-
-5. **Update Environment Variables:**
-
-   - In your `.env` file, add:
+   - In the `.env` file present in the root directory, add:
      ```
      GOOGLE_API_KEY=your_google_gemini_api_key
      ```
@@ -122,5 +101,6 @@ Ensure you have the following installed on your machine:
 
 ## Testing the Endpoints
 
-You can test the endpoints using Thunder Client or Postman or using OpenAPI Swagger UI.
+Test the API Endpoints using openapi.yaml
 
+Or you can test the endpoints using Thunder Client or Postman or using OpenAPI Swagger UI.

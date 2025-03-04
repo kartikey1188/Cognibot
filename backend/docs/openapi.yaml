@@ -1,7 +1,37 @@
 openapi: 3.0.3
 info:
-  title: Team 11 - API Endpoints
-  description: API to retrieve and summarize lecture transcripts.
+  title: Team 11 - API Endpoints (Milestone 4)
+  description: |
+    **Team Members:**
+
+    1) Abhinav Velaga (23f1002933)
+
+    2) Aditya Shanker Srivastava (23f1001545)
+
+    3) Gaurav Ginodia (22f3002972)
+
+    4) Kartikey Singh (21f1001440)
+
+    5) Rashmi Tindwani (22f3001311)
+
+    6) Shubham Sharma (21f2000041)
+
+    7) Surya Vikram (22f3002751)
+
+    **General Description:** 
+    
+    1) This OpenAPI specification document outlines the API endpoints for the Team 11 Software Engineering Project.
+
+    2) The API endpoints are categorized into two sections: User Story Related API Endpoints and Non - User Story Related API Endpoints.
+
+    3) The User Story Related API Endpoints are directly related to the user stories defined in Milestone 1.
+
+    4) All User Stories except User Story 3.3 and 4.1 correspond to specific API endpoints in this document, since 3.3 and 4.1 are being asserted in other ways.
+
+    5) The Non - User Story Related API Endpoints are additional endpoints that are not directly related to the user stories but are essential for the functionality of the system.
+
+    6) Authentication has been removed from most of the API endpoints at this stage in development to ensure simplicity for this document and ease in testing the endpoints.
+    
   version: 1.0.0
 
 servers:
@@ -18,11 +48,15 @@ paths:
 
   /lecture_summary/{lecture_id}:
     get:
-      summary: Retrieve a summary of a lecture transcript.
+      summary: Generate a summary for any lecture in the database. [User Story 2.2]
       tags:
         - User Story Related API Endpoints
-      description: 
-        Fetches the transcript of a lecture using its ID, summarizes it using Gemini AI, 
+      description: |
+        **Corresponding User Story:** 2.2
+
+        **What the endpoint does:** Generates the summary of a lecture using its lecture ID
+
+        **How it does it:** Fetches the transcript of a lecture using its ID (by feeding its url to YoutubeTranscriptApi), summarizes it using Gemini AI, 
         and returns the key points in a structured format.
       parameters:
         - name: lecture_id
@@ -68,10 +102,15 @@ paths:
                     example: Failed to retrieve transcript
   /clarification:
     post:
-      summary: Process a user's clarification query
+      summary: Clarifies a user's question/doubt regarding concepts and ideas related to the syllabus. [User Story 2.3 & 2.4]
       tags:
-        - User Story Related API Endpoints
-      description: Takes a user ID and a query as input, retrieves previous chat history from Firestore, processes the query using a LangChain-powered agent, and returns an AI-generated response.
+        - User Story Related API Endpoints 
+      description: |
+       **Corresponding User Story:** 2.3 & 2.4
+
+       **What the endpoint does:** Answers a conceptual question related to the syllabus while maintaining context, remembering chat history and upholding academic integrity.
+
+       **How it does it:** Takes a user ID and a query as input, retrieves previous chat history (of the particular user) from Firestore, processes the query using a LangChain-powered agent, and returns an AI-generated response with the help of relevant chunks retrieved from the Chroma Vector Database.
       operationId: postClarification
       requestBody:
         required: true
@@ -94,7 +133,7 @@ paths:
                 summary: Example input
                 value:
                   user_id: 125
-                  quest: "What are variables and literals?"
+                  quest: "What are variables and literals in Python?"
       responses:
         "200":
           description: Successfully retrieved the AI response.
@@ -135,10 +174,15 @@ paths:
   
   /topic_search:
     post:
-      summary: Perform a topic search in the vector database.
+      summary: Perform a topic search in the vector database. [User Story 2.5]
       tags:
         - User Story Related API Endpoints
-      description: Accepts a query string, searches the Chroma vector database for relevant chunks using an embedding model, and returns metadata from the most relevant results.
+      description: |
+        **Corresponding User Story:** 2.5
+
+        **What the endpoint does:** Searches for and locates where specifically a particular topic was taught in the syllabus, and returns the top 3 results.
+
+        **How it does it:** Accepts a query string, searches the Chroma vector database for relevant chunks using an embedding model, and returns metadata from the most relevant results.
       operationId: postTopicSearch
       requestBody:
         required: true
@@ -156,7 +200,7 @@ paths:
               user_input:
                 summary: Example input
                 value:
-                  quest: "Explain machine learning models"
+                  quest: "If-else statement"
       responses:
         "200":
           description: Successfully retrieved relevant topic information.
@@ -202,13 +246,17 @@ paths:
   
   /faq_suggestions/{lecture_id}:
     get:
-      summary: Retrieve FAQ suggestions based on student doubts for a lecture.
+      summary: Retrieve suggestions on how to address the FAQs for a particular lecture. [User Story 3.2]
       tags:
         - User Story Related API Endpoints
-      description: >
-        Fetches a list of doubts/questions asked by students for a specific lecture from Firestore,
-        generates comprehensive suggestions using Gemini AI for addressing the frequently asked questions,
-        and returns the suggestions in a structured format.
+      description: |
+        **Corresponding User Story:** 3.2
+
+        **What the endpoint does:** Generates comprehensive suggestions using Gemini AI for instructors to address the frequently asked questions for a specific lecture.
+
+        **How it does it:** Fetches a list of doubts/questions asked by students for a specific lecture from Firestore, generates comprehensive suggestions using Gemini AI for addressing the frequently asked questions, and returns the suggestions in a structured format.
+
+        **Important Note:** If you are using this API endpoint for the first time, ensure that some doubts/questions asked by students for the lecture with the ID you input are stored in the Firestore Database - which you can do using the /receive_doubt endpoint mentioned in the 'Non - User Story Related API Endpoints' section.
       parameters:
         - name: lecture_id
           in: path

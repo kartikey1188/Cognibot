@@ -35,3 +35,7 @@ Thumbs.db
 backend/service-account.json
 
 backend/data/transcripts
+
+backend/dockerfile
+
+backend/.dockerignore
