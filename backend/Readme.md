@@ -31,25 +31,30 @@ Ensure you have the following installed on your machine:
 
 ---
 
-## Google Cloud Gemini API Setup
+## Google Cloud Gemini API & Google Cloud Firestore API Setup
 
 1. **Select Your Project:**
 
    - Visit [Google Cloud Console](https://console.cloud.google.com/).
    - Select the project you created in Firebase using the Project ID (located beside the Google Cloud icon).
 
-2. **Enable the Gemini API:**
+2. **Enable the Google Cloud Firestore API:**
+
+   - Go to the [Google Cloud Firestore API page](https://console.cloud.google.com/apis/api/firestore.googleapis.com/).
+   - Click **"Enable"**.
+
+3. **Enable the Gemini API:**
 
    - Go to the [Gemini API page](https://console.cloud.google.com/apis/api/generativelanguage.googleapis.com/).
    - Click **"Enable"**.
 
-3. **Create Credentials:**
+4. **Create Credentials:**
 
    - Go to **APIs & Services → Credentials**.
    - Click **"Create Credentials"** and select **"API Key"**.
    - Copy the created API key.
 
-4. **Update Environment Variables:**
+5. **Update Environment Variables:**
 
    - In the `.env` file present in the root directory, add:
      ```
