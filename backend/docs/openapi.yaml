@@ -133,7 +133,7 @@ paths:
                 summary: Example input
                 value:
                   user_id: 125
-                  quest: "What are variables and literals?"
+                  quest: "What are variables and literals in Python?"
       responses:
         "200":
           description: Successfully retrieved the AI response.
@@ -200,7 +200,7 @@ paths:
               user_input:
                 summary: Example input
                 value:
-                  quest: "Explain machine learning models"
+                  quest: "If-else statement"
       responses:
         "200":
           description: Successfully retrieved relevant topic information.
@@ -255,6 +255,8 @@ paths:
         **What the endpoint does:** Generates comprehensive suggestions using Gemini AI for instructors to address the frequently asked questions for a specific lecture.
 
         **How it does it:** Fetches a list of doubts/questions asked by students for a specific lecture from Firestore, generates comprehensive suggestions using Gemini AI for addressing the frequently asked questions, and returns the suggestions in a structured format.
+
+        **Important Note:** If you are using this API endpoint for the first time, ensure that some doubts/questions asked by students for the lecture with the ID you input are stored in the Firestore Database - which you can do using the /receive_doubt endpoint mentioned in the 'Non - User Story Related API Endpoints' section.
       parameters:
         - name: lecture_id
           in: path
