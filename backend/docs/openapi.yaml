@@ -19,6 +19,10 @@ info:
     7) Surya Vikram (22f3002751)
 
     **General Description:** 
+
+        -- THE CODE FOR USER STORY RELATED API ENDPOINTS IS IN backend/app/services
+
+        -- THE CODE FOR NON - USER STORY RELATED API ENDPOINTS IS IN backend/app/apis
     
     1) This OpenAPI specification document outlines the API endpoints for the Team 11 Software Engineering Project.
 
