@@ -42,15 +42,15 @@ class FeedBackAndRecommendations(Resource):
 
             # Input validation
             if not isinstance(user_answers, list):
-                return jsonify({"error": "submitted_answers must be a list"}), 400
+                return {"error": "submitted_answers must be a list"}, 400
 
             for ans in user_answers:
                 if not isinstance(ans, dict) or 'qid' not in ans or 'answer' not in ans:
-                    return jsonify({"error": "Each answer must be a dictionary with 'qid' and 'answer'"}), 400
+                    return {"error": "Each answer must be a dictionary with 'qid' and 'answer'"}, 400
                 if not isinstance(ans['qid'], int):
-                    return jsonify({"error": "qid must be an integer"}), 400
+                    return {"error": "qid must be an integer"}, 400
                 if not isinstance(ans['answer'], list) or not all(isinstance(a, str) for a in ans['answer']):
-                    return jsonify({"error": "answer must be a list of strings"}), 400
+                    return {"error": "answer must be a list of strings"}, 400
 
             question_map = {q["qid"]: q for q in data["questions"]}
 
@@ -177,10 +177,10 @@ class FeedBackAndRecommendations(Resource):
                 "comprehensive_feedback": comprehensive_feedback
             }
 
-            return jsonify(feedback_response)
+            return feedback_response
         
         except Exception as e:
-            return jsonify({"error": f"Internal server error: {str(e)}"}), 500
+            return {"error": f"Internal server error: {str(e)}"}, 500
 
 
 api.add_resource(FeedBackAndRecommendations, '/api/feedback-recommendations')
