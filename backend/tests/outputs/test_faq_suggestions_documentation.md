@@ -24,6 +24,32 @@ JSON: {"lecture_id": 22, "faq_suggestions": "The students' questions reveal a si
 
 **Result:** `Success`
 
+**Pytest Code:**
+```python
+def test_faq_suggestions_success(client):
+    lecture_id = 22  
+    endpoint = f"/faq_suggestions/{lecture_id}"
+
+    response = client.get(endpoint)
+    data = response.get_json()
+
+    expected_status = 200
+    result = "Success" if response.status_code == expected_status and "faq_suggestions" in data else "Failed"
+
+    write_test_doc(
+        title="***Case:*** *Successful FAQ suggestion retrieval*",
+        endpoint=endpoint,
+        method="GET",
+        inputs=f"lecture_id: {lecture_id}",
+        expected="HTTP Status Code: 200 and field 'faq_suggestions' in JSON",
+        actual=f"HTTP Status Code: {response.status_code}\nJSON: {json.dumps(data)}",
+        result=result
+    )
+
+    assert response.status_code == 200
+    assert "faq_suggestions" in data
+```
+
 ---
 
 ### ***Case:*** *Lecture ID with no questions in Firestore*
@@ -48,6 +74,33 @@ JSON: {"lecture_id": 99999, "faq_suggestions": "No questions/doubts asked by the
 
 **Result:** `Success`
 
+**Pytest Code:**
+```python
+def test_faq_suggestions_no_questions(client):
+    lecture_id = 99999  # Use an ID with no questions in Firestore
+    endpoint = f"/faq_suggestions/{lecture_id}"
+
+    response = client.get(endpoint)
+    data = response.get_json()
+
+    expected_status = 200
+    expected_message = "No questions/doubts asked by the students for this lecture."
+    result = "Success" if response.status_code == expected_status and expected_message in data.get("faq_suggestions", "") else "Failed"
+
+    write_test_doc(
+        title="***Case:*** *Lecture ID with no questions in Firestore*",
+        endpoint=endpoint,
+        method="GET",
+        inputs=f"lecture_id: {lecture_id}",
+        expected=f"HTTP Status Code: 200 and message: '{expected_message}'",
+        actual=f"HTTP Status Code: {response.status_code}\nJSON: {json.dumps(data)}",
+        result=result
+    )
+
+    assert response.status_code == 200
+    assert expected_message in data.get("faq_suggestions", "")
+```
+
 ---
 
 ### ***Case:*** *Internal Server Error due to invalid lecture_id type*
@@ -71,6 +124,35 @@ JSON: null
 ```
 
 **Result:** `Failed`
+
+**Pytest Code:**
+```python
+def test_faq_suggestions_server_error(client):
+    lecture_id = "invalid"  # Forcefully pass a string to trigger error
+    endpoint = f"/faq_suggestions/{lecture_id}"
+
+    response = client.get(f"/faq_suggestions/{lecture_id}")
+    try:
+        data = response.get_json()
+    except Exception:
+        data = None
+
+    expected_status = 500
+    result = "Success" if response.status_code == expected_status else "Failed"
+
+    write_test_doc(
+        title="***Case:*** *Internal Server Error due to invalid lecture_id type*",
+        endpoint=endpoint,
+        method="GET",
+        inputs=f"lecture_id: {lecture_id}",
+        expected="HTTP Status Code: 500 and error message",
+        actual=f"HTTP Status Code: {response.status_code}\nJSON: {json.dumps(data)}",
+        result=result
+    )
+
+    assert response.status_code == 500
+    assert data and "Error" in data if isinstance(data, dict) else True
+```
 
 ---
 

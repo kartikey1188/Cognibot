@@ -26,6 +26,30 @@ JSON: {"lecture_summary": "This introductory lecture to programming using Python
 
 **Result:** `Success`
 
+**Pytest Code:**
+```python
+def test_summary_success(client):
+    lecture_id = 1
+    response = client.get(f"/lecture_summary/{lecture_id}")
+    data = response.get_json()
+
+    expected_status = 200
+    result = "Success" if response.status_code == expected_status and "lecture_summary" in data else "Failed"
+
+    write_test_doc(
+        title="***Case:*** *Successful summary generation*",
+        endpoint=f"http://127.0.0.1:5000/lecture_summary/{lecture_id}",
+        method="GET",
+        inputs=json.dumps({"lecture_id": lecture_id}, indent=2),
+        expected="HTTP Status Code: 200 and JSON with 'lecture_summary'",
+        actual=f"HTTP Status Code: {response.status_code}\nJSON: {json.dumps(data)}",
+        result=result
+    )
+
+    assert response.status_code == 200
+    assert "lecture_summary" in data
+```
+
 ---
 
 ### ***Case:*** *Transcript not found*
@@ -52,6 +76,30 @@ JSON: {"Error": "Transcript not found or empty"}
 
 **Result:** `Success`
 
+**Pytest Code:**
+```python
+def test_transcript_not_found(client):
+    lecture_id = 99999  # Assuming this ID doesn't exist
+    response = client.get(f"/lecture_summary/{lecture_id}")
+    data = response.get_json()
+
+    expected_status = 404
+    result = "Success" if response.status_code == expected_status else "Failed"
+
+    write_test_doc(
+        title="***Case:*** *Transcript not found*",
+        endpoint=f"http://127.0.0.1:5000/lecture_summary/{lecture_id}",
+        method="GET",
+        inputs=json.dumps({"lecture_id": lecture_id}, indent=2),
+        expected="HTTP Status Code: 404 and error message",
+        actual=f"HTTP Status Code: {response.status_code}\nJSON: {json.dumps(data)}",
+        result=result
+    )
+
+    assert response.status_code == 404
+    assert data and "Error" in data
+```
+
 ---
 
 ### ***Case:*** *Internal server error on summary generation*
@@ -77,6 +125,33 @@ JSON: {"lecture_summary": "This lecture introduces basic programming concepts us
 ```
 
 **Result:** `Failed`
+
+**Pytest Code:**
+```python
+def test_summary_server_error(client):
+    lecture_id = 5  
+    response = client.get(f"/lecture_summary/{lecture_id}")
+    try:
+        data = response.get_json()
+    except Exception:
+        data = None
+
+    expected_status = 500
+    result = "Success" if response.status_code == expected_status else "Failed"
+
+    write_test_doc(
+        title="***Case:*** *Internal server error on summary generation*",
+        endpoint=f"http://127.0.0.1:5000/lecture_summary/{lecture_id}",
+        method="GET",
+        inputs=json.dumps({"lecture_id": lecture_id}, indent=2),
+        expected="HTTP Status Code: 500 and error message",
+        actual=f"HTTP Status Code: {response.status_code}\nJSON: {json.dumps(data)}",
+        result=result
+    )
+
+    assert response.status_code == 500
+    assert data and "Error" in data if isinstance(data, dict) else True
+```
 
 ---
 
