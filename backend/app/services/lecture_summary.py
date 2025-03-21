@@ -13,7 +13,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from dotenv import load_dotenv
 load_dotenv()
 
-from backend.data.transcript_generator import GetSingleLectureTranscript
+from backend.app.utils.transcript_generator import GetSingleLectureTranscript
 
 slt = GetSingleLectureTranscript()
 

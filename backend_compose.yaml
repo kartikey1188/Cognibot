@@ -1,0 +1,14 @@
+services:
+  team_11_backend:
+    image: infinity81/team_11_backend
+    ports:
+    - 5000:5000
+    env_file:
+    - .env # Make sure the .env file is in the same directory (soft-engg-project-jan-2025-se-Jan-11 in this case) as this docker-compose file to run the container successfully
+
+
+# run the following command to start the container (from the directory where the docker-compose file is located): 
+
+# docker compose -f backend_compose.yaml up -d
+
+

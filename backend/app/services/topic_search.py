@@ -13,7 +13,7 @@ from langchain_community.vectorstores import Chroma
 embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en")
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-persistent_directory  = os.path.abspath(os.path.join(current_dir, "..", "..", "data", "vector_databases"))
+persistent_directory  = os.path.abspath(os.path.join(current_dir, "..", "..", "data", "vector_database"))
 
 class TopicSearch(Resource):
     def post(self):
@@ -30,7 +30,7 @@ class TopicSearch(Resource):
             # Searching the vector database for relevant chunks
             retriever = vector_db.as_retriever(
                 search_type="similarity_score_threshold",
-                search_kwargs={"k": 3, "score_threshold": 0.6},
+                search_kwargs={"k": 3, "score_threshold": 0.6, "filter": {"nature": "lecture"}},
             )
 
             relevant_chunks = retriever.invoke(quest)

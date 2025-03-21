@@ -3,7 +3,7 @@ import os
 from app.apis import *
 from flask import current_app as app
 from flask_restful import Resource
-from app.models.user import Lecture, Course
+from app.models.user import Lecture
 from youtube_transcript_api import YouTubeTranscriptApi
 import re
 

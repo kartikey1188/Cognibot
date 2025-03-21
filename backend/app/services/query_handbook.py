@@ -12,7 +12,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate
 
 # Configuration
-PERSISTENT_DIRECTORY = str(Path(__file__).resolve().parent.parent.parent / "data" / "handbook_vector_db")
+PERSISTENT_DIRECTORY = str(Path(__file__).resolve().parent.parent.parent / "data" / "vector_database")
 EMBEDDING_MODEL = "BAAI/bge-small-en"
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
@@ -66,7 +66,7 @@ class HandbookQuery(Resource):
             # Retrieve relevant documents
             retriever = db.as_retriever(
                 search_type="similarity_score_threshold",
-                search_kwargs={"k": k, "score_threshold": score_threshold},
+                search_kwargs={"k": k, "score_threshold": score_threshold, "filter": {"nature": "handbook"}},
             )
             relevant_docs = retriever.invoke(user_query)
             
