@@ -45,3 +45,7 @@ backend/.dockerignore
 backend/logs
 
 .pytest_cache
+
+backend/data/vector_database
+backend/data/grading_document_vector_db
+backend/data/handbook_vector_db

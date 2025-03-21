@@ -6,7 +6,7 @@ from app.apis import *
 from flask import current_app as app
 from flask_restful import Resource, reqparse
 from langchain_google_genai import ChatGoogleGenerativeAI
-from backend.data.transcript_generator import GetSingleLectureTranscript
+from backend.app.utils.transcript_generator import GetSingleLectureTranscript
 
 # Initialize the transcript retriever
 slt = GetSingleLectureTranscript()

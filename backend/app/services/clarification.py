@@ -1,21 +1,16 @@
 import os
-import datetime
 from . import *
 from app.apis import *
 from flask import current_app as app
 import traceback
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify
-from flask_restful import Api, Resource, reqparse
-from google.cloud import firestore
-from flask_jwt_extended import get_jwt_identity
+from flask_restful import Resource, reqparse
 from app.services.custom_templates import *
 from app.services import *
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_firestore import FirestoreChatMessageHistory
-from langchain_core.prompts import PromptTemplate
 from langchain.agents import tool, create_react_agent, AgentExecutor
 from langchain import hub
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
@@ -30,10 +25,9 @@ COLLECTION_NAME = "doubts_clarification_history"
 
 # Vector DB setup
 current_dir = os.path.dirname(os.path.abspath(__file__))
-persistent_directory = os.path.abspath(os.path.join(current_dir, "..", "..", "data", "vector_databases"))
+persistent_directory = os.path.abspath(os.path.join(current_dir, "..", "..", "data", "vector_database"))
 
 embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en")
-vector_db = Chroma(persist_directory=persistent_directory, embedding_function=embeddings)
 
 # LLM setup (Gemini)
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
@@ -57,7 +51,10 @@ def get_chat_history(user_id):
 @tool
 def search_syllabus(query):
     """Using the user's input, searches the syllabus vector database for relevant content."""
+    vector_db = Chroma(persist_directory=persistent_directory, embedding_function=embeddings)
+
     retriever = vector_db.as_retriever(
+        filter={"nature": "lecture"},
         search_type="similarity_score_threshold",
         search_kwargs={"k": 3, "score_threshold": 0.7},
     )

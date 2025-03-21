@@ -12,10 +12,10 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 # Defining the directory containing the transcript text files and the persistent directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
-transcript_dir = os.path.join(current_dir, "transcripts")
-persistent_directory = os.path.join(current_dir, "vector_databases") # the directory for the vector database to be situated
+transcript_dir = os.path.join(current_dir, "..", "..", "data", "transcripts")
+persistent_directory = os.path.join(current_dir, "..", "..", "data", "vector_database") # the directory for the vector database to be situated
 
-class GenerateVectorDB(Resource):
+class GenerateLectureVectorDB(Resource):
     def get(self):
         try:
             # Ensure the transcript directory exists
@@ -47,7 +47,7 @@ class GenerateVectorDB(Resource):
                         print(f"Warning: No lecture found for ID {parts[2]}. Skipping.")
                         continue  # Skipping if no matching lecture
 
-                    doc.metadata = {"Name Of Course": parts[0], "Week Number": parts[1], "Lecture Title": parts[3], "Lecture Link": lecture.lecture_link}
+                    doc.metadata = {"Name Of Course": parts[0], "Week Number": parts[1], "Lecture Title": parts[3], "Lecture Link": lecture.lecture_link, "nature": "lecture"}
                     print(f"Saved metadata to a doc belonging to lecture with ID {parts[2]}")
                     count+=1
                     documents.append(doc)
@@ -74,12 +74,12 @@ class GenerateVectorDB(Resource):
             print("\n--- Creating and persisting vector store ---")
             vector_db = Chroma.from_documents(
                 chunks, embeddings, persist_directory=persistent_directory)
-            print("Vector database saved successfully.")
+            print("Lecture Vector Database saved successfully.")
             print("\n--- Finished creating and persisting vector store ---")
 
         except Exception as e:
             app.logger.error(f"Exception occurred: {e}")
             app.logger.error(traceback.format_exc())
-            return {"Error": "Failed to create the vector database"}, 500
+            return {"Error": "Failed to create the lecture vector database"}, 500
 
-api.add_resource(GenerateVectorDB, '/generate_vectordb')
+api.add_resource(GenerateLectureVectorDB, '/generate_lecture_vectordb')

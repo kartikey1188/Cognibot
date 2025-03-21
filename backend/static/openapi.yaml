@@ -1,0 +1,1969 @@
+openapi: 3.0.3
+info:
+  title: Team 11 - API Endpoints (Milestone 4)
+  description: |
+    **Team Members:**
+
+    1) Abhinav Velaga (23f1002933)
+
+    2) Aditya Shanker Srivastava (23f1001545)
+
+    3) Gaurav Ginodia (22f3002972)
+
+    4) Kartikey Singh (21f1001440)
+
+    5) Rashmi Tindwani (22f3001311)
+
+    6) Shubham Sharma (21f2000041)
+
+    7) Surya Vikram (22f3002751)
+
+    **General Description:** 
+
+        -- THE CODE FOR USER STORY RELATED API ENDPOINTS IS IN backend/app/services
+
+        -- THE CODE FOR NON - USER STORY RELATED API ENDPOINTS IS IN backend/app/apis
+    
+    1) This OpenAPI specification document outlines the API endpoints for the Team 11 Software Engineering Project.
+
+    2) The API endpoints are categorized into two sections: User Story Related API Endpoints and Non - User Story Related API Endpoints.
+
+    3) The User Story Related API Endpoints are directly related to the user stories defined in Milestone 1.
+
+    4) All User Stories except User Story 3.3 and 4.1 correspond to specific API endpoints in this document, since 3.3 and 4.1 are being asserted in other ways.
+
+    5) The Non - User Story Related API Endpoints are additional endpoints that are not directly related to the user stories but are essential for the functionality of the system.
+
+    6) Authentication has been removed from most of the API endpoints at this stage in development to ensure simplicity for this document and ease in testing the endpoints.
+    
+  version: 1.0.0
+
+servers:
+  - url: http://127.0.0.1:5000
+
+tags:
+  - name: User Story Related API Endpoints
+  - name: Non - User Story Related API Endpoints
+
+  
+paths:
+
+#### User Story Related API Endpoints:
+
+  /lecture_summary/{lecture_id}:
+    get:
+      summary: Generate a summary for any lecture in the database. [User Story 2.2]
+      tags:
+        - User Story Related API Endpoints
+      description: |
+        **Corresponding User Story:** 2.2
+
+        **What the endpoint does:** Generates the summary of a lecture using its lecture ID
+
+        **How it does it:** Fetches the transcript of a lecture using its ID (by feeding its url to YoutubeTranscriptApi), summarizes it using Gemini AI, 
+        and returns the key points in a structured format.
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          description: The ID of the lecture whose summary is to be retrieved.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successfully retrieved the lecture summary.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lecture_summary:
+                    type: string
+                    description: A concise summary of the lecture transcript.
+              example:
+                lecture_summary: >
+                  This lecture discusses basic arithmetic operations in programming, 
+                  highlighting the importance of data types and operator precedence...
+        "404":
+          description: Transcript not found or empty.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: Transcript not found or empty
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: Failed to retrieve transcript
+  /clarification:
+    post:
+      summary: Clarifies a user's question/doubt regarding concepts and ideas related to the syllabus. [User Story 2.3 & 2.4]
+      tags:
+        - User Story Related API Endpoints 
+      description: |
+       **Corresponding User Story:** 2.3 & 2.4
+
+       **What the endpoint does:** Answers a conceptual question related to the syllabus while maintaining context, remembering chat history and upholding academic integrity.
+
+       **How it does it:** Takes a user ID and a query as input, retrieves previous chat history (of the particular user) from Firestore, processes the query using a LangChain-powered agent, and returns an AI-generated response with the help of relevant chunks retrieved from the Chroma Vector Database.
+      operationId: postClarification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - quest
+              properties:
+                user_id:
+                  type: integer
+                  description: Unique identifier for the user.
+                quest:
+                  type: string
+                  description: The user's query or clarification request.
+            examples:
+              user_input:
+                summary: Example input
+                value:
+                  user_id: 125
+                  quest: "What are variables and literals in Python?"
+      responses:
+        "200":
+          description: Successfully retrieved the AI response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query:
+                    type: string
+                    description: The original user query.
+                  response:
+                    type: string
+                    description: The AI-generated response.
+              example:
+                query: "What is the if-else statement?"
+                response: "The if-else statement is a fundamental control flow structure in programming.  It allows you to execute different blocks of code based on whether a condition is true or false.  If the condition is true, the code within the `if` block is executed; otherwise, the code within the `else` block is executed.  The syllabus provides several examples of if-else statements in Python, including checking if a number is even or odd, determining a student's grade based on their marks, and choosing a mode of transportation based on time and price.  These examples demonstrate how to use if-else statements to make decisions and control the flow of your program."
+        "400":
+          description: Bad request, usually due to missing parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "A query is required"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Failed to process request"
+  
+  /topic_search:
+    post:
+      summary: Perform a topic search in the vector database. [User Story 2.5]
+      tags:
+        - User Story Related API Endpoints
+      description: |
+        **Corresponding User Story:** 2.5
+
+        **What the endpoint does:** Searches for and locates where specifically a particular topic was taught in the syllabus, and returns the top 3 results.
+
+        **How it does it:** Accepts a query string, searches the Chroma vector database for relevant chunks using an embedding model, and returns metadata from the most relevant results.
+      operationId: postTopicSearch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quest
+              properties:
+                quest:
+                  type: string
+                  description: The query string for topic search.
+            examples:
+              user_input:
+                summary: Example input
+                value:
+                  quest: "If-else statement"
+      responses:
+        "200":
+          description: Successfully retrieved relevant topic information.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  search_query:
+                    type: string
+                    description: The original search query.
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      description: Metadata of relevant retrieved chunks.
+              example:
+                search_query: "Explain machine learning models"
+                results:
+                  - { "title": "Introduction to ML", "source": "lecture_notes.pdf", "page": 12 }
+                  - { "title": "Supervised Learning", "source": "ml_book.pdf", "page": 45 }
+                  - { "title": "Neural Networks", "source": "deep_learning_notes.txt", "page": 8 }
+        "400":
+          description: Bad request, usually due to missing parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "A query is required"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Failed to conclude topic search"
+  
+  /faq_suggestions/{lecture_id}:
+    get:
+      summary: Retrieve suggestions on how to address the FAQs for a particular lecture. [User Story 3.2]
+      tags:
+        - User Story Related API Endpoints
+      description: |
+        **Corresponding User Story:** 3.2
+
+        **What the endpoint does:** Generates comprehensive suggestions using Gemini AI for instructors to address the frequently asked questions for a specific lecture.
+
+        **How it does it:** Fetches a list of doubts/questions asked by students for a specific lecture from Firestore, generates comprehensive suggestions using Gemini AI for addressing the frequently asked questions, and returns the suggestions in a structured format.
+
+        **Important Note:** If you are using this API endpoint for the first time, ensure that some doubts/questions asked by students for the lecture with the ID you input are stored in the Firestore Database - which you can do using the /receive_doubt endpoint mentioned in the 'Non - User Story Related API Endpoints' section.
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          description: The ID of the lecture for which FAQ suggestions are to be retrieved.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successfully retrieved the FAQ suggestions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lecture_id:
+                    type: integer
+                    description: The ID of the lecture.
+                  faq_suggestions:
+                    type: string
+                    description: AI-generated suggestions for addressing student doubts/questions.
+              example:
+                lecture_id: 101
+                faq_suggestions: "To address the frequently asked questions regarding recursion, it's helpful to provide step-by-step explanations with visual aids."
+        "404":
+          description: No doubts or questions were found for the lecture.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "No questions/doubts asked by the students for this lecture."
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Failed to retrieve suggestions on frequently asked questions."
+
+  /lecture_review_report:
+    post:
+      summary: "[User Story 3.1] Generate AI-based lecture review reports"
+      description: |
+        **Corresponding User Story:** 3.1
+        
+        **What the endpoint does:** Retrieves student feedback for lectures in a course (optionally filtered by week) and generates an AI-powered analysis report.
+       
+        **How it does it:**  It queries the database to collect lecture reviews, formats the feedback, and then uses the Gemini AI model to analyze the reviews—returning insights on common issues, suggested improvements, and overall student satisfaction.
+
+      tags:
+        - User Story Related API Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course_id:
+                  type: integer
+                  description: The ID of the course for which the review report is generated.
+                week:
+                  type: integer
+                  nullable: true
+                  description: The specific week number to filter reviews (optional).
+              required:
+                - course_id
+            example:
+              course_id: 1
+              week: 1
+      responses:
+        "200":
+          description: Successfully generated an AI-powered lecture review report.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  course_id:
+                    type: integer
+                    description: The course ID for which the report was generated.
+                  week:
+                    type: integer
+                    nullable: true
+                    description: The week number for the report (if provided).
+                  lecture_review_report:
+                    type: string
+                    description: AI-generated analysis including common issues, suggested improvements, and overall student satisfaction.
+              example:
+                course_id: 1
+                week: 2
+                lecture_review_report: |
+                  Common Issues: Many students reported unclear examples and fast pacing.
+                  Suggested Improvements: Include more real-world examples and slow down explanations.
+                  Overall Student Satisfaction: Average rating is 3.8/5.
+        "404":
+          description: No reviews found for the specified course or week.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "No reviews found for the selected course/week"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error processing request: [detailed error message]"
+
+  
+  /api/grading/query:
+    post:
+      summary: Query the grading document database (User Story 2.9)
+      tags:
+        - User Story Related API Endpoints
+      description: Accepts a user query, retrieves relevant information from a vector database, and generates a response using Gemini AI.
+      operationId: postGradingDocQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: The user's query related to the grading document.
+                k:
+                  type: integer
+                  description: Number of relevant documents to retrieve (default = 3).
+                score_threshold:
+                  type: number
+                  format: float
+                  description: Minimum similarity score for retrieved documents (default = 0.5).
+            examples:
+              user_input:
+                summary: Example input
+                value:
+                  query: "What is the grading criteria for software engineering?"
+                  k: 1
+                  score_threshold: 0.6
+      responses:
+        200:
+          description: Successfully retrieved the query response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    description: AI-generated response based on the grading document.
+                  documents:
+                    type: array
+                    description: List of relevant documents used for llm's context.
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                          description: Extracted text from the relevant grading document chunk.
+                        source:
+                          type: string
+                          nullable: true
+                          description: The source file or reference of the document (if available).
+        400:
+          description: Invalid request due to missing or incorrect parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating the issue with the request.
+                    example: "Query is required"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating an internal processing failure.
+                    example: "Error processing query: [detailed error message]"
+
+  
+  /api/feedback-recommendations:
+    post:
+      summary: Provides feedback and study recommendations based on student answers (User Story 2.1)
+      tags:
+        - User Story Related API Endpoints
+      description: |
+        This endpoint analyzes a student's answers to practice/graded assignment questions,
+        evaluates correctness, and provides personalized feedback and study recommendations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                submitted_answers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      qid:
+                        type: string
+                        description: Unique identifier for the question.
+                      answer:
+                        type: array
+                        items:
+                          type: string
+                        description: The student's submitted answer(s).
+            example:
+              submitted_answers:
+                - qid: 1
+                  answer: ["D"]
+                - qid: 2
+                  answer: ["B"]
+                - qid: 3
+                  answer: ["B", "D"]
+                - qid: 4
+                  answer: ["B", "C"]
+                - qid: 5
+                  answer: ["B"]
+                - qid: 6
+                  answer: ["1020"]      
+      responses:
+        "200":
+          description: Feedback and recommendations successfully generated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  performance_summary:
+                    type: object
+                    properties:
+                      total_questions:
+                        type: integer
+                      correct:
+                        type: integer
+                      partially_correct:
+                        type: integer
+                      incorrect:
+                        type: integer
+                      percent_correct:
+                        type: number
+                        format: float
+                  question_assessments:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        qid:
+                          type: string
+                        question:
+                          type: string
+                        question_type:
+                          type: string
+                        correct_answer:
+                          type: array
+                          items:
+                            type: string
+                        student_answer:
+                          type: array
+                          items:
+                            type: string
+                        is_correct:
+                          type: boolean
+                        is_partially_correct:
+                          type: boolean
+                  comprehensive_feedback:
+                    type: string
+                    description: AI-generated detailed feedback and study recommendations.
+        "400":
+            description: Invalid request format.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      description: Error message explaining the request format issue.
+                      example: "submitted_answers must be a list"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating an internal processing failure.
+                    example: "Error processing request: [detailed error message]"
+
+  
+  /extra_questions:
+    post:
+      summary: "[User Story 2.6] Generate extra practice questions for a lecture"
+      description: |
+        **Corresponding User Story:** 2.6
+
+        **What the endpoint does:** Retrieves the transcript of a lecture and generates AI-powered multiple-choice questions (MCQs) to test students' understanding.
+       
+        **How it does it:** It fetches the transcript from the vector database, passes it to the Gemini AI model which processes the transcript to generate 5 unique MCQs (each with 4 answer options and the correct answer), and returns the questions in JSON format.
+      tags:
+        - User Story Related API Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lecture_id:
+                  type: integer
+                  description: The ID of the lecture for which extra questions are generated.
+              required:
+                - lecture_id
+            example:
+              lecture_id: 2
+      responses:
+        "200":
+          description: Successfully generated extra practice questions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lecture_id:
+                    type: integer
+                    description: The lecture ID for which the questions were generated.
+                  questions:
+                    type: array
+                    description: A list of generated multiple-choice questions.
+                    items:
+                      type: object
+                      properties:
+                        question:
+                          type: string
+                          description: The multiple-choice question.
+                        options:
+                          type: object
+                          description: The four answer choices.
+                          properties:
+                            A:
+                              type: string
+                            B:
+                              type: string
+                            C:
+                              type: string
+                            D:
+                              type: string
+                        correct_answer:
+                          type: string
+                          description: The correct answer option (A, B, C, or D).
+              example:
+                lecture_id: 5
+                questions:
+                  - question: "What is the primary purpose of a for-loop in Python?"
+                    options:
+                      A: "To define a function"
+                      B: "To iterate over a sequence"
+                      C: "To declare a variable"
+                      D: "To create a new list"
+                    correct_answer: "B"
+                  - question: "Which data structure follows the Last In, First Out (LIFO) principle?"
+                    options:
+                      A: "Queue"
+                      B: "Stack"
+                      C: "Array"
+                      D: "Dictionary"
+                    correct_answer: "B"
+        "404":
+          description: Transcript not found or empty.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Transcript not found or empty"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to generate extra practice questions"
+
+
+  /assignment_feedback:
+    post:
+      summary: "[User Story 2.7] Execute Python code and provide AI-powered feedback"
+      description: |
+        **Corresponding User Story:** 2.7
+        
+        **What the endpoint does:** Safely executes Python code submitted by the user and returns AI-generated feedback on errors, suggested improvements, and best practices without providing the exact solution.
+        
+        **How it does it:** It executes the provided code in a restricted environment to capture output and errors, then passes the execution result to the Gemini AI model, which returns feedback for the student.
+
+      tags:
+        - User Story Related API Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  description: The ID of the user submitting the code.
+                code:
+                  type: string
+                  description: The Python code to be executed and reviewed.
+              required:
+                - user_id
+                - code
+            example:
+              user_id: 1
+              code: |
+                def add(a, b)
+                    return a + b
+
+                print(add(5, 3))
+      responses:
+        "200":
+          description: Execution result and AI feedback.
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/handbook/query:
+    post:
+      summary: Query the handbook using AI (User Story 2.8)
+      tags:
+        - User Story Related API Endpoints
+      description: Retrieves relevant information from the institution's handbook and generates an AI-powered response based on the context.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: The user's question related to the handbook.
+                k:
+                  type: integer
+                  description: The number of top relevant documents to retrieve (default is 3).
+                  example: 3
+                score_threshold:
+                  type: number
+                  format: float
+                  description: The minimum similarity score threshold for document retrieval (default is 0.5).
+                  example: 0.5
+              required:
+                - query
+            examples:
+              user_input:
+                summary: Example input
+                value:
+                  query: "What are the system requirements to attend the programme?"
+                  k: 1
+                  score_threshold: 0.6
+          
+      responses:
+        200:
+          description: Successfully retrieved an AI-generated answer based on the handbook.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    description: The AI-generated response to the query.
+                  documents:
+                    type: array
+                    description: List of relevant documents retrieved from the handbook.
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                          description: Extracted text from the relevant document.
+                        source:
+                          type: string
+                          nullable: true
+                          description: The source file or reference of the document (if available).
+                        page_number:
+                          type: integer
+                          nullable: true
+                          description: The page number of the document (if available).
+        400:
+          description: Invalid request due to missing or incorrect parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating the issue with the request.
+                    example: "Query is required"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating an internal processing failure.
+                    example: "Error processing query: [detailed error message]"
+
+
+#### Non - User Story Related API Endpoints:
+
+# Student API Endpoints
+  /all_students:
+    get:
+      summary: Get all students
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieve a list of all students.
+
+      responses:
+        200:
+          description: Successfully retrieved all students.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Student"
+        401:
+          description: Unauthorized access.
+        403:
+          description: Forbidden access.
+
+  /student/{student_id}:
+    get:
+      summary: Get a student by ID
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieve details of a specific student.
+     
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Student details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+        404:
+          description: Student not found.
+    delete:
+      summary: Delete a student
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Deletes a specific student.
+      
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Student deleted successfully.
+        404:
+          description: Student not found.
+        500:
+          description: Failed to delete student.
+    put:
+      summary: Update student details
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Update a student's name or email.
+    
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+      responses:
+        200:
+          description: Student updated successfully.
+        400:
+          description: Email already exists.
+        403:
+          description: Unauthorized access.
+        500:
+          description: Failed to update student.
+
+  /student/{student_id}/courses:
+    get:
+      summary: Get all courses of a student
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieve all courses that a student is enrolled in.
+      
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successfully retrieved courses.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Course"
+        404:
+          description: Student not found.
+
+  /student/{student_id}/course/{course_id}:
+    post:
+      summary: Enroll a student in a course
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Enroll a student into a course (Admin only).
+     
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        201:
+          description: Student enrolled successfully.
+        400:
+          description: Student already enrolled.
+        404:
+          description: Student or Course not found.
+        500:
+          description: Failed to enroll student.
+
+    delete:
+      summary: Unenroll a student from a course
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Remove a student from a course (Admin only).
+      
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Student unenrolled successfully.
+        404:
+          description: Enrollment record not found.
+        500:
+          description: Failed to unenroll student.
+
+  /receive_doubt:
+    post:
+      summary: Receive a doubt/question from a student.
+      tags:
+        - Non - User Story Related API Endpoints
+      description: >
+        Accepts a doubt or question from a student for a specific lecture and stores it in Firestore.
+      operationId: postReceiveDoubt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - lecture_id
+                - doubt
+              properties:
+                lecture_id:
+                  type: integer
+                  description: The ID of the lecture for which the doubt is being asked.
+                doubt:
+                  type: string
+                  description: The student's doubt or question.
+            examples:
+              user_input:
+                summary: Example input
+                value:
+                  lecture_id: 22
+                  doubt: "Can the if-else statements be used inside of loops?"
+      responses:
+        "201":
+          description: Successfully received the doubt/question.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                    example: "Question/Doubt received successfully"
+        "400":
+          description: Bad request, usually due to missing parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Lecture ID and doubt are required."
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Error:
+                    type: string
+                    example: "Failed to receive question/doubt."
+
+  /lectures/{course_id}:
+    get:
+      summary: Get all lectures of a specific course
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieves all lectures for a given course.
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the course.
+      responses:
+        "200":
+          description: Successfully retrieved all lectures.
+        "404":
+          description: Course not found or no lectures available.
+
+  /lectures/{course_id}/{week}:
+    get:
+      summary: Get all lectures of a particular week of a particular course
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieves all lectures for a given week in a specific course.
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the course.
+        - name: week
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The week number.
+      responses:
+        "200":
+          description: Successfully retrieved lectures.
+        "404":
+          description: Course not found or no lectures for this week.
+
+  /get_lecture_by_number/{course_id}/{week}/{lecture_number}:
+    get:
+      summary: Get a specific lecture using course ID, week, and lecture number
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieves a specific lecture based on the course ID, week, and lecture number.
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the course.
+        - name: week
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The week number.
+        - name: lecture_number
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The lecture number.
+      responses:
+        "200":
+          description: Successfully retrieved the lecture.
+        "404":
+          description: Lecture not found.
+
+  /get_lecture_by_id/{lecture_id}:
+    get:
+      summary: Get a specific lecture using lecture ID
+      tags:
+        - Non - User Story Related API Endpoints
+      description: Retrieves a specific lecture based on its lecture ID.
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the lecture.
+      responses:
+        "200":
+          description: Successfully retrieved the lecture.
+        "404":
+          description: Lecture not found.
+  
+  /all_instructors:
+    get:
+      summary: Get all instructors
+      tags:
+        - Non - User Story Related API Endpoints
+     
+      responses:
+        200:
+          description: List of all instructors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Instructor"
+
+  /instructor/{instructor_id}:
+    get:
+      summary: Get an individual instructor
+      tags:
+        - Non - User Story Related API Endpoints
+      
+      parameters:
+        - name: instructor_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Instructor details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Instructor"
+        404:
+          description: Instructor not found
+
+    put:
+      summary: Update an instructor's details
+      tags:
+        - Non - User Story Related API Endpoints
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: instructor_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                description:
+                  type: string
+      responses:
+        200:
+          description: Instructor details updated successfully
+        400:
+          description: User with this email already exists
+        403:
+          description: Unauthorized or Instructor not found
+        500:
+          description: Failed to update instructor
+
+    delete:
+      summary: Delete an instructor
+      tags:
+        - Non - User Story Related API Endpoints
+      
+      parameters:
+        - name: instructor_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Instructor deleted successfully
+        404:
+          description: Instructor not found
+        500:
+          description: Failed to delete instructor
+
+  /all_courses:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Get all courses
+      description: Retrieves a list of all available courses.
+      
+      responses:
+        200:
+          description: List of courses retrieved successfully
+
+  /course/{course_id}:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Get an individual course
+      description: Retrieves details of a specific course by its ID.
+      
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          description: ID of the course
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Course details retrieved successfully
+        404:
+          description: Course not found
+    
+    delete:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Delete a course
+      description: Deletes a course by its ID.
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          description: The ID of the course to be deleted.
+          schema:
+            type: integer
+            example: 1
+      responses:
+        200:
+          description: Course deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Course deleted successfully"
+        404:
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Course not found"
+        500:
+          description: Failed to delete course
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to delete course due to server error."
+
+
+  /course:
+    post:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Create a new course
+      description: Creates a new course with the provided details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - course_name
+                - course_code
+                - level
+                - type
+              properties:
+                course_name:
+                  type: string
+                  description: The name of the course.
+                  example: "Java"
+                course_code:
+                  type: string
+                  description: The unique code for the course.
+                  example: "BSCCS3009"
+                level:
+                  type: string
+                  enum: ["Foundational", "Diploma", "Degree"]
+                  description: The academic level of the course.
+                type:
+                  type: string
+                  enum: ["Data Science", "Programming", "Miscellaneous"]
+                  description: The category of the course.
+                description:
+                  type: string
+                  description: A short description of the course. Defaults to "No description".
+                  example: "An introduction to Java."
+                image:
+                  type: string
+                  description: URL or path to an image representing the course.
+                  example: "https://example.com/course-image.png"
+      responses:
+        201:
+          description: Course created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Course created successfully"
+                  course_id:
+                    type: integer
+                    example: 1
+        400:
+          description: Course with this name or code already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Course with this code already exists"
+        500:
+          description: Failed to create course
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Failed to create course due to server error."
+
+
+  /course/{course_id}/students:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Get all students in a course
+      description: Retrieves a list of students enrolled in a specific course.
+      
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          description: ID of the course
+          schema:
+            type: integer
+      responses:
+        200:
+          description: List of students retrieved successfully
+        404:
+          description: Course not found
+
+  /lecture/{lecture_id}:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Get an individual lecture
+      description: Retrieves details of a specific lecture by its ID.
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          description: ID of the lecture
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Lecture details retrieved successfully
+        404:
+          description: Lecture not found
+
+    put:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Update an individual lecture
+      description: Updates the details of a specific lecture.
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          description: ID of the lecture
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                week:
+                  type: integer
+                lecture_number:
+                  type: integer
+                title:
+                  type: string
+                lecture_link:
+                  type: string
+              example:
+                week: 3
+                lecture_number: 2
+                title: "Updated Lecture Title"
+                lecture_link: "https://example.com/new-lecture-link"
+      responses:
+        200:
+          description: Lecture updated successfully
+        400:
+          description: Lecture with this link already exists or duplicate week/lecture_number
+        404:
+          description: Lecture not found
+        500:
+          description: Failed to update lecture
+
+    delete:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Delete an individual lecture
+      description: Deletes a specific lecture by its ID.
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          description: ID of the lecture
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Lecture deleted successfully
+        404:
+          description: Lecture not found
+        500:
+          description: Failed to delete lecture
+
+  /lecture:
+    post:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Create a new lecture
+      description: Creates a new lecture and assigns it to a course.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course_id:
+                  type: integer
+                week:
+                  type: integer
+                lecture_number:
+                  type: integer
+                title:
+                  type: string
+                lecture_link:
+                  type: string
+              required:
+                - course_id
+                - week
+                - lecture_number
+                - title
+                - lecture_link
+              example:
+                course_id: 1
+                week: 2
+                lecture_number: 1
+                title: "Introduction to AI"
+                lecture_link: "https://example.com/lecture-link"
+      responses:
+        201:
+          description: Lecture created successfully
+        400:
+          description: Lecture with this link or duplicate week/lecture_number already exists
+        404:
+          description: Course not found
+        500:
+          description: Failed to create lecture
+
+  
+  /submit_feedback:
+    post:
+      summary: "Submit lecture feedback"
+      description: >
+        Allows a student to submit feedback for a lecture, including a numerical rating (1 to 5)
+        and a textual review. The submitted feedback is stored in the database for further analysis.
+      tags:
+        - "Non - User Story Related API Endpoints"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lecture_id:
+                  type: integer
+                  description: "The unique ID of the lecture for which feedback is being submitted."
+                rating:
+                  type: integer
+                  description: "The student's rating for the lecture (1 to 5)."
+                feedback:
+                  type: string
+                  description: "The feedback text provided by the student."
+              required:
+                - lecture_id
+                - rating
+                - feedback
+            example:
+              lecture_id: 2
+              rating: 4
+              feedback: "The lecture was well-structured but could use clearer examples."
+      responses:
+        "201":
+          description: "Feedback submitted successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: "Confirmation message that feedback was submitted."
+              example:
+                message: "Feedback submitted successfully"
+        "404":
+          description: "Lecture not found."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Lecture not found"
+        "400":
+          description: "Bad request due to missing or invalid fields."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Invalid input: rating must be between 1 and 5"
+        "500":
+          description: "Internal server error."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Failed to submit feedback"
+
+  /api/questions:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Get all questions
+      description: Retrieves a list of questions from the system.
+      responses:
+        200:
+          description: List of questions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  questions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Unique ID of the question
+                        text:
+                          type: string
+                          description: The question text
+                        options:
+                          type: array
+                          items:
+                            type: string
+                          description: List of possible answer options
+  
+  /register:
+    post:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: User Registration
+      description: Allows users to register as students, instructors, or admins.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - name
+                - password
+                - confirm_password
+                - role
+              properties:
+                email:
+                  type: string
+                  description: User's email address
+                name:
+                  type: string
+                  description: User's full name
+                password:
+                  type: string
+                  format: password
+                  description: User's password
+                confirm_password:
+                  type: string
+                  format: password
+                  description: Password confirmation
+                role:
+                  type: string
+                  enum: [student, instructor, admin]
+                  description: Role of the user
+                description:
+                  type: string
+                  description: Optional description for instructors
+      responses:
+        201:
+          description: User registered successfully
+        400:
+          description: Invalid input (email exists, passwords do not match, or invalid role)
+
+  /login:
+    post:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: User Login
+      description: Authenticates the user and returns an access token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  description: User's email address
+                password:
+                  type: string
+                  format: password
+                  description: User's password
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: User's full name
+                  email:
+                    type: string
+                    description: User's email
+                  id:
+                    type: integer
+                    description: User ID
+                  role:
+                    type: string
+                    description: User role
+                  message:
+                    type: string
+                    example: Login successful
+        401:
+          description: Invalid email or password
+
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Check User Login Status
+      description: Checks if the user is logged in.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: User is logged in
+        401:
+          description: Unauthorized (invalid or missing token)
+
+  /logout:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: User Logout
+      description: Logs out the user and removes authentication cookies.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Logout successful
+
+  /user:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Get User Information
+      description: Retrieves details about the currently logged-in user.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: User details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: User's full name
+                  email:
+                    type: string
+                    description: User's email
+                  id:
+                    type: integer
+                    description: User ID
+                  role:
+                    type: string
+                    description: User role
+                  message:
+                    type: string
+                    example: Login successful
+        401:
+          description: Unauthorized (invalid or missing token)
+
+  
+  /admin:
+    get:
+      tags:
+        - Non - User Story Related API Endpoints
+      summary: Admin-only access
+      description: Allows access only to users with the 'admin' role.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Admin access granted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Hello, admin"
+        403:
+          description: Access forbidden (insufficient permissions)
+        401:
+          description: Unauthorized (invalid or missing token)
+
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        role:
+          type: string
+          enum: ["student", "instructor", "admin"]
+        name:
+          type: string
+        email:
+          type: string
+        password_hash:
+          type: string
+
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+        user:
+          $ref: "#/components/schemas/User"
+        courses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Course"
+
+    Instructor:
+      type: object
+      properties:
+        id:
+          type: integer
+        user:
+          $ref: "#/components/schemas/User"
+        courses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Course"
+        description:
+          type: string
+          default: "No description provided."
+
+    Course:
+      type: object
+      properties:
+        course_id:
+          type: integer
+        course_name:
+          type: string
+        course_code:
+          type: string
+        description:
+          type: string
+        level:
+          type: string
+          enum: ["Foundational", "Diploma", "Degree"]
+        type:
+          type: string
+          enum: ["Data Science", "Programming", "Miscellaneous"]
+        image:
+          type: string
+        instructors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Instructor"
+        students:
+          type: array
+          items:
+            $ref: "#/components/schemas/Student"
+        lectures:
+          type: array
+          items:
+            $ref: "#/components/schemas/Lecture"
+
+    Lecture:
+      type: object
+      properties:
+        lecture_id:
+          type: integer
+        course_id:
+          type: integer
+        lecture_number:
+          type: integer
+        week:
+          type: integer
+        title:
+          type: string
+        lecture_link:
+          type: string
+        reviews:
+          type: array
+          items:
+            $ref: "#/components/schemas/LectureReview"
+
+    LectureReview:
+      type: object
+      properties:
+        review_id:
+          type: integer
+        lecture_id:
+          type: integer
+        user_id:
+          type: integer
+        rating:
+          type: integer
+        feedback:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    InstructorCourses:
+      type: object
+      properties:
+        instructor_id:
+          type: integer
+        course_id:
+          type: integer
+
+    StudentCourses:
+      type: object
+      properties:
+        student_id:
+          type: integer
+        course_id:
+          type: integer
+        grade_obtained:
+          type: string
+          enum: ["NA", "S", "A", "B", "C", "D", "E"]
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
+
+  
