@@ -5,7 +5,7 @@ from app.config import Config
 from flask_cors import CORS
 
 def create_app(test_config=None):
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='../docs', static_url_path='/static')
     if test_config:
         app.config.from_mapping(test_config)
     else:

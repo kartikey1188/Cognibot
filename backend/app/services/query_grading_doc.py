@@ -67,9 +67,8 @@ class GradingDocQuery(Resource):
 
             # Retrieve relevant documents
             retriever = db.as_retriever(
-                filter={"nature": "grading_doc"},
                 search_type="similarity_score_threshold",
-                search_kwargs={"k": k, "score_threshold": score_threshold},
+                search_kwargs={"k": k, "score_threshold": score_threshold, "filter":{"nature": "grading_doc"}},
             )
             relevant_docs = retriever.invoke(user_query)
 

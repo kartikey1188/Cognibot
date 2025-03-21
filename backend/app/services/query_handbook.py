@@ -65,9 +65,8 @@ class HandbookQuery(Resource):
             
             # Retrieve relevant documents
             retriever = db.as_retriever(
-                filter={"nature": "handbook"},
                 search_type="similarity_score_threshold",
-                search_kwargs={"k": k, "score_threshold": score_threshold},
+                search_kwargs={"k": k, "score_threshold": score_threshold, "filter": {"nature": "handbook"}},
             )
             relevant_docs = retriever.invoke(user_query)
             

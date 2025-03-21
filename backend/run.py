@@ -36,8 +36,8 @@ app.logger.setLevel(logging.INFO)
 app.logger.info('App startup')
 
 # Swagger UI setup
-SWAGGER_URL = '/'  # Swagger UI served at '/'
-API_URL = '/static/openapi.yaml'  # YAML file URL
+SWAGGER_URL = ''  # Swagger UI served at localhost:5000
+API_URL = '/static/openapi.yaml'  # the static folder is backend/docs folder
 
 swaggerui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,

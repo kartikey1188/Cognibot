@@ -54,9 +54,8 @@ def search_syllabus(query):
     vector_db = Chroma(persist_directory=persistent_directory, embedding_function=embeddings)
 
     retriever = vector_db.as_retriever(
-        filter={"nature": "lecture"},
         search_type="similarity_score_threshold",
-        search_kwargs={"k": 3, "score_threshold": 0.7},
+        search_kwargs={"k": 3, "score_threshold": 0.7, "filter": {"nature": "lecture"}},
     )
     relevant_chunks = retriever.invoke(query)
     
