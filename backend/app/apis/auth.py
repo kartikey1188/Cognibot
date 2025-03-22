@@ -98,7 +98,7 @@ class UserLogin(Resource):
             return {"message": "Invalid email or password !"}, 401
 
         access_token = create_access_token(identity=user.id, additional_claims={"role": user.role.value})
-        response = jsonify({"name":user.name, "email":user.email, "id":user.id, "role":user.role.value, "message":"Login successful"})
+        response = jsonify({"name":user.name, "email":user.email, "id":user.id, "role":user.role.value, "message":"Login successful", "access_token": access_token})
         set_access_cookies(response, access_token)
         return response
     

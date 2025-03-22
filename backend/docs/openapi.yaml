@@ -39,11 +39,9 @@ info:
   version: 1.0.0
 
 servers:
-  - url: "{baseUrl}"
-    variables:
-      baseUrl:
-        default: http://localhost:5000
-
+  - url: "https://team-11-backend-v1-457986151866.us-central1.run.app"
+  - url: "http://localhost:5000"
+  
 tags:
   - name: User Story Related API Endpoints
   - name: Non - User Story Related API Endpoints
