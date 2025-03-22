@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Team 11 - API Endpoints (Milestone 4)
+  title: Team 11 - API Endpoints 
   description: |
     **Team Members:**
 
@@ -39,8 +39,9 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://127.0.0.1:5000
-
+  - url: "https://team-11-backend-v1-457986151866.us-central1.run.app"
+  - url: "http://localhost:5000"
+  
 tags:
   - name: User Story Related API Endpoints
   - name: Non - User Story Related API Endpoints
@@ -81,9 +82,11 @@ paths:
                     type: string
                     description: A concise summary of the lecture transcript.
               example:
+                lecture_id: 5
+                title: Variables and Input Statement
                 lecture_summary: >
-                  This lecture discusses basic arithmetic operations in programming, 
-                  highlighting the importance of data types and operator precedence...
+                  This lecture introduces basic programming concepts using Python.  The core idea revolves 
+                  around creating interactive programs that take user input and...
         "404":
           description: Transcript not found or empty.
           content:

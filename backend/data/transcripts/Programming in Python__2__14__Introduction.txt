@@ -1,0 +1,46 @@
+I quoted the example of driving a car the last 
+week and this week I will continue quoting the   same example. Now, because I did not find, I do 
+not think there is a better example to explain how   important it is for us to start learning, I mean 
+start driving the car, start writing the program   than simply keep looking at theory and syntax 
+and then, lecture videos are very important. But   once you understand what is what, you probably 
+should move ahead, and then start coding. 
+  That is the first point I would like to tell 
+you for the beginning of the second week and   as you know, we tried (giving) making you warm 
+up for programming and please note the things   are not as simple as it appeared in week 1, 
+things are going to get more complex and that   is the very reason why we use the computer. 
+Programming is all about doing complex things   quickly and easily as I keep saying. So this 
+week, we are going to see a few more top ups to   programming skill set, which will be; firstly, 
+we will tell you what one means by a variable.   It may sound like Greek for you, if you 
+are listening it for the first time,   but you will get used to it. 
+We keep buckets in our houses to store   entities and we have different kinds 
+of buckets, different kinds of jars.   The vessel you use to store milk 
+is not used to store let us say,   plain rice. The glass you used to drink water 
+is a different glass as compared to what you use   glass to drink coffee or tea. 
+We have our own maybe fancy variants   there. But actually, strictly speaking, certain 
+things can be put in certain objects only. So   very similarly when a computer has different kinds 
+of baskets for different types of entities. If you   want to store an integer, computer stores it 
+in a different way; if it is a floating point   number or let us say a real number, it stores 
+it in a different way. If it is a string, the   computer stores it in a very different way. 
+So we are going to discuss that to begin with,   we are going to introduce you all to what is 
+called variables. Variables, in other words,   in a layman's language is a basket as in real 
+life and we need to spend some time there,   thanks to Python, things are very, very simple 
+as compared to, let us say, the programming   language that that were there in the 90s, as 
+I keep saying, things were very hard there.
+  Here, Python gives you the flexibility 
+to declare these baskets very easily.   We will be starting with variables and we will 
+go ahead with some print statement, some advanced   ideas, which I think is important for you all to 
+learn and after that, we will be moving ahead to   the if loop conditional statement, 
+which is; it sounds very complicated,   it does not even sound like English, 
+if I say if loop, but then with time,   you will realize that it is a very, very powerful 
+entity in programming and if you understand it,   you understand programming completely. 
+So basically, there is this triangle which   I want you all to remember. The triangle 
+with one point being if, the other being   for and other being while. These three are three 
+simple words in English, but in programming,   they mean something else and you really need to 
+know where to use if and how would you use for,   how do you use while. Maybe confusing at this 
+moment, but then please bear with me with time,   you will realize what is what. 
+We will be discussing the if loop,   writing a couple of code in this direction and 
+I will be teaching you the science of secrecy   in its simplest form. How would you encode 
+text and send it so that nobody understands it   in its very, very naivest form? In fact, do not 
+take whatever we teach seriously because it is a   very toy example. In fact, very advanced ideas 
+will come later on in the course. But as of now,   we are going to toy around with some very 
+basic examples. That is with the first week.

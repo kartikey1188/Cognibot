@@ -36,8 +36,6 @@ backend/service-account.json
 
 backend/tests/service-account.json
 
-backend/data/transcripts
-
 backend/dockerfile
 
 backend/.dockerignore
@@ -49,3 +47,5 @@ backend/logs
 backend/data/vector_database
 backend/data/grading_document_vector_db
 backend/data/handbook_vector_db
+
+env.yaml

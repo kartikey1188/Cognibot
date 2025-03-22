@@ -1,0 +1,198 @@
+Namaste welcome to the next video 
+of machine learning practice course.   In this week we are studying end-to-end machine 
+learning project and we are discussing various   steps that are involved in end-to-end machine 
+learning project. So, far we looked at the   first three steps the first one being looking 
+at the big picture second is getting the data   and the third is data visualization.
+Now we are on the fourth step which is   about preparation of data for machine 
+learning algorithm. So, in this video   we will look at various steps that are involved in 
+data preparation for machine learning algorithm.   We often need to pre-process the data before 
+using it for model building due to variety of   reasons. There could be errors in data capture. 
+Data may contain outliers or missing values. 
+  Imagine there is a sensor 
+measuring the wind quality   and if sensor starts malfunctioning we 
+might see different values than otherwise.   In machine learning algorithm generally we 
+use different features to represent an example   these different features 
+may be at different scales.   The current data distribution is 
+exactly not amenable to learning.   So, we we apply certain steps for data processing 
+and these steps are like separating features   and labels handling missing values and outliers 
+feature scaling to bring all features on the same   scale and in applying certain transformations 
+like log square root on the features. 
+  So, you can see that these four 
+steps that we are talking about   are are addressing the issues that we 
+discussed a few minutes ago. For example   handling missing values and outliers 
+help us to fix error due to data capture.   If there are outliers or missing values in 
+the data the handling of missing values will   take care of you know filling missing values 
+with with suitable with suitable values.
+  The feature scaling helps us to bring all 
+features on the same scale and transformations   like log and square root might help us to get 
+the data distribution that is more amenable   to learning. It is a good practice to make a copy 
+of the data and apply preprocessing on that copy   this ensures that if something goes wrong our 
+original copy of the data remains intact.
+  Let us look at the first step where we separate 
+features and labels from the training set.   So, in order to separate the 
+feature we simply apply drop   method on the training set. So, in this 
+case we dropped this label which is quality   before applying data cleaning we first check if 
+there are any missing values in the feature set   one way of it one way of finding it out is as 
+follows. So, we do column wise operation we can   we calculate we apply is in a function 
+on each column and then sum it up.
+  This counts the number of isna's in 
+each columns or number of missing values   in each columns. In this data set you can see that 
+there are no missing values because the values   in the column are the the values uh you 
+know that we obtained after this operation   are all zero. So, there 
+are no missing values.
+  In case we have non-zero numbers in any column we 
+have problem of missing values. These values are   missing due to errors in recording 
+or these values simply do not exist.   If the values are not recorded we can 
+use imputation technique to fill up   the missing values. The second option is to 
+drop the rows containing the missing values.   The values dot exist it is 
+better to keep them as NaN.
+  Sklearn provides a couple of methods for 
+dropping rows containing missing values.   We can we can call drop in a method or drop method 
+to draw to draw pros containing the missing values   but what happens is in case of 
+machine learning the data is scarce   and throwing away any data 
+like this could be costly.   Hence we try to use imputation technique 
+to fill up the missing values.
+  Sklearn provides simple imputed simpleimputer 
+class for filling up missing values and   his missing values can be filled up with 
+let us say median value or average value   or or maybe lowest value or highest value I mean 
+depending on the feature and the context.
+  In this case we import the 
+simple computer class from   sklearn and we apply the median strategy 
+for filling up the missing values.   In this case every missing value will be replaced 
+by the median of that particular feature.   We first called the fit method on computer for 
+that particular feature. The fit method learns the   learns the strategy it will basically calculate 
+the median value in this particular case.
+  We can learn the statistics learned by computer 
+with simple statistics underscore member variable.   And here you can see on median values for each 
+feature in our dataset. We can cross check it by   actually calculating median on the feature set. 
+And you can see that these values match uh match   exactly is 7.9 for fixed acidity the imputer 
+also learned 7.9 as the value of median   then 0.52 for volatile acidity and so on.
+You can check each of these values over here and   the values that are learned by imputer and we find 
+that these values are matching and note that we   have already separated the label which is quality 
+which is not present in in the feature set. 
+  Finally we use a trend imputer to transform 
+the training set such that the missing values   are replaced by the medians. We simply 
+call the transform method on imputer.   The transform method returns a numpy array and 
+we can convert it into data frame if needed.   We can look at the shape of the of the transformed 
+uh feature set and you can see that it has got   1279 examples with 11 features.
+  We can convert convert this 
+numpy array into the data frame   sometimes we might have 
+text or categorical features   in the dataset and we need special 
+handling for these features.   Since machine learning algorithms prefer numerical 
+data what we basically do here is we take this   text or categorical attributes and convert 
+them into numbers. Let us look at how to do it.   First option is to convert the categories to 
+numbers. We can simply use ordinal encoder   transformation for that ordinal and encoder 
+transformation called the fit transfer method on   ordinal encoder objects to convert text to numbers 
+and text is also an example of a category.
+  The list of categories can be obtained via 
+categories underscore instance variable.   One issue with this representation 
+is that ML algorithm would assume   that the two nearby values are 
+closer than the distinct ones   that could be a real problem if there is no 
+systematic ordering in the categories.
+  In that case we use one hot encoding as an option. 
+Here we create one binary feature per category   the feature value is 1 when the 
+category is present otherwise it is 0.   Only one feature is 1 which is hot and 
+the rest of them are 0 which is cold.   The new features are referred to as dummy 
+features a sklearn provides one hot encoder   class to convert the categorical 
+values into one hot vectors.
+  And again one hot encoder is a transformation so 
+that it has got fit underscore transfer method   it returns scifi sparse matrix as an output 
+rather than numpy array because the the the   new representation is pretty sparse many features 
+are actually zero and only few features are one.   So, this enables us to save a huge amount of space 
+for for this new representation in case you want   to convert it into dense representation.
+We can do it with two array method.   Again the list of categories can be obtained 
+via categories underscore member variable.
+  As we observe that when the number of categories 
+are very large the one hot encoding would result   in a very large number of features. This can be 
+addressed with one of the following approaches we   can either replace one hot encoding representation 
+with the categorical numerical features or we   can convert it into a lower dimensional 
+learnable vector called embeddings. 
+  So, it is often observed that different 
+features in different features that are   used for representing examples are at different 
+scales and most of the machine learning algorithms   do not perform well when input features are on 
+different scales. Scaling of target label is   generally not required. We generally do scaling 
+only on the features. There are variety of   scaling approaches that can be used the first 
+one is mean max scaling or normalization.
+  In mean max scaling we subtract minimum 
+value of the feature from the current value   and then divide it by the difference between 
+the minimum and maximum value of that feature.   The values are shifted and scaled 
+so, that they range between 0 and 1.   Scikit-learn provide min max 
+scalar transformer for this.   One can specify the hyper parameter of feature 
+range to specify the range of the feature.
+  The second approach for feature scaling is 
+standardization. In standardization we subtract   mean value of each feature from the current value 
+and then divide it by the standard deviation. So,   that the resulting feature has a unit variance. 
+While normalization bounds when normalization   bounds values between 0 and 1 standardization 
+does not bound values to a specific range.
+  Standardization is less affected by 
+outliers compared to normalization.   A Scikit-learn provides standard scalar 
+transformation for feature trans standardization.   Note that all these transformers are learnt on the 
+training set and then apply it on the training and   test set to transform them. Remember that we 
+should apply the same kind of transformation   to training and test in order to get in order to 
+have the correct machine learning pipeline.
+  These make sure that we are applying the same 
+kind of transformation on the test as that as   that was applied on the training set. We never 
+learn these transformers on the full data set. 
+  So, depending on the nature of the feature set 
+you can decide your transform you can decide   your transformation. So, for example if your 
+data set has outliers then standardization might   be the transformer might be the transformation 
+that you want to use rather than normalization.   So, in order to make sure that we apply uniform 
+preprocessing to both training and test set we use   a pipeline class provided by Scikit- learn. 
+Pipeline class helps us to line up transformation   in an intended order. 
+Here is an example of pipeline.   The pipeline class we specify a sequence 
+of transformation. Here we are we have two   transformation one is the imputer transformation 
+and second is standard scalar transformation.   So, the imputer transformation helps 
+us to fill up the missing values   whereas standard scalar 
+helps us in standardization.   You can note that each step is defined 
+by the name and the estimator pair.
+  For imputer we are going to 
+use simple computer estimator   and for standard scalar we are going 
+to use standard scalar estimator.   Each name should be unique and should 
+not contain double underscore.
+  The output of one step in this case of the simple 
+imputer is passed to the standard scalar. So,   what really happens is whatever data that we get 
+we first fill up the missing values with simple   imputer and then we apply standard scaling on that 
+on the resulting data set from the simple imputer.   Now in in this transform underscore 
+pipeline the standard scalar is the last   transformation that we are using. 
+So, the pipeline would expose the   the method of the last estimator. In this 
+case the last estimator is standard scalar   and and since it is a transformer we call a fit 
+transfer method on the pipeline object. 
+  So, this works well when we have features of 
+the of the same type. What if we have features   of different types and it is very common in real 
+world situation that features will be of different   types. Some features will be numerical features 
+some features might be categorical features and so   on. So, transforming this mixed feature can be a 
+challenging thing. But a scikit-learn has a way of   scikit-learn has provided a way for us 
+to transform these mixed features.
+  Sklearn provides column transformer for 
+for exactly this particular purpose.   We can import column transformer class 
+from sklearn dot compose package.   In our current data set for wine prediction 
+wine quality prediction we do not have   features of mixed types. All our features are 
+numeric. So, it was easier for us to apply   you know the same kind of 
+transformer on all features. 
+  So, here for for the purpose of illustration 
+we have we have a code snippet using the   column transformer. Here we are defining what 
+kind of transformers that should be applied   on on different type of attributes. For numerical 
+features we will use num underscore pipeline   and for categorical features 
+we we will use OneHotEncoders.   The column the column transformer applies each 
+transformation to the appropriate column and   then concatenates output along the columns.
+And the columns are specified over here. Here   we are specified uh numerical 
+attributes that are coming from   uh this particular list of fine features. So, 
+this is a list of attributes on which this   numpy uh numpy pipeline transform transformation 
+will be you have applied. Categorical attribute   which is place of manufacturing and this 
+OneHotEncode encoder will be applied on   this place of manufacturing which is in 
+the list of categorical attributes.
+  Here there is a single categorical attribute but 
+if we we can also specify multiple categorical   attributes if they exist in our dataset. So, 
+this is a very, very useful uh useful transformer   to learn and this will be very 
+useful in real life situations.   However there is only one restriction   all transformer all transformers 
+must return the same number of rows.   If that does not happen we will have problem while   concatenating the outputs 
+along different columns.
+  In this case the numerical transformer returns 
+a tens matrix while the categorical transformer   returns a sparse matrix. The column transformer 
+automatically determines the type of the output   based on the density of the resulting matrix. 
+That is all from the data preprocessing steps.   We looked at how to handle the missing 
+values how to standardize the features   and how to apply the pre-processing uniformly to 
+training and test set using pipeline class.
+  This content will be very useful for you while 
+solving the real-world. In problem next step   we will look at how to train 
+the machine learning model.
