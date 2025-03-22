@@ -1,0 +1,79 @@
+Hello python students. In previous lecture we discussed about import
+statement and we also saw how to import a particular library into python program. In that same lecture we also talked about
+two python libraries; math and random. We will introduce one more library called
+calendar and using that library we will discuss the main concept of this particular lecture
+which is different ways to import a library into a python program. Let us start with calendar library. Import calendar, print calendar dot month,
+let us say I want to display the calendar of 2021 and month let us say January. Let us execute and see what output we are
+getting. It displays the entire calendar of month January
+2021. Similarly, you can change the month from Jan
+to let us say July and execute it again, it will display the calendar of month July. You can always change these values for year
+and for month to get a calendar of that particular month of that particular year. But what if I do not want to display a calendar
+of only one month, let us say I want to display calendar of entire year 2021. Of course that is possible, let us see how
+to do that. Print calendar dot calendar in bracket 2021,
+let me comment this line and let us execute the code, as you can see the entire calendar
+of year 2021 is displayed over here. Now you must be wondering why it says calendar
+dot calendar, now do not break your head over this particular way of writing the code, we
+will come to these concepts slowly in later weeks of this particular course. Right now let us focus on different ways of
+input statement. So far we have imported the library calendar
+and used two different features of that particular library, first allows us to print a calendar
+for a month and second one allows us to print the calendar for entire year. So far we have discussed only about this kind
+of a import statement. Let us try another variation of this particular
+import statement. Let me remove this line. From calendar import star, print calendar
+2021, let me comment this code, we all know how to comment a multiline code. Let us execute this, as expected we are getting
+the output where the computer is printing the calendar for entire year 2021. You must be wondering what is the difference
+between the earlier code and this new code? Earlier we were writing import calendar, then
+we say import calendar brings the entire library calendar into this python program and anything
+inside that library can be accessed only through this particular word calendar. Due to which we always have to write calendar
+dot calendar or calendar dot month as we saw earlier. But in second case, when we said from calendar
+import star, which means we are telling the computer to bring everything inside the calendar
+library into this particular python program. Due to which now we do not have to write calendar
+dot calendar, we can directly access this particular feature called calendar and pass
+the value for year as 2021. Same thing can be done for month as well,
+let us see month 2021 and 10th as a month October. We are getting October month of 2021. Once again we did not write calendar dot month,
+we only wrote month, because as I explained earlier, in first case we are telling computer
+to bring the entire library called calendar into python program whereas in second case,
+we are asking computer to bring everything inside that calendar library into this python
+program. Due to which now computer knows that there
+is something called as month in that particular library. Let us execute a similar code with the first
+type of import statement; import calendar, print month in bracket 2011 comma 10. It says name error, name month is not defined,
+as I explained currently computer is able to find that there is a library called calendar. What all things are there inside that library
+are not known to the computer. That is the reason we explicitly have to mention
+calendar dot month. Now come to the knowns, it should look for
+the specific term month inside library calendar. Then it should be able to execute the code. Once again just to summarize, import calendar
+statement imports the entire calendar library in this particular python program, whereas
+from calendar import star, imports the entire content of calendar library into this particular
+python program. Now we will see the third variation of this
+particular import statement. Let us comment this code first. As I explained earlier, in this case we are
+importing the entire content of library calendar into this particular program. But ultimately we are using only one feature
+of that library which is month. In this case, do not you think it is not an
+optimum way where we are importing everything, but using only one feature of the library? Unnecessarily we are asking computer to bring
+all those things, but we are using only one feature out of all those things, hence to
+avoid all that trouble, we will simply say from calendar import month. Still we will get the same output. Only problem with this kind of import statement
+is now if we try to execute something like calendar 2021, then it will not execute, it
+will say name calendar is not defined. Because we explicitly said from calendar import
+month. So now computer will bring only month feature
+from calendar library into this program. In this case, we explicitly have to mention
+month comma calendar. Now both those features month as well as calendar
+will be available in this particular program. Hence we got the output first the month October,
+because of first print statement and then the entire calendar of year 2021 to second
+print statement. If we are using one or two features from a
+specific library, then this is the most ideal way to write the program. And if you are using almost all the features
+of the library, then it is better to use star like we saw earlier. Output will always be same, moving on to the
+next and the last type of import statement. In which we can import a specific library
+or a specific feature of the library and store it in a variable. Let us see how that works with import calendar
+first. Import calendar as, this is one more key word
+says as let us say c. Now the entire calendar library is accessible
+using this particular variable c. We can say c dot month and the specific month
+which is October of 2021 will be displayed. This particular feature helps us in saving
+some time writing some lengthy library names. Same thing can be done using the next type
+of import statement as well. We can say from calendar import month as let
+us m, let us remove this line and in this case, instead of month we can use this variable
+m. Because now computer knows that this particular
+calendar library has a feature month and it is stored in variable m. Let us execute, October 2021. Before closing let us revise what all things
+we saw in this particular lecture. First we saw a normal import calendar statement,
+then we saw something where we used from calendar import star, then we saw from calendar import
+a specific feature either it can be a month or calendar or something else. And then we saw how to store a specific feature
+in a variable or a library itself in a variable using a key word as . All these different types of import statements
+are not that critical, we are teaching you all these concepts to complete the python
+course. As a python programmer, you should know that
+there are multiple ways to import a library. Thank you for watching this lecture. Happy learning!

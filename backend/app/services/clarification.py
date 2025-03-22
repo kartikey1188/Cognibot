@@ -42,9 +42,9 @@ def get_chat_history(user_id):
     if not chat_history.messages:
         return "No chat history found."
     
-    last_3_messages = chat_history.messages[-3:]
+    last_5_messages = chat_history.messages[-5:]
 
-    return last_3_messages
+    return last_5_messages
 
 
 # Defining Syllabus Search Tool

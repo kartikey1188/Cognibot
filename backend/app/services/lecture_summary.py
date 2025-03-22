@@ -13,17 +13,37 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from dotenv import load_dotenv
 load_dotenv()
 
-from backend.app.utils.transcript_generator import GetSingleLectureTranscript
+#from backend.app.utils.transcript_generator import GetSingleLectureTranscript
 
-slt = GetSingleLectureTranscript()
+#slt = GetSingleLectureTranscript()
 
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+
+def sanitize_filename(filename):
+    return re.sub(r'[\\/:\*?"<>|]', '_', str(filename))
+
+def get_transcript(lecture_id):
+    try:
+        lecture = Lecture.query.filter(Lecture.lecture_id==lecture_id).first()
+        if not lecture:
+            return {"Error": "Lecture not found"}, 404
+        filename = sanitize_filename(f"{lecture.course.course_name}__{lecture.week}__{lecture.lecture_id}__{lecture.title}.txt")
+        transcript_path = os.path.join(app.config["TRANSCRIPT_FOLDER"], filename)
+        with open(transcript_path, "r") as f:
+            transcript = f.read()
+        full = {"Transcript": transcript, "lecture_id": lecture.lecture_id, "title": lecture.title}
+        return full
+        
+    except Exception as e:
+        app.logger.error(f"Exception occurred: {e}")
+        app.logger.error(traceback.format_exc())
+        return {"Error": "Failed to retrieve transcript"}, 500
 
 class LectureSummary(Resource):
     def get(self, lecture_id):
         try:
 
-            transcript = slt.get(lecture_id)
+            transcript = get_transcript(lecture_id)
 
             if not transcript or "Transcript" not in transcript or not transcript["Transcript"].strip():
                 return {"Error": "Transcript not found or empty"}, 404
@@ -44,7 +64,7 @@ class LectureSummary(Resource):
 
             summary = llm.invoke(messages)
 
-            return {"lecture_summary":summary.content}, 200
+            return {"lecture_id" : transcript["lecture_id"], "title" : transcript["title"], "lecture_summary" : summary.content}, 200
         
         except Exception as e:
             app.logger.error(f"Exception occurred: {e}")

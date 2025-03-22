@@ -1,0 +1,76 @@
+So, let us dive in and write our first program. 
+Programming was not as easy as it is in 2021,   thanks to the internet we do not have to install 
+anything before starting to code. So, what do you   see? I have now opened my browser, let me just 
+zoom in just so that it is clear to you all   and I am typing Replit.com, R-E-P-L-I-T.com. 
+And then you will see this. The moment you see   this click on Start coding and then it 
+will ask for a user name and password,   if you have a Gmail ID, just click on this G and 
+log into your Gmail ID and you will be getting   a window like, a screen like this. 
+Go to this plus symbol, click on it,   what is the language that you would 
+like to code in, Python obviously,   click on Python and then here you will 
+get a name that is machine given. 
+  It is generally a combination of words, random 
+combination of words. So, what I will do is I will   remove it and then give it a name first code and 
+then create on create R-E-P-L. So, I click on it,   this is a repository that gets created. Do not 
+break your head about what is a repository,   it is just a place where you can come and code and 
+as you can see, you can in fact, see some examples   by clicking here. Let us do that. 
+Here are some example codes, but it is   a little confusing to see it on your first day 
+of programming. So, let us try coding something   from our hands. Let me say print hello, 
+just hello and once I type something here,   you will see things are self-explanatory, 
+I will not explain, come here and click on   run and you will see hello here. Now, your 
+question would be what just happened? 
+  You say something here and the same word came 
+here. I mean, what is the big deal? What are we   into? So, the point is this is the place where 
+you will type your, you can call it commands,   and this is the place where your computer will 
+execute them and show you the result of what you   have typed here. Just in case you typed, instead 
+of hello you typed Namaste, and then click on run,   it will show you Namaste. 
+If you say Namaste India   and then click on run, it will show Namaste India 
+, so the nutshell all you do is you type your   commands here and you get the output here. You can 
+type more print commands, this is the second line   and you will indeed get Namaste India in the first 
+line and then this is the second line . You can   type whatever you want, put dots here or put some 
+special symbols and you will see them here. 
+  Let us do a small piece of code that is not 
+simply printing some English statements. Let me   delete this and simply type one star, see what 
+happens, let me not explain what I am doing,   it again should be self-explanatory. 
+So, what am I doing? I type two stars   in the second line, three stars in the third 
+line, as I run this I will get this. 
+  We keep doing this assuming I have a lot of time 
+this evening, I can keep typing, this five lines   and then sixth line is six stars, 
+seventh line is seven stars.   Then run, you will get precisely what you have 
+typed. It is sort of has a staircase effect as   you can see, correct? And let me continue this 
+8, 9 and 10. Looking at the pattern you see,   I should have included 9 stars here, but I have 
+included 2 stars more, making it 10 stars. 
+  If I run look at this the computer will 
+obviously not know that it should display   the 9 stars here and not 10, simply because you 
+have specified 10 stars here. The point to note   is that your computer does precisely what you ask 
+your computer to do. If you ask it to display a   hash at the end, it will simply display a hash 
+at the end as you can see. Print I don't know   what to type , then run it, it will simply say, 
+I don't know what to type as simple as that. 
+  So, this is a gentle introduction, 
+a very quick introduction to   Python and the simplest way to start 
+typing your code and the simplest code is,   of course, your print statement. I 
+just now showed you how you can type   something here and execute the same by clicking 
+on run command and the executed code appears on   the screen right here. This should be enough to 
+begin with, you can go ahead and try exploring   whatever you want to explore. 
+Before I conclude let me try to display this stars   in the reverse order. What do I mean by that? 
+three stars, let us say space space star,   give me a minute, you will understand what I am 
+trying to do, space star star and star star star.   What do you think this will display? Exactly the 
+same thing but in the reverse order. Wonderful!   Now, what if I want to display four 
+lines? Understand a small issue here. 
+  I cannot simply put four here. I 
+should put one space extra here,   one extra space here and one extra space 
+here, do you see, do you see that I   clicked on run and I got the output, a 
+beautiful staircase effect, but in the   staircase effect, but in the reverse direction. 
+But do you observe something? It is not as easy   as the previous program where you simply typed one 
+star in the first line, two in the second line,   three in the third line, fourth in the fourth 
+line, it is a little more involved than that. 
+  To make your life even more difficult, rather 
+I am making my life difficult here, not yours.   I am sure when you type start typing your piece 
+of code your life will become difficult as well.   You see for five I should again go 
+and push these things by one space   run and here I am. And assuming I did that for 
+about 10 lines and the 11th line will involve me   going up and then putting space to all the lines 
+above, oh, it is going to be some hard work if   you are going to do this for like 20 lines. 
+I stop here with a question - Is there any way we   can automate this? Of course, we are a couple of 
+weeks ahead with this question, rather I am asking   this question couple of weeks ahead, but let us 
+wait and watch if there is a nice way to display   this by coding something really nice here, in 
+just three to four lines, so let us wait for the   forthcoming weeks where we take you on our 
+journey of automating things using programming.

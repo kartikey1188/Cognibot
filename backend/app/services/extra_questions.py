@@ -2,17 +2,40 @@ import os
 import traceback
 import json
 from . import *
+import re
 from app.apis import *
+from app.models.user import Lecture
 from flask import current_app as app
 from flask_restful import Resource, reqparse
 from langchain_google_genai import ChatGoogleGenerativeAI
-from backend.app.utils.transcript_generator import GetSingleLectureTranscript
+#from backend.app.utils.transcript_generator import GetSingleLectureTranscript
 
 # Initialize the transcript retriever
-slt = GetSingleLectureTranscript()
+#slt = GetSingleLectureTranscript()
 
 # AI Model (Gemini)
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+
+
+def sanitize_filename(filename):
+    return re.sub(r'[\\/:\*?"<>|]', '_', str(filename))
+
+def get_transcript(lecture_id):
+    try:
+        lecture = Lecture.query.filter(Lecture.lecture_id==lecture_id).first()
+        if not lecture:
+            return {"Error": "Lecture not found"}, 404
+        filename = sanitize_filename(f"{lecture.course.course_name}__{lecture.week}__{lecture.lecture_id}__{lecture.title}.txt")
+        transcript_path = os.path.join(app.config["TRANSCRIPT_FOLDER"], filename)
+        with open(transcript_path, "r") as f:
+            transcript = f.read()
+        full = {"Transcript": transcript, "lecture_id": lecture.lecture_id, "title": lecture.title}
+        return full
+        
+    except Exception as e:
+        app.logger.error(f"Exception occurred: {e}")
+        app.logger.error(traceback.format_exc())
+        return {"Error": "Failed to retrieve transcript"}, 500
 
 class ExtraPracticeQuestions(Resource):
     def post(self):
@@ -24,7 +47,7 @@ class ExtraPracticeQuestions(Resource):
             lecture_id = args["lecture_id"]
 
             # Retrieve the transcript for the given lecture
-            transcript_data = slt.get(lecture_id)
+            transcript_data = get_transcript(lecture_id)
 
             if not transcript_data or "Transcript" not in transcript_data or not transcript_data["Transcript"].strip():
                 return {"Error": "Transcript not found or empty"}, 404

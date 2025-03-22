@@ -1,0 +1,79 @@
+Namaste welcome to the next video of machine 
+learning practice course. In this video we   will study the next step of end-to-end machine 
+learning project that is data visualization.   Data visualization is performed on training 
+set and in case of large training set   we usually sample examples to form an exploration 
+set. Data visualization enables us to understand   the features and the relationship among 
+themselves and with the output label.
+  In our case since we have a small amount 
+of trading data will use all of it for   data exploration. In this case there is no 
+need to create a separate exploration set.   It is a good idea to create a copy of 
+the training set so, that we can freely   manipulate it without worrying about any 
+manipulation in the original data. 
+  So, there are different visualization 
+techniques that we can use the first one   is the scatter visualization. So, we can use the 
+cbone library for doing the scatter visualization   and there is a scatter plot function in 
+the library that we can use. You have to   predict we have to specify the the x-axis and the 
+y-axis and the the data for for visualization.   So, the scatter plot prints the data in form 
+of such a graph where we have fixed acidity   on the x axis and density on the y axis.
+And each point over here is a training point   and each point has been assigned a colour 
+based on the quality of the wine.
+  Another library that we can use is 
+matplotlib for the same purpose.   In matplotlib we can we can show the same kind 
+of data with with slightly different look at   fill as well as you know by using some kind of a 
+colour coded strip for denoting the quality.
+  Apart from visualizing individual features we can 
+also study relationship between features. One of   the relationship is a standard correlation 
+coefficient. It ranges between -1 to +1   correlation of +1 denotes a very strong positive 
+correlation between the features correlation of -1   denotes a very strong negative correlation between 
+the features and correlation of 0 means that there   is no linear correlation between the features.
+We can visualize correlation with a heat map.   So, note that note that standard 
+correlation coefficient only captures   the linear relationship between the features. 
+If you suspect or if you believe that there is   a non-linear relationship between the features 
+you can use rank correlation for that purpose.   Let us calculate correlation between our features. 
+We can use core function for calculating the   correlations between the feature.
+Let us check out the features that are   correlated with the label and in our case 
+the label is the quality of the wine.   So, you can see that. So, if i if i plot this 
+correlation matrix with respect to the label   these are correlation of 
+different features with the label.   You can see that sulfates is a sulfate 
+has correlation coefficient of 0.22   alcohol has correlation coefficient coefficient 
+of 0.48 which is probably the strongly correlated   features with the quality of the wine.
+Whereas volatile acidity is probably the   strong negative negatively correlated 
+features with the quality of the wine. 
+  We can visualize the correlation matrix with heat 
+map. So, there is a heat map function in cbond   library that we can use for that purpose. 
+So, here you can see all correlation coefficients   in one go in form of a heat map. So, what you 
+see is this heat map which is some kind of a   symmetric matrix there are there are features 
+on y-axis and then there are features also   in the x-axis and what you see is each cell 
+calculates correlation between the features.   So, here you can see that fixed acidity 
+and citric acid are are strongly correlated   with correlation coefficient of 0.66.
+And you know you can see the colour coding that   we have used for representing this correlation 
+on the side on this colour bar here on the side.   As we move towards correlation of wine the colour 
+becomes fender and fender and as we move towards   a smaller or lower correlation 
+the colour becomes darker.   In this way you can quickly spot 
+strongly positively correlated features   as well as negatively correlated features. 
+So, these are some of the examples of negatively   correlated features for example fixed acidity 
+and pH s are negatively correlated. 
+  So, you can notice that the correlation 
+coefficient on diagonal is one. The darker colors   represent negative correlations while ventricular 
+denote positive correlations. For example citric   acid and fixed acidity have strong positive 
+correlation with correlation coefficient of 0.66.   pH and fixed acidity have strong negative 
+correlation which is correlation of -0.67.   Another option to visualize the relationship 
+between the features is with scatter matrix.
+  So, there is a scatter matrix function in in 
+pandas plotting library that we can use. So,   scatter matrix function also plots 
+the relationship between features   in form of scatter scatter plots. On 
+diagonal you see some kind of histograms   they denote the distribution of the individual 
+feature. For example this particular histogram   shows the show that shows the distribution of 
+the citric acid feature. Whereas this particular   scatter plot shows the relationship between citric 
+acid and pH so, this is a scatter plot of citric   acid pH versus citric acid and so on.
+For the convenience of visualization   we are showing only a small number of 
+attributes on the screen otherwise this   would have been a very large plot which cannot 
+be accommodated on this particular screen. 
+  So, similar analysis can be carried out 
+with combined features, features that   are derived from the original features.
+There is a small note of wisdom for all of you   visualization and data exploration do not have 
+to be absolutely thorough. The objective here   is to get quick insight into the features and its 
+relationship with other features and the labels.   Exploration is an iterative process once we build 
+the model we obtain more insights and we can come   back to the exploration step if necessary. That 
+is all from the data visualization visualization   process. In the next step we will look at how 
+to prepare the data for the training.

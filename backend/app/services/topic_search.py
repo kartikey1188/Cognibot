@@ -5,7 +5,6 @@ from flask_restful import Resource
 from app.apis import *
 from flask_restful import reqparse
 
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 

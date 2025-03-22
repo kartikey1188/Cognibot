@@ -1,0 +1,119 @@
+Namaste welcome to the next video of machine
+learning practice course. In this video I will introduce you to Scikit-learn. Scikit-learn is a python library that will
+be using for implementing machine learning algorithms in machine learning practice course. Scikit-learn api's are organized on the lines
+of our machine learning framework. Here what I am doing is I am going to list
+the components of the scikit-learn api and machine learning framework side by side. So, that we can establish the correspondences. The first component in scikit-learn api helps
+us in training data loading preparation and preprocessing it corresponds to train data
+component in machine learning framework. The second component is a model and model
+helps us in actually train the machine learning model the model subsumes loss function and
+optimization procedures. It corresponds to model loss function and
+optimization components of machine learning framework. The third component of scikit-learn api helps
+us in model selection and evaluation. In model selection we perform cross validation
+and hyperparameter tuning in order to find out the best possible hyper parameters for
+the model. And model evaluation helps us with several
+metrics for measuring the performance of the machine learning model. This corresponds to evaluation component of
+machine learning framework. We have an additional component for model
+inspection that helps us in inspecting the loan model and understand what exactly model
+has learned. You might get overwhelmed with the number
+of components a number of api s listed in the scikit-learn and package. However psychiatrists are very designed with
+the following principles if you understand these principles it will be easier for you
+to intuitively figure out what kind of methods or what kind of member variables will be exposed
+by different scikit-loan api's. So the first principle is about consistency. All api s share a simple and consistent interface. For example there is an estimated api that
+helps us in training the machine learning model. All estimator api s have a fit method. So, in that sense if we change uh change from
+one estimator to the other probably we do not have to change any part of our code and
+our code will work uh just fine and this is possible because of this consistency principle. All estimators have fit method and in the
+same way there are predictors which are another escape and object they have prediction score
+method. So, no matter what kind of creditor we are
+using each one of them will have implemented predict and fit method. So, this simple and consistent interface also
+helps us in in remembering or in understanding into today what kind of methods we should
+be using once we figure out the class of the object. Second is inspection once we train a machine
+learning model we are interested in inspecting the model we are curious about what kind of
+parameters what kind of weights each parameter is taking or what kind of hyper parameters
+have been obtained to hyperparameter search. And scikit-learn api s provide is learnable
+parameters as well as hyperparameters as directly through public instance variables or member
+variables. Scikit-learn uses standard data representations
+like numbers arrays or side by sparse matrix instead of custom design classes that helps
+us not designing too many classes in the api and also freeze up programmers from burden
+of remembering uh you know more classes. Then there is inherent principle of compulsivity
+existing building blocks are reduced as much as possible and we can combine the very minimum
+building blocks in order to build a complex machine learning pipeline. And finally there is a principle of using
+sensibility for twelve years for parameters and that helps us in quickly building a baseline
+model. Let us look at high level types of scikit-learn
+object. There are three types of escape and object
+one is transformers second is estimators and told his predictors. Transformers help us in transforming the dataset
+as the name suggest. Transformers implementary methods one is transformed
+second is fit and thirty is fit transform. Transform method helps us in transforming
+the dataset. Before applying transformation we need to
+learn the parameters of the transformation that is done through the fit method and fit
+underscore transform does job of the both job of both the methods fit and transform
+it felt it first freeze the model and then transform the dataset using the using the
+train model. Estimators on the other hand helps us in training
+the machine learning model based on the given training data and hyperparameter. All estimators have fit method when we call
+fit method on the estimator it helps us entering the machine learning model. Then there are predictors predictors helps
+us in making predictions on data. Predict method takes datasets dataset as an
+input and returns predictions as an output. They also provide another method which is
+scores method and its score method helps to measure the quality of predictions. Transformers corresponds to data processing
+step in the machine learning pipeline. Estimators correspond to the training step
+and predictors corresponds to the inference step. So, you can see that these three sklearns
+of objects are associated with specific steps in machine learning pipeline and based on
+what kind of component of the machine learning pipeline we are implementing we can figure
+out what kind of scikit-learn object we should be using for that particular purpose. Let us look at some of the concrete scikit-learn
+api s. First look at the data api. The data api helps us for loading generating
+and reprocessing the training and test set. So there are different modules here the first
+model is sklearn the dataset. The sklearn under datasets module helps us
+enduring the data the data could be the custom data as well as some of the popular reference
+datasets. They come bundled with a sklearn or scikit-learn
+helps us to face the datasets on the second is a sklearn under preprocessing. The preprocessing module helps us in scaling
+centering, normalization, binarisation of the features. Then we have third model which is a sklearn
+dot impute that helps us in feeding the missing values there could be missing values in the
+dataset due to various data captured errors. Then we have a module for feature selection
+which helps us in selecting certain features based on based on different algorithms and
+we have also a module for feature extraction which is sklearn feature underscore extraction
+that helps us to extract features from the data like text and images. Then we have model api, model api helps us
+to implement supervised as well as an unsupervised models. So, first is the regression model and second
+is a classification model. For regression we have a sklearn linear underscore
+model. Sklearn dot linear underscore module module
+helps us to implement linear ridge and lasso modules. We can also perform regression with it the
+sklearn the trees. We can perform classification to various methods
+like sklearn under cleaning underscore module there are methods like logistics regulation
+which are implemented in this module then sklearnen dot svm, sklearn dot trees, sklearn
+dot neighbour, sklearn dot naive_bayes, sklearn dot multiply or sklearned multiclass. So svm as name suggest implements a svm algorithm,
+trees implements decision trees uh neibhours module helps us in implements uh knines and
+knine kind of classifiers. Na ve underwscore base module helps us in
+implementing a naive based classifier. Na ve based classifier is already implemented
+and we essentially called the fit method uh and for that we have to import scikit-learn
+dot na ve underscore base module. And finally a sklearn learned multi class
+module helps us in helps us in implementing the multi-class classification setups. A sklearn and multi output module helps us
+in implementing multi output classification and regression setup. So, for example if you have multi-label classification
+we should be using multi output module or if you have multiple regression or multi output
+regression we should be using multi output module from scikit-learn api. And we have a sklearn under cluster module
+that implements many popular clustering algorithms. So, if you want to perform clustering you
+have to look out uh for methods in scikit-learn cluster module. So roughly what you can do is sklearn provides
+a very nice documentation and if you type in this module in the sklearn documentation
+or in the help pages you will find out different classes or different machine learning models
+that are implemented in that module and that would help help you to select the right kind
+of uh model and module for uh you know implementing your machine learning algorithms. The model evaluation api implements different
+metrics for model evaluation. The metrics for classification regression
+and clustering that are implemented by the model evaluation api s and are available to
+us in sklearn library. Then we also have a model selection api that
+implements various models election strategies like cross validation hyper-parameter evening
+and plotting the learning curves. And we have modeled inspection api that has
+tools for model inspection where we can figure out you know what are different weights uh
+for all the different ways that are learned by the model and this kind of inspection also
+helps us to get an intuitive feeling about what model has learned. Finally some practical advice about using
+sklearner api. So, remember that it is not possible to remember
+each and every scikit-learn api. I recommend that you remember high-level modules
+and api design principles. Use documentation for more information and
+how can you use that? this is a small porcelain you can import the necessary uh class here
+we are here we are importing logistics precaution class from a sklearn underscore linear underscore
+module. And then you can you know put a question mark
+followed by the name of the class to access documentation through its educational notebooks
+or through google colab and keep the following links handy. So, there is a ready reference api guy that
+points you to scikit-learn uh a prinference page. Sklearn also has an extensive user guide that
+you can use and it also has worked example for reference implementations. All this will help you to uh you know to effectively
+use different sklearn modules for solving the machine learning problem. I hope uh this has uh provided this video
+has provided a good overview of sklearn. Now you are aware of different sklearn modules
+and the correspondence to components in machine learning framework. So, after this video now you are ready to
+implement machine learning algorithm with uh with scikit api. And we will be using these modules again and
+again uh in machine learning practice course and in the in in in various practical implementations. So, I suggest you go through these links and
+get a feel for a sklearn api and be ready for rest of the course, thank you and Namaste.

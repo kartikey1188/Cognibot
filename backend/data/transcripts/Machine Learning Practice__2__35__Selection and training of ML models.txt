@@ -1,0 +1,141 @@
+Namaste welcome to the next video 
+of machine learning practice course.   In this video we will talk about how 
+to select and train machine learning   model. This is step number five in our 
+end-to-end machine learning project.   In this step we will talk about how to select   a machine learning model that can 
+be applied on the problem at hand.   So, it generally happens that when we 
+are solving a machine learning problem   and we get the data we we are not sure what 
+kind of machine learning model to use.
+  In this case it is a good practice to build a 
+quick baseline model on the preprocessed data   and get an idea about model performance. So, in 
+this case in the case of wine quality prediction   since the quality is a number we can use linear 
+regression model as a quick baseline. 
+  Once we train once we train the regression 
+model we can evaluate its performance on both   the training as well as test sets. We can use 
+mean squared error as an evaluation measure.   So, in the training set we obtain 
+mean square error of point 0.42.
+  We evaluate the performance in the test set 
+where we first apply the transformation on   the test set same as the training set and 
+then apply the model prediction function.   So, we have the test set here we apply the same 
+pipeline that the the transformation pipeline the   test set as a training set and then we calculate 
+the mean squared error on the on the test set.   So, these are the actual labels and these are 
+the predicted label from from our model.
+  We compare these two and calculate mean 
+square error through sklearn function.   The mean squared error on 
+the test set is 0.39.
+  Let us visualize the error between 
+the actual and predicted value.   So, here what we will do is we will have a 
+scatter plot that will that will plot the actual   wine quality which is the actual 
+label and the predicted quality.   So, each for each example we can see a dot here 
+that that shows this for this particular point   the actual quality was 3 and we predicted 
+the quality somewhere between 4 and 5. 
+  Here the actual quality was 8 and we predicted 
+quality which is slightly less than 7. So,   this particular plot shows that the model seems to 
+be making an error model seems to be making errors   on the best and poor quality wines. So, on either 
+extremes the model is not performing that well.   On the other hand for average quality wines 
+model seems to be performing fairly well.
+  Now that we have a quick baseline we can 
+try to build other other regressor models.   Decision tree regressor is is another such 
+regression model we are yet to study this in   machine learning techniques course but in the 
+later weeks of the course we are going to study   decision tree regressor model. In this case what 
+we will use you what we will do is we will use   the decision tree regressor as provided 
+by the scikit-learn package.
+  We import the decision tree regressor and and 
+call the fit function on the training set.   At this point I would like you to notice a 
+similarity between two core snippets. In case of   linear regression we had linear regression object 
+on which we call the fit function and in decision   tree regressor we have a tree regression 
+object on which we call the fit method.   And you can see that the fit method 
+takes the same kind of parameters   these are the features of the 
+wine and this is a label.
+  And this happens due to a nice code design 
+by a scalar library both linear regressor   and decision tree regressor are instances of 
+estimator class. In in the second week we will   be discussing about design principles 
+of scikit-learn library in the overview   of a sklearn lecture that time some of these 
+similarities will be more clear to you. 
+  You can see that the tree regressor obtains a 
+zero training error and the test error is 0.58.   As you may notice based on our discussion that 
+this is an example of the over fitted model.
+  Let us look at the plot of the actual 
+quality versus the predicted quality.   And we can see that the predictions 
+are all over the place. 
+  We can use cross validation for robust 
+evaluation on of model performance. We   have discussed cross validation in detail 
+in machine learning techniques course.   Here we can use cross validation score for 
+evaluating the performance of the model.   The cross validation provides separate a 
+mean squared error for each validation set.   We can use this separate mean squared error on 
+different validation set to get a mean estimation   of MSE as well as the standard deviation.
+  The standard deviation helps us to determine how 
+precise is the estimate across different scores.   Of course there is an additional cost that we 
+pay with with additional trading runs because   in cross validation what we do is we end up 
+training the model on different folds. So, there   are multiple training runs that are involved. 
+This can be too expensive in certain cases. 
+  So, this is a small code 
+snippet where we are calculating   the mean score and the standard deviation from 
+different cross validation faults and this course   actually shows the raw MSE score from 
+different scores of cross validation. 
+  Let us calculate the cross 
+validation score on linear regressor.   So, in the cross validation score function 
+we pass the the estimator object which is   linear regression in this case the feature 
+set, the label set, the scoring method   and and and number of folds that we want to 
+use here we use 10 folds for cross validation.   We will be studying in detail 
+what this cross validation score   function does as well as what the scoring 
+means in in the subsequent weeks.
+  In this case we obtain different scores there 
+are 10 different scores one MSE for each fold.   So, from these 10 different 
+values we calculate the mean which   which comes out to be 0.43 and 
+the standard deviation is 0.08.   You can see that the MSE varies by fold. 
+The lowest MSE is obtained on fold number   5 right it is 0.29 and highest MSE is 
+obtained on on the first fold which is 0.56.   So, the average comes out to be 0.43 
+and the standard deviation is 0.08.
+  We can apply the same kind of cross 
+validation on the decision tree regressors.   Let us look at the scores from the decision 
+tree regressor. Again these are 10 different   scores from different folds and you can see 
+that there is there is a wide variability.   The highest MSE is 1.07 whereas the lowest 
+MSE seems to be 0.46 and of course it is a   and this is a scoring method this 
+is a scoring method and this scores   that we have is basically negative mean 
+squared error we take minus of that. 
+  So, we have mean squared errors and 
+in this case the lower mean square   squared error indicates a better model. We get a 
+mean of 0.68 and the standard deviation of 0.16.   So, if we compare this course with the linear 
+regression scores you know we we find that linear   regressor is has got a better MSE as well as more 
+precise estimation compared to decision tree.
+  It was it was 0.43 in case of linear regression   and the standard deviation there was 0.08 
+which is smaller compared to the deviation   obtained from decision tree.
+Ensemble learning methods have often   found to improve the performance 
+of machine learning models.   Here we defined a random forest regressor 
+that was that was imported from sklearn   dot ensemble package. We call the fit 
+function on the random forest aggressor   in order to train the model. And then we calculate 
+the cross validation score on on the training set.   Here we obtain the mean of 0.34 
+and standard deviation of 0.07.   In case of random forest 
+regressor you can also see   a variability but that this variability is 
+much less compared to the previous two models.   Here the mean is 0.34 and the 
+standard deviation is 0.07. 
+  We can also calculate the mean 
+squared error on the test sets.   The mean squared error on the test set is 0.34   and just like linear regression model. So, random 
+forest model is slightly better than the linear   regression model and you know you can also see 
+similar traits like linear regression model.   It works well on most of the wine qualities except 
+for the extreme ones. So, the poor quality and the   best quality wines are are kind of not predicted 
+that well even by the random forest model.
+  But random forest is more promising than 
+linear regression and decision tree models.   It is a good practice to build a few such models 
+quickly without tuning their hyper parameters   and shortlist a few promising models among them.   We also need to save these models to 
+disk in python using pixel format. 
+  So, once you have the model you might be 
+wondering what is what are the next steps.   Once we have the model we often perform model 
+diagnostics in order to find out whether model   is suffering from underfitting or overfitting. 
+We have discussed the ideas of underfitting   and overfitting and how to overcome them 
+in machine learning techniques course.
+  If your model is under fitting we uh we need 
+to you know. So, basically the problem is   that our model does not have enough 
+capacity and we can fix it by   using models with more capacity by using let 
+us say something like polynomial features.   If you are applying too much of 
+regularization then also model can under fit   in that case we can reduce the amount 
+of regularization or the constraints.
+  On the other hand in case of overfitting 
+what happens is model has excess capacity   because of which model is pretty much able 
+to memorize the training data it it gets   us almost perfect predictions on the training 
+set but it fails to generalize on the test set.   We can fix the overfitting problem by getting 
+more data or trying simple model or we can apply   more constraints or regularization in order 
+to prevent the overfitting problem. 
+  So, once we have once we have modeled once we 
+have shortlisted some of the promising models the   next step is fine tuning the model. We will talk 
+about fine tuning in detail in the next video. 
