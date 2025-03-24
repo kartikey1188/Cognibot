@@ -1,7 +1,7 @@
 import os
 from . import *
 from app.apis import *
-from flask import current_app as app
+from flask import current_app as app, request
 import traceback
 from dotenv import load_dotenv
 from flask_restful import Resource, reqparse
@@ -15,7 +15,7 @@ from langchain_google_firestore import FirestoreChatMessageHistory
 from langchain.agents import tool, create_react_agent, AgentExecutor
 from langchain import hub
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
-from werkzeug.datastructures import FileStorage
+#from werkzeug.datastructures import FileStorage
 
 # Load environment variables
 load_dotenv()
@@ -84,17 +84,13 @@ agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, handle_pa
 class Clarification(Resource):
     def post(self):
         try:
-            parser = reqparse.RequestParser()
-            parser.add_argument("user_id", type=int, required=True, help="The user is required")
-            parser.add_argument("quest", type=str, help="A query is required")
-            parser.add_argument("image", type=FileStorage, location="files")
-            parser.add_argument("audio", type=FileStorage, location="files")
+            user_id = request.form.get('user_id', type=int)
+            quest = request.form.get('quest').strip()
+            image_file = request.files.get('image')  
+            audio_file = request.files.get('audio')  
 
-            args = parser.parse_args()
-            quest = args["quest"].strip()
-            user_id = args["user_id"]
-            image_file = args["image"]
-            audio_file = args["audio"]
+            if user_id is None:
+                return {"error": "The user_id is required"}, 400
 
             written_query = "No written query provided" 
             image_description = "No Image Provided"
