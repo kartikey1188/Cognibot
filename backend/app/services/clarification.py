@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from flask_restful import Resource, reqparse
 from app.services.custom_templates import *
 from app.services import *
+from app.utils.clarification_helpers import *
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -14,6 +15,7 @@ from langchain_google_firestore import FirestoreChatMessageHistory
 from langchain.agents import tool, create_react_agent, AgentExecutor
 from langchain import hub
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from werkzeug.datastructures import FileStorage
 
 # Load environment variables
 load_dotenv()
@@ -84,13 +86,49 @@ class Clarification(Resource):
         try:
             parser = reqparse.RequestParser()
             parser.add_argument("user_id", type=int, required=True, help="The user is required")
-            parser.add_argument("quest", type=str, required=True, help="A query is required")
+            parser.add_argument("quest", type=str, help="A query is required")
+            parser.add_argument("image", type=FileStorage, location="files")
+            parser.add_argument("audio", type=FileStorage, location="files")
+
             args = parser.parse_args()
             quest = args["quest"].strip()
             user_id = args["user_id"]
+            image_file = args["image"]
+            audio_file = args["audio"]
 
-            if not quest:
-                return {"Error": "A query is required"}, 400
+            written_query = "No written query provided" 
+            image_description = "No Image Provided"
+            audio_description = "No Audio Provided"
+
+            inputs = 0 # For all inputs
+            special_inputs = 0 # For image and audio inputs
+            if quest:
+                inputs += 1
+                written_query = quest
+
+            if image_file:
+                if image_file.mimetype not in ["image/png", "image/jpeg", "image/jpg", "image/webp"]:
+                    return {"Error": "Invalid image file type. Allowed: PNG, JPEG, JPG, WEBP"}, 400
+                inputs += 1
+                special_inputs += 1
+                image_bytes = convert_to_base64(image_file)
+                image_description = describe_image(image_bytes) if image_bytes else "Couldn't convert to base64 successfully."
+            
+            app.logger.info(f"Image description: {image_description}")
+
+            if audio_file:
+                if audio_file.mimetype not in ["audio/mpeg", "audio/wav", "audio/mp4", "audio/x-m4a", "audio/ogg"]:
+                    return {"Error": "Invalid audio file type. Allowed: MP3, WAV, MP4, M4A, OGG"}, 400
+                audio_file_type = audio_file.mimetype
+                inputs += 1
+                special_inputs += 1
+                audio_bytes = convert_to_base64(audio_file)
+                audio_description = describe_audio(audio_bytes, audio_file_type) if audio_bytes else "Couldn't convert to base64 successfully."
+            
+            app.logger.info(f"Audio description: {audio_description}")
+
+            if inputs == 0:
+                return {"Error": "No input provided"}, 400
             
             chat_history = FirestoreChatMessageHistory(
             session_id=str(user_id), collection=COLLECTION_NAME, client=client
@@ -98,7 +136,16 @@ class Clarification(Resource):
             
             chat_history.add_user_message(quest)
 
-            response = agent_executor.invoke({"input": quest, "user_id": user_id})
+            if special_inputs == 0:
+                response = agent_executor.invoke({"input": quest, "user_id": user_id})
+            
+            if special_inputs!=0:
+                grand_quest = special_processing(written_query, image_description, audio_description, user_id)
+                app.logger.info(f"Grand Quest: {grand_quest}")
+                if grand_quest == -1:
+                    return {"Error": "Failed to process special inputs"}, 500
+                else:
+                    response = agent_executor.invoke({"input": grand_quest, "user_id": user_id})
 
             if isinstance(response, dict) and "output" in response:
                 response_text = response["output"]  # Extracting response text if it's inside a dict
