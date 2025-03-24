@@ -113,34 +113,38 @@ paths:
       tags:
         - User Story Related API Endpoints 
       description: |
-       **Corresponding User Story:** 2.3 & 2.4
+        **Corresponding User Story:** 2.3 & 2.4
 
-       **What the endpoint does:** Answers a conceptual question related to the syllabus while maintaining context, remembering chat history and upholding academic integrity.
+        **What the endpoint does:** Answers conceptual queries related to the syllabus while maintaining context, remembering chat history and upholding academic integrity.
 
-       **How it does it:** Takes a user ID and a query as input, retrieves previous chat history (of the particular user) from Firestore, processes the query using a LangChain-powered agent, and returns an AI-generated response with the help of relevant chunks retrieved from the Chroma Vector Database.
+        **How it does it:** Takes a user ID along with any combination of written text, audio file, and image file as input. It first retrieves previous chat history for the user from Firestore. The inputs are then processed by an AI powered helper function that combines them into a single unified query. This query is passed to a LangChain-powered AI Agent, which generates a context sensitive response using relevant chunks retrieved from the Chroma Vector Database - performing RAG.
+
       operationId: postClarification
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               required:
                 - user_id
-                - quest
               properties:
                 user_id:
                   type: integer
                   description: Unique identifier for the user.
+                  example: 125
                 quest:
                   type: string
-                  description: The user's query or clarification request.
-            examples:
-              user_input:
-                summary: Example input
-                value:
-                  user_id: 125
-                  quest: "What are variables and literals in Python?"
+                  description: Written query/doubt provided by the user.
+                  example: "What is the if-else statement?"
+                image:
+                  type: string
+                  format: binary
+                  description: Image file provided by the user.
+                audio:
+                  type: string
+                  format: binary
+                  description: Audio file provided by the user.
       responses:
         "200":
           description: Successfully retrieved the AI response.
@@ -157,7 +161,7 @@ paths:
                     description: The AI-generated response.
               example:
                 query: "What is the if-else statement?"
-                response: "The if-else statement is a fundamental control flow structure in programming.  It allows you to execute different blocks of code based on whether a condition is true or false.  If the condition is true, the code within the `if` block is executed; otherwise, the code within the `else` block is executed.  The syllabus provides several examples of if-else statements in Python, including checking if a number is even or odd, determining a student's grade based on their marks, and choosing a mode of transportation based on time and price.  These examples demonstrate how to use if-else statements to make decisions and control the flow of your program."
+                response: "The if-else statement is a fundamental control flow structure in programming. It allows you to execute different blocks of code based on whether a condition is true or false..."
         "400":
           description: Bad request, usually due to missing parameters.
           content:
@@ -167,7 +171,7 @@ paths:
                 properties:
                   Error:
                     type: string
-                    example: "A query is required"
+                    example: "No input provided"
         "500":
           description: Internal server error.
           content:
@@ -178,7 +182,7 @@ paths:
                   Error:
                     type: string
                     example: "Failed to process request"
-  
+
   /topic_search:
     post:
       summary: Perform a topic search in the vector database. [User Story 2.5]

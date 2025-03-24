@@ -4,15 +4,20 @@ from flask import current_app as app
 from flask_restful import Resource
 from app.apis import *
 from flask_restful import reqparse
-
+from dotenv import load_dotenv
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
+import google.generativeai as genai
 
 # Defining the embedding model
 embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en")
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 persistent_directory  = os.path.abspath(os.path.join(current_dir, "..", "..", "data", "vector_database"))
+
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+genai.configure(api_key=GOOGLE_API_KEY)
+load_dotenv()
 
 class TopicSearch(Resource):
     def post(self):
