@@ -10,6 +10,15 @@ import os
 from langchain_google_firestore import FirestoreChatMessageHistory
 from dotenv import load_dotenv # To securely load GOOGLE_API_KEY from .env
 from app.services import *
+from app.utils.custom_templates import *
+from langchain_chroma import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
+
+embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en")
+COLLECTION_NAME = "doubts_clarification_history"
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+persistent_directory = os.path.abspath(os.path.join(current_dir, "..", "..", "data", "vector_database"))
 
 # Loading env vars
 load_dotenv()
@@ -166,3 +175,51 @@ def special_processing(written_query, image_description, audio_description, user
 
     response = model.generate_content([combined])
     return clean_text(response.text) if response and hasattr(response, "text") else -1
+
+
+# ----------------------------------- Alt Model: ----------------------------------------------------
+
+
+def alt_model_gemini(final_quest, chunks, history):
+    alt_model = genai.GenerativeModel("gemini-2.0-flash")
+
+    input = alt_system_text55.format(question=final_quest, relevant_chunks=chunks, chat_history=history)
+
+    response = alt_model.generate_content([input])
+    return response.text
+
+def get_chat_history_two(user_id):
+    """Retrieves the chat history for the given user from Firestore Database."""
+    chat_history = FirestoreChatMessageHistory(
+        session_id=str(user_id), collection=COLLECTION_NAME, client=client
+    )
+    if not chat_history.messages:
+        return "No chat history found."
+    
+    last_5_messages = chat_history.messages[-5:]
+
+    return last_5_messages
+
+
+def search_syllabus_two(query):
+    """Using the user's input, searches the syllabus vector database for relevant content."""
+    vector_db = Chroma(persist_directory=persistent_directory, embedding_function=embeddings)
+
+    retriever = vector_db.as_retriever(
+        search_type="similarity_score_threshold",
+        search_kwargs={"k": 3, "score_threshold": 0.7, "filter": {"nature": "lecture"}},
+    )
+    relevant_chunks = retriever.invoke(query)
+    
+    if not relevant_chunks:
+        return "The query is not relevant to the syllabus."
+    
+    return "\n\n".join([chunk.page_content for chunk in relevant_chunks])  # Converts list to string (easier for the AI Agent to use)
+
+
+def alternate_agent(user_id, final_quest):
+    history = get_chat_history_two(user_id)
+    chunks = search_syllabus_two(final_quest)
+    response_text = alt_model_gemini(final_quest, chunks, history)
+
+    return response_text
