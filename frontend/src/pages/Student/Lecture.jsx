@@ -43,8 +43,10 @@ const styles = {
 };
 
 function Lecture() {
-  const [value, setValue] = useState(0);
-  const [comment, setComment] = useState("");
+  const { _, lid } = useParams();
+  const [comments, setComments] = useState({});
+  const [ratings, setRatings] = useState({});
+  const [value, setValue] = useState(ratings[lid] || 0);
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([
     new Message({
@@ -56,7 +58,6 @@ function Lecture() {
   const [content, setContent] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [tabIndex, setTabIndex] = useState(0);
-  const { _, lid } = useParams();
   const convertToEmbedLink = (url) => {
     const regExp =
       /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
@@ -74,6 +75,18 @@ function Lecture() {
       }));
     });
   }, [lid]);
+
+  useEffect(() => {
+    setValue(ratings[lid] || 0);
+    setComments(prev => ({...prev, [lid] : prev?.lid || ""}))
+  }, [lid, ratings]);
+
+  const handleCommentChange = (e) =>{
+    setComments(prev => ({
+      ...prev,
+      [lid]: e.target.value
+    }));
+  }
 
   const formatSummary = (text) => {
     if (!text) return "";
@@ -110,7 +123,6 @@ function Lecture() {
     const userMessage = new Message({ id: 0, message: newMessage });
     setMessages((prevMessages) => [...prevMessages, userMessage]);
 
-    // Simulate an automated response
     setTimeout(() => {
       const responseMessage = new Message({
         id: 1,
@@ -138,6 +150,31 @@ function Lecture() {
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+  };
+
+  const handleReviewSubmit = () => {
+    axiosInstance.post(`/submit_feedback`, {
+      lecture_id : lid,
+      rating: value,
+      feedback: comments[lid]
+    })
+    .then(response => {
+      setComments(prev=> ({
+        ...prev, 
+        [lid] : ""
+      }));
+    })
+    .catch(error => {
+      console.error('Error submitting review:', error);
+    });
+  };
+
+  const handleRatingChange = (event, newValue) => {
+    setValue(newValue);
+    setRatings(prev => ({
+      ...prev,
+      [lid]: newValue
+    }));
   };
 
   return (
@@ -217,9 +254,7 @@ function Lecture() {
                   <Rating
                     name="lecture-rating"
                     value={value}
-                    onChange={(event, newValue) => {
-                      setValue(newValue);
-                    }}
+                    onChange={handleRatingChange}
                     precision={0.5}
                   />
                 </Box>
@@ -228,8 +263,8 @@ function Lecture() {
                   label="Your Review"
                   multiline
                   rows={3}
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
+                  value={comments[lid]}
+                  onChange={handleCommentChange}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       backgroundColor: "background.paper",
@@ -241,7 +276,7 @@ function Lecture() {
                   color="primary"
                   fullWidth
                   sx={{ mt: 2 }}
-                  onClick={() => console.log({ rating: value, comment })}
+                  onClick={handleReviewSubmit}
                 >
                   Submit Review
                 </Button>
