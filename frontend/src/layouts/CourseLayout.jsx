@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Drawer,
   List,
@@ -20,96 +20,49 @@ import TerminalTwoToneIcon from "@mui/icons-material/TerminalTwoTone";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import MenuIcon from "@mui/icons-material/Menu";
 import AssistantIcon from "@mui/icons-material/Assistant";
-import { Outlet, Link} from "react-router-dom";
+import { Outlet, Link, useParams } from "react-router-dom";
+import axiosClient from "../axiosClient";
 
 const CourseLayout = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const { id } = useParams();
   const [openWeek, setOpenWeek] = useState(null);
   const drawerWidth = 280;
   const [selectedItem, setSelectedItem] = useState(null);
-  const weeks = [
-    {
-      week: 1,
-      content: [
-        {
+  const [content, setContent] = useState([]);
+
+  useEffect(() => {
+    axiosClient.get(`/lectures/${id}`).then((response) => {
+      // Group lectures by week
+      const groupedByWeek = response.data.reduce((acc, lecture) => {
+        const week = lecture.week;
+        if (!acc[week]) {
+          acc[week] = [];
+        }
+        acc[week].push({
           type: "Lecture",
-          title: "Introduction",
+          title: lecture.title,
           icon: OndemandVideoIcon,
-          path: "/course/lecture",
-          isGraded : false
-        },
-        {
-          type: "PA",
-          title: "Practice Assignment 1",
-          icon: AssignmentOutlinedIcon,
-          path: "/course/assignment",
-          isGraded : false
-        },
-        {
-          type: "GA",
-          title: "Graded Assignment 1",
-          icon: AssignmentIcon,
-          path: "/course/assignment",
-          isGraded : true
-        },
-        {
-          type: "PPA",
-          title: "Practice Programming 1",
-          icon: TerminalTwoToneIcon,
-          path: "/course/programming-assignment",
-          isGraded : false
-        },
-        {
-          type: "GRPA",
-          title: "Graded Programming 1",
-          icon: TerminalIcon,
-          path: "/course/programming-assignment",
-          isGraded : true
-        },
-      ],
-    },
-    {
-      week: 2,
-      content: [
-        {
-          type: "Lecture",
-          title: "Introduction",
-          icon: OndemandVideoIcon,
-          path: "/course/lecture",
-          isGraded : false
-        },
-        {
-          type: "PA",
-          title: "Practice Assignment 1",
-          icon: AssignmentOutlinedIcon,
-          path: "/course/assignment",
-          isGraded : false
-        },
-        {
-          type: "GA",
-          title: "Graded Assignment 1",
-          icon: AssignmentIcon,
-          path: "/course/assignment",
-          isGraded : true
-        },
-        {
-          type: "PPA",
-          title: "Practice Programming 1",
-          icon: TerminalTwoToneIcon,
-          path: "/course/programming-assignment",
-          isGraded : false
-        },
-        {
-          type: "GRPA",
-          title: "Graded Programming 1",
-          icon: TerminalIcon,
-          path: "/course/programming-assignment",
-          isGraded : true
-        },
-      ],
-    },
-    
-  ];
+          path: `/course/${id}/lecture/${lecture.lecture_id}`,
+          isGraded: false,
+          lectureNumber: lecture.lecture_number,
+          lecture_link: lecture.lecture_link
+        });
+        return acc;
+      }, {});
+
+      // Convert to weeks array format
+      const formattedWeeks = Object.keys(groupedByWeek).map(weekNum => ({
+        week: parseInt(weekNum),
+        content: groupedByWeek[weekNum].sort((a, b) => a.lectureNumber - b.lectureNumber)
+      })).sort((a, b) => a.week - b.week);
+
+      setContent(formattedWeeks);
+    });
+
+  }, [id]);
+
+  const weeks = content;
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -146,7 +99,11 @@ const CourseLayout = () => {
           }}
         >
           {isOpen && (
-            <Typography variant="subtitle1" component={Link} to="/course">
+            <Typography
+              variant="subtitle1"
+              component={Link}
+              to={`/course/${id}`}
+            >
               Course Overview
             </Typography>
           )}
@@ -200,7 +157,7 @@ const CourseLayout = () => {
                         sx={{ pl: 4 }}
                         component={Link}
                         to={{
-                          pathname : item.path,
+                          pathname: item.path,
                           search: `?isGraded=${item.isGraded}`,
                         }}
                         selected={selectedItem === `${week.week}-${idx}`} // Check if selected
@@ -232,10 +189,10 @@ const CourseLayout = () => {
             borderTop: 1,
             paddingTop: 0,
             borderColor: "divider",
-            width: '100%'
+            width: "100%",
           }}
         >
-          <ListItemButton >
+          <ListItemButton>
             <ListItemIcon>
               <AssistantIcon></AssistantIcon>
             </ListItemIcon>

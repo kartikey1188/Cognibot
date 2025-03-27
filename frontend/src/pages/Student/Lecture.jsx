@@ -1,19 +1,20 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import PropTypes from 'prop-types';
 import { Typography, Box, Paper, Button, Rating, TextField, Grow, Container, Grid, Tabs, Tab } from "@mui/material";
 import OfflineBoltRoundedIcon from "@mui/icons-material/OfflineBoltRounded";
-import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import DescriptionIcon from '@mui/icons-material/Description';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import ChatIcon from '@mui/icons-material/Chat';
 import { ChatFeed, Message } from 'react-chat-ui';
+import { useParams } from "react-router-dom";
+import axiosInstance from "../../axiosClient";
 
 const styles = {
   container: { mt: 4 },
   videoBox: {
     position: "relative",
     width: "100%",
-    paddingTop: "56.25%", // 16:9 aspect ratio
+    paddingTop: "56.25%", 
     boxShadow: 3,
     borderRadius: 2,
     overflow: "hidden",
@@ -44,8 +45,26 @@ function Lecture() {
   const [messages, setMessages] = useState([
     new Message({ id: 1, message: 'Welcome to the lecture chat! Feel free to discuss the content here.' }),
   ]);
+  const [content, setContent] = useState(null)
   const [newMessage, setNewMessage] = useState('');
   const [tabIndex, setTabIndex] = useState(0);
+  const {_, lid} = useParams();
+  const convertToEmbedLink = (url) => {
+    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    const match = url.match(regExp);
+    const videoId = match && match[7].length === 11 ? match[7] : null;
+    
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+  };
+  
+  useEffect(() => {
+    axiosInstance.get(`/get_lecture_by_id/${lid}`).then((response) => {
+      setContent(c => ({
+        'title': response.data.title,
+        "link": convertToEmbedLink(response.data.lecture_link)
+      }));
+    });
+  }, [lid]);
 
   const handleSendMessage = useCallback(() => {
     if (newMessage.trim() === '') return;
@@ -69,14 +88,14 @@ function Lecture() {
   return (
     <Container maxWidth="lg" sx={styles.container}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Introduction to Vim
+        {content?.title}
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
           <Box sx={styles.videoBox}>
             <iframe
               style={styles.iframe}
-              src="https://www.youtube.com/embed/p4D8-brdrZo?si=A4EN9dSP1qcRlgzk"
+              src={content?.link}
               title="Lecture Video"
               allowFullScreen
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

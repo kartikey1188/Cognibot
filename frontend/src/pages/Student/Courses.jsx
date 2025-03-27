@@ -2,27 +2,14 @@ import { useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import CourseCard from "../../components/CourseCard";
 import { Link } from "react-router-dom";
+import axiosClient from "@/axiosClient";
 function Courses() {
-  const [currentDateTime, setCurrentDateTime] = useState(new Date());
-
+  const [courses, setCourses] = useState([]);
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentDateTime(new Date());
-    }, 1000);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
-
-  const formatDate = (date) => {
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
+    axiosClient.get("/all_courses").then((response) => {
+      setCourses((c) => response.data);
     });
-  };
-
+  }, []);
   return (
     <section className="flex flex-col gap-4 p-3">
       <Typography
@@ -32,26 +19,15 @@ function Courses() {
       >
         COURSES
       </Typography>
-      <div className="self-end text-sm flex gap-2 text-gray-400 italic">
-        <span>{formatDate(currentDateTime)}</span>
-        <span>{currentDateTime.toLocaleTimeString()}</span>
-      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 ">
-      <Link to="/course" style={{ textDecoration: 'none' }}>
-          <div>
-            <CourseCard />
-          </div>
-        </Link>
-        <Link to="/course" style={{ textDecoration: 'none' }}>
-          <div>
-            <CourseCard />
-          </div>
-        </Link>
-        <Link to="/course" style={{ textDecoration: 'none' }}>
-          <div>
-            <CourseCard />
-          </div>
-        </Link>
+        {courses.map(course=> (
+          <Link to={`/course/${course.course_id}`} style={{ textDecoration: "none" }} key={course.course_id}>
+            <div>
+              <CourseCard course={course}/>
+            </div>
+          </Link>
+        )
+        )}
       </div>
     </section>
   );
