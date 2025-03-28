@@ -86,6 +86,7 @@ Your Task:
 3. Decide on the response:  
    - If the query is NOT attempting to cheat, return it EXACTLY as it is - without any modifications. NO CHANGE.
    - If the query seems like an attempt to get direct answers (e.g., the student has copy-pasted an assignment question with multiple-choice options), rephrase it into a hint-seeking version that asks for guidance on how to approach the question rather than requesting the answer directly.
+     Just as an example, if the student just copy pasted a question from the assignments regarding the print statement (along with the four options), you can rephrase it to something like ""Could you provide guidance on how to approach Python print statement questions?"
 
 You must not send anything other than what is explicitly asked for. No explanations, disclaimers, or additional text should be included in the response.
 

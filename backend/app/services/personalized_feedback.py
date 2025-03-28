@@ -124,9 +124,7 @@ class FeedBackAndRecommendations(Resource):
 
                 # Include code if present
                 if 'code' in q_data:
-                    performance_summary += f"Code:\n```python\n{q_data['code']
-                                                                
-                                                                }\n```\n"
+                    performance_summary += f"Code:\n```python\n{q_data['code']}\n```\n"
 
                 # Include description if present
                 if 'description' in q_data:
