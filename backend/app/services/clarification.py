@@ -9,23 +9,16 @@ from app.utils.custom_templates import *
 from app.services import *
 from app.utils.clarification_helpers import *
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_chroma import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_firestore import FirestoreChatMessageHistory
 from langchain.agents import tool, create_react_agent, AgentExecutor
 from langchain import hub
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from app.utils.vdb import vector_db
 
 # Load environment variables
 load_dotenv()
 
 COLLECTION_NAME = "doubts_clarification_history"
-
-# Vector DB setup
-current_dir = os.path.dirname(os.path.abspath(__file__))
-persistent_directory = os.path.abspath(os.path.join(current_dir, "..", "..", "data", "vector_database"))
-
-embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en")
 
 # LLM setup (Gemini)
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
@@ -49,7 +42,6 @@ def get_chat_history(user_id):
 @tool
 def search_syllabus(query):
     """Using the user's input, searches the syllabus vector database for relevant content."""
-    vector_db = Chroma(persist_directory=persistent_directory, embedding_function=embeddings)
 
     retriever = vector_db.as_retriever(
         search_type="similarity_score_threshold",
