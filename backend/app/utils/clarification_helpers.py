@@ -11,14 +11,9 @@ from langchain_google_firestore import FirestoreChatMessageHistory
 from dotenv import load_dotenv # To securely load GOOGLE_API_KEY from .env
 from app.services import *
 from app.utils.custom_templates import *
-from langchain_chroma import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
+from app.utils.vdb import vector_db
 
-embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en")
 COLLECTION_NAME = "doubts_clarification_history"
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-persistent_directory = os.path.abspath(os.path.join(current_dir, "..", "..", "data", "vector_database"))
 
 # Loading env vars
 load_dotenv()
@@ -62,9 +57,13 @@ def describe_audio(audio, audio_file_type):
 
 
 def extract_text_from_image(image_bytes):
-    image = Image.open(io.BytesIO(image_bytes))
-    extracted_text = pytesseract.image_to_string(image)
-    return clean_text(extracted_text)
+    try:
+        image = Image.open(io.BytesIO(image_bytes))
+        extracted_text = pytesseract.image_to_string(image)
+        return clean_text(extracted_text)
+    finally:
+        if 'image' in locals():
+            image.close()
 
 def is_meaningful_text(text: str) -> bool:
     return bool(text.strip()) 
@@ -203,7 +202,6 @@ def get_chat_history_two(user_id):
 
 def search_syllabus_two(query):
     """Using the user's input, searches the syllabus vector database for relevant content."""
-    vector_db = Chroma(persist_directory=persistent_directory, embedding_function=embeddings)
 
     retriever = vector_db.as_retriever(
         search_type="similarity_score_threshold",
