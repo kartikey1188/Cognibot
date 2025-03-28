@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
+import { useParams } from 'react-router-dom'
+import axiosInstance from "../../axiosClient";
 
 function Course() {
+  const {id} = useParams()
+  const [course, setCourse] = useState({})
+  useEffect(()=>{
+    axiosInstance.get(`/course/${id}`)
+    .then(response=>{
+      setCourse(response.data)
+    })
+  },[])
   return (
     <section>
-      <Typography variant="h3">Programming in Python</Typography>
+      <Typography variant="h3">{course.course_name}</Typography>
       <Typography variant="body1">
         This course provides a comprehensive introduction to Python programming,
         covering fundamental concepts and advanced techniques. Whether you're a

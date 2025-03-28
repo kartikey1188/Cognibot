@@ -8,18 +8,7 @@ const PublicRoute = ({ children }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
-  const fetchAttempted = useRef(false);
 
-  useEffect(() => {
-    if (!fetchAttempted.current) {
-      fetchAttempted.current = true;
-      dispatch(fetchUser())
-        .unwrap()
-        .catch(() => {
-          fetchAttempted.current = false;
-        });
-    }
-  }, []);
 
   if (loading) {
     return (

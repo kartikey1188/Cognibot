@@ -95,7 +95,7 @@ function AppContent() {
             />
           </Route>
 
-          <Route path="/course" element={<CourseLayout />}>
+          <Route path="/course/:id" element={<CourseLayout />}>
             <Route
               index
               element={
@@ -105,7 +105,7 @@ function AppContent() {
               }
             />
             <Route
-              path="/course/lecture"
+              path="/course/:id/lecture/:lid"
               element={
                 <PrivateRoute allowedRoles={["student"]}>
                   <Lecture />
@@ -113,7 +113,7 @@ function AppContent() {
               }
             />
             <Route
-              path="/course/assignment"
+              path="/course/:id/assignment/:aid"
               element={
                 <PrivateRoute allowedRoles={["student"]}>
                   <Assignment />
@@ -121,7 +121,7 @@ function AppContent() {
               }
             />
             <Route
-              path="/course/programming-assignment"
+              path="/course/:id/programming/:paid"
               element={
                 <PrivateRoute allowedRoles={["student"]}>
                   <ProgrammingAssignment />
