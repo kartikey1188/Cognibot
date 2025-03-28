@@ -67,7 +67,9 @@ custom_prompt = ChatPromptTemplate.from_messages([
 
 # Creating Agent
 agent = create_react_agent(llm, tools, custom_prompt)
-agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, handle_parsing_errors=True)
+
+verbose_mode = os.getenv("AGENT_VERBOSE", "false").strip().lower() == "true"
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=verbose_mode, handle_parsing_errors=True)
 
 class Clarification(Resource):
     def post(self):
