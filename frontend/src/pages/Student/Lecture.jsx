@@ -48,13 +48,7 @@ function Lecture() {
   const [ratings, setRatings] = useState({});
   const [value, setValue] = useState(ratings[lid] || 0);
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState([
-    new Message({
-      id: 1,
-      message:
-        "Welcome to the lecture chat! Feel free to discuss the content here.",
-    }),
-  ]);
+  const [messages, setMessages] = useState([]);
   const [content, setContent] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [tabIndex, setTabIndex] = useState(0);
@@ -68,6 +62,11 @@ function Lecture() {
   };
 
   useEffect(() => {
+    setMessages([new Message({
+      id: 1,
+      message:
+       "Welcome! Ask your lecture-related questions here—they'll go straight to the instructor.",
+    }),])
     axiosInstance.get(`/get_lecture_by_id/${lid}`).then((response) => {
       setContent((c) => ({
         title: response.data.title,
@@ -78,6 +77,7 @@ function Lecture() {
 
   useEffect(() => {
     setValue(ratings[lid] || 0);
+
     setComments(prev => ({...prev, [lid] : prev?.lid || ""}))
   }, [lid, ratings]);
 
@@ -119,19 +119,24 @@ function Lecture() {
   const summary = formatSummary(content?.summary);
   const handleSendMessage = useCallback(() => {
     if (newMessage.trim() === "") return;
-
     const userMessage = new Message({ id: 0, message: newMessage });
     setMessages((prevMessages) => [...prevMessages, userMessage]);
+    
+    axiosInstance.post('/receive_doubt', {
+      lecture_id : lid, 
+      doubt : newMessage
+    }).then(response=>{
+      setTimeout(() => {
+        const responseMessage = new Message({
+          id: 1,
+          message: response.data.Message,
+        });
+        setMessages((prevMessages) => [...prevMessages, responseMessage]);
+      }, 1000);
 
-    setTimeout(() => {
-      const responseMessage = new Message({
-        id: 1,
-        message: "Thank you for your message. We will get back to you shortly.",
-      });
-      setMessages((prevMessages) => [...prevMessages, responseMessage]);
-    }, 1000);
+      setNewMessage("");
+    })
 
-    setNewMessage("");
   }, [newMessage]);
 
   const handleTabChange = useCallback((event, newValue) => {
@@ -292,12 +297,10 @@ function Lecture() {
                   borderRadius: 2,
                   backgroundColor: "#fafafa",
                   p: 3,
+                  pt : 1
                 }}
               >
-                <Typography variant="h5" gutterBottom>
-                  Lecture Chat
-                </Typography>
-                <Box sx={{ maxHeight: 300, overflowY: "auto" }}>
+                <Box sx={{ maxHeight: 220, overflowY: "auto" }}>
                   <ChatFeed
                     messages={messages}
                     showSenderName
