@@ -13,10 +13,6 @@ export const loginUser = createAsyncThunk("loginUser", async (data, {rejectWithV
 }); 
 
 // logout user action
-export const logoutUser = createAsyncThunk("logoutUser", async () => {
-    const response = await axiosInstance.get('/logout');
-    return;
-})
 
 export const fetchUser = createAsyncThunk("fetchUser", async ()=>{
     try{
@@ -38,6 +34,11 @@ const authSlice = createSlice({
     reducers: {
         setError: (state, action) => {
           state.error = action.payload;
+        }, 
+        logoutUser : (state , action ) =>{
+            state.user = null, 
+            state.loading = false,
+            state.error = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -53,17 +54,6 @@ const authSlice = createSlice({
             state.loading = false;
             state.error = action.payload
 
-        })
-        builder.addCase(logoutUser.pending, (state, action) => {
-            state.loading = true;
-        })
-        builder.addCase(logoutUser.fulfilled, (state, action) => {
-            state.loading = false;
-            state.user = null;
-        })
-        builder.addCase(logoutUser.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload;
         })
         builder.addCase(fetchUser.pending, (state, action)=>{
             state.loading = true;
@@ -84,4 +74,4 @@ const authSlice = createSlice({
 })
 
 export default authSlice.reducer;
-export const { setError } = authSlice.actions;
+export const { setError, logoutUser} = authSlice.actions;

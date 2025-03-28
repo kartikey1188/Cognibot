@@ -10,18 +10,18 @@ const PrivateRoute = ({ children, allowedRoles }) => {
   const loading = useSelector((state) => state.auth.loading);
   const fetchAttempted = useRef(false);
 
-  useEffect(() => {
-    if (!fetchAttempted.current) {
-      fetchAttempted.current = true;
-      dispatch(fetchUser())
-        .unwrap()
-        .catch(() => {
-          fetchAttempted.current = false;
-        });
-    }
-  }, [dispatch]);
+  // useEffect(() => {
+  //   if (!fetchAttempted.current) {
+  //     fetchAttempted.current = true;
+  //     dispatch(fetchUser())
+  //       .unwrap()
+  //       .catch(() => {
+  //         fetchAttempted.current = false;
+  //       });
+  //   }
+  // }, [dispatch]);
 
-  if (loading || !fetchAttempted.current) {
+  if (loading) {
     return (
       <Box 
         sx={{ 

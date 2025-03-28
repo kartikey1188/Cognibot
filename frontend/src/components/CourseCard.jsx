@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Box } from "@mui/material";
 
-export default function ImgMediaCard() {
+export default function ImgMediaCard({course}) {
   return (
     <Card
       sx={{
@@ -50,7 +50,7 @@ export default function ImgMediaCard() {
             textShadow: "1px 1px 2px rgba(0,0,0,0.6)",
           }}
         >
-          Programming In Python
+          {course.course_name}
         </Typography>
       </Box>
       <CardContent>

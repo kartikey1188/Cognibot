@@ -1,16 +1,6 @@
 import React, { useState, useCallback } from "react";
-import {
-  Typography,
-  Box,
-  TextField,
-  Button,
-  Paper,
-  CircularProgress,
-  Alert,
-  Divider,
-  Grow,
-  IconButton,
-} from "@mui/material";
+//prettier-ignore
+import { Typography, Box, TextField, Button, Paper, CircularProgress, Alert, Divider, Grow, IconButton, } from "@mui/material";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { materialDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { ChatFeed, Message } from "react-chat-ui";
@@ -52,15 +42,17 @@ function ProgrammingAssignment() {
       const response = await fetch("https://api.jdoodle.com/v1/execute", {
         method: "POST",
         headers: {
+          Accept: "application/json",
           "Content-Type": "application/json",
-          "X-Auth-Token": "YOUR_API_KEY",
+          "Access-Control-Allow-Origin":"*"
         },
         body: JSON.stringify({
+          clientId: "514340096b7d08d71eed22c3506b9174",
+          clientSecret:
+            "439ff241408faf10fce13ea51295d1f3f3b3817f542578aabe67a412d4600f24",
           script: code,
           language: "python3",
           versionIndex: "3",
-          clientId: "YOUR_CLIENT_ID",
-          clientSecret: "YOUR_CLIENT_SECRET",
         }),
       });
 
@@ -127,7 +119,7 @@ function ProgrammingAssignment() {
   }, [newMessage]);
 
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", mt: 4 }}>
+    <Box sx={{ maxWidth: 1000, mx: "auto", pb: 8 }}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
         {isGraded ? "Graded " : "Practice "}Programming Assignment
       </Typography>
@@ -209,80 +201,6 @@ function ProgrammingAssignment() {
         {error && <ErrorMessage />}
       </Paper>
 
-      {!isGraded && (
-        <Box sx={{ position: "fixed", bottom: 16, right: 16 }}>
-          <IconButton
-            color="primary"
-            onClick={() => setChatOpen(!chatOpen)}
-            sx={{
-              bgcolor: "background.paper",
-              borderRadius: "50%",
-              boxShadow: 3,
-            }}
-          >
-            {chatOpen ? <CloseIcon /> : <ChatIcon />}
-          </IconButton>
-        </Box>
-      )}
-
-      {chatOpen && (
-        <Grow in>
-          <Paper
-            elevation={3}
-            sx={{
-              position: "fixed",
-              bottom: 80,
-              right: 16,
-              width: 300,
-              height: 400,
-              p: 2,
-              borderRadius: 2,
-              backgroundColor: "#fafafa",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Assignment Chat
-            </Typography>
-            <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
-              <ChatFeed
-                messages={messages}
-                showSenderName
-                bubblesCentered={false}
-                bubbleStyles={{
-                  text: {
-                    fontSize: 16,
-                  },
-                  chatbubble: {
-                    borderRadius: 20,
-                    padding: 10,
-                  },
-                }}
-              />
-            </Box>
-            <Box sx={{ display: "flex", mt: 2 }}>
-              <TextField
-                fullWidth
-                variant="outlined"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                placeholder="Type your message..."
-                sx={{ mr: 1 }}
-                aria-label="Type your message"
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSendMessage}
-              >
-                Send
-              </Button>
-            </Box>
-          </Paper>
-        </Grow>
-      )}
     </Box>
   );
 }
