@@ -4,8 +4,8 @@ from app.apis import *
 from flask import current_app as app, request
 import traceback
 from dotenv import load_dotenv
-from flask_restful import Resource, reqparse
-from app.services.custom_templates import *
+from flask_restful import Resource
+from app.utils.custom_templates import *
 from app.services import *
 from app.utils.clarification_helpers import *
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -15,13 +15,9 @@ from langchain_google_firestore import FirestoreChatMessageHistory
 from langchain.agents import tool, create_react_agent, AgentExecutor
 from langchain import hub
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
-#from werkzeug.datastructures import FileStorage
 
 # Load environment variables
 load_dotenv()
-
-# Firestore setup
-#PROJECT_ID = os.getenv("PROJECT_ID")
 
 COLLECTION_NAME = "doubts_clarification_history"
 
@@ -96,6 +92,8 @@ class Clarification(Resource):
             image_description = "No Image Provided"
             audio_description = "No Audio Provided"
 
+            final_quest = ""
+
             inputs = 0 # For all inputs
             special_inputs = 0 # For image and audio inputs
             if quest:
@@ -110,8 +108,6 @@ class Clarification(Resource):
                 image_bytes = convert_to_base64(image_file)
                 image_description = describe_image(image_bytes) if image_bytes else "Couldn't convert to base64 successfully."
             
-            app.logger.info(f"Image description: {image_description}")
-
             if audio_file:
                 if audio_file.mimetype not in ["audio/mpeg", "audio/wav", "audio/mp4", "audio/x-m4a", "audio/ogg"]:
                     return {"Error": "Invalid audio file type. Allowed: MP3, WAV, MP4, M4A, OGG"}, 400
@@ -121,8 +117,6 @@ class Clarification(Resource):
                 audio_bytes = convert_to_base64(audio_file)
                 audio_description = describe_audio(audio_bytes, audio_file_type) if audio_bytes else "Couldn't convert to base64 successfully."
             
-            app.logger.info(f"Audio description: {audio_description}")
-
             if inputs == 0:
                 return {"Error": "No input provided"}, 400
             
@@ -133,23 +127,32 @@ class Clarification(Resource):
             chat_history.add_user_message(quest)
 
             if special_inputs == 0:
-                response = agent_executor.invoke({"input": quest, "user_id": user_id})
-            
+                final_quest = quest
+                response = agent_executor.invoke({"input": final_quest, "user_id": user_id})
+                #response = alternate_agent(user_id, final_quest)
+
             if special_inputs!=0:
                 grand_quest = special_processing(written_query, image_description, audio_description, user_id)
                 app.logger.info(f"Grand Quest: {grand_quest}")
                 if grand_quest == -1:
                     return {"Error": "Failed to process special inputs"}, 500
                 else:
-                    response = agent_executor.invoke({"input": grand_quest, "user_id": user_id})
+                    final_quest = grand_quest
+                    response = agent_executor.invoke({"input": final_quest, "user_id": user_id})
+                    #response = alternate_agent(user_id, final_quest)
 
             if isinstance(response, dict) and "output" in response:
                 response_text = response["output"]  # Extracting response text if it's inside a dict
             else:
                 response_text = str(response)  # Converting to string as a fallback
+            
+            app.logger.info(f"Agent Response: {response_text}")
+
+            if response_text == "Agent stopped due to iteration limit or time limit.":
+                response_text = alternate_agent(user_id, final_quest)
 
             chat_history.add_ai_message(response_text)  # Saving as a proper string
-
+                
             return {"query": quest, "response": response_text}, 200
 
         except Exception as e:
