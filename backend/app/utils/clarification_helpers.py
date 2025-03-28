@@ -221,3 +221,35 @@ def alternate_agent(user_id, final_quest):
     response_text = alt_model_gemini(final_quest, chunks, history)
 
     return response_text
+
+
+# ----------------------------------- Integrity Check: ----------------------------------------------------
+
+
+def check_integrity(quest):
+    model = genai.GenerativeModel("gemini-2.0-flash")
+
+    retriever = vector_db.as_retriever(
+        search_type="similarity_score_threshold",
+        search_kwargs={"k": 2, "score_threshold": 0.8, "filter": {"nature": "question"}},
+    )
+
+    retrieved_docs = retriever.get_relevant_documents(quest)
+
+    if not retrieved_docs:
+        return {
+            "flag": "No"
+        }
+
+    # Extracting retrieved chunks and format them properly
+    retrieved_chunks = [f"Chunk {i+1}:\n{doc.page_content}" for i, doc in enumerate(retrieved_docs)]
+
+    input_text = integrity_checker.format(question=quest, retrieved_chunks="\n\n".join(retrieved_chunks))
+
+    response = model.generate_content([input_text])
+
+    return {
+        "flag": "Yes",
+        "retrieved_chunks": retrieved_chunks,
+        "ai_response": clean_text(response.text),
+    }

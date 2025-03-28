@@ -47,7 +47,7 @@ class GenerateLectureVectorDB(Resource):
                         print(f"Warning: No lecture found for ID {parts[2]}. Skipping.")
                         continue  # Skipping if no matching lecture
 
-                    doc.metadata = {"Name Of Course": parts[0], "Week Number": parts[1], "Lecture Title": parts[3], "Lecture Link": lecture.lecture_link, "nature": "lecture"}
+                    doc.metadata = {"Name Of Course": parts[0], "Week Number": parts[1], "Lecture Title": parts[3], "Lecture Link": lecture.lecture_link, "nature": "lecture", "Lecture ID": lecture.lecture_id, "Course ID": lecture.course_id}
                     print(f"Saved metadata to a doc belonging to lecture with ID {parts[2]}")
                     count+=1
                     documents.append(doc)

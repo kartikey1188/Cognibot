@@ -8,6 +8,7 @@ from backend.app.utils.transcript_generator import GenerateAllTranscripts
 from backend.app.utils.lecture_vectordb_generator import GenerateLectureVectorDB
 from backend.app.utils.embed_pdf import GenerateHandbookVectorDB
 from backend.app.utils.embed_txt import GenerateGradingDocVectorDB
+from backend.app.utils.add_questionstodb import AddQuestionsToVectorDB
 import os
 import logging
 from logging.handlers import RotatingFileHandler
@@ -75,12 +76,17 @@ if __name__ == "__main__":
             # Adding handbook chunks
             generator2 = GenerateHandbookVectorDB()
             generator2.get()
-            app.logger.info(f"Added handbook chunks to the database in the folder: {vectordb_folder}")
+            app.logger.info(f"Added handbook chunks to the vector database in the folder: {vectordb_folder}")
 
             # Adding grading doc chunks
             generator3 = GenerateGradingDocVectorDB()
             generator3.get()
-            app.logger.info(f"Added grading doc chunks to the database in the folder: {vectordb_folder}")
+            app.logger.info(f"Added grading doc chunks to the vector database in the folder: {vectordb_folder}")
+
+            # Adding question chunks
+            generator4 = AddQuestionsToVectorDB()
+            generator4.get()
+            app.logger.info(f"Added questions to the vector database in the folder: {vectordb_folder} ")
             app.logger.info("WE HAVE A UNIFIED VECTOR DATABASE NOW CONTAINING LECTURE, HANDBOOK, AND GRADING DOC CHUNKS")
         else:
             app.logger.info(f"Vector database folder is not empty. Skipping vector database generation.")
