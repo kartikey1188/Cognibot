@@ -113,7 +113,7 @@ function AppContent() {
               }
             />
             <Route
-              path="/course/:id/assignment"
+              path="/course/:id/assignment/:aid"
               element={
                 <PrivateRoute allowedRoles={["student"]}>
                   <Assignment />

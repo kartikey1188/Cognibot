@@ -32,9 +32,11 @@ const CourseLayout = () => {
   const [content, setContent] = useState([]);
 
   useEffect(() => {
-    axiosClient.get(`/lectures/${id}`).then((response) => {
-      // Group lectures by week
-      const groupedByWeek = response.data.reduce((acc, lecture) => {
+    Promise.all([
+      axiosClient.get(`/lectures/${id}`),
+      axiosClient.get(`/api/questions`),
+    ]).then(([lectureResponse, questionResponse]) => {
+      const groupedByWeek = lectureResponse.data.reduce((acc, lecture) => {
         const week = lecture.week;
         if (!acc[week]) {
           acc[week] = [];
@@ -46,20 +48,39 @@ const CourseLayout = () => {
           path: `/course/${id}/lecture/${lecture.lecture_id}`,
           isGraded: false,
           lectureNumber: lecture.lecture_number,
-          lecture_link: lecture.lecture_link
+          lecture_link: lecture.lecture_link,
         });
         return acc;
       }, {});
 
-      // Convert to weeks array format
-      const formattedWeeks = Object.keys(groupedByWeek).map(weekNum => ({
-        week: parseInt(weekNum),
-        content: groupedByWeek[weekNum].sort((a, b) => a.lectureNumber - b.lectureNumber)
-      })).sort((a, b) => a.week - b.week);
+      Object.keys(groupedByWeek).forEach((week) => {
+        const weekQuestions = questionResponse.data
+
+        groupedByWeek[week].push({
+          type: "Assignment",
+          title: `Assignment ${week} `,
+          icon: AssignmentIcon,
+          path: `/course/${id}/assignment/${week}`,
+          isGraded: true,
+          week: parseInt(week),
+          questionCount: weekQuestions.length || 0,
+        });
+      });
+
+      const formattedWeeks = Object.keys(groupedByWeek)
+        .map((weekNum) => ({
+          week: parseInt(weekNum),
+          content: groupedByWeek[weekNum].sort((a, b) => {
+            if (a.type !== b.type) {
+              return a.type === "Lecture" ? -1 : 1;
+            }
+            return (a.lectureNumber || 0) - (b.lectureNumber || 0);
+          }),
+        }))
+        .sort((a, b) => a.week - b.week);
 
       setContent(formattedWeeks);
     });
-
   }, [id]);
 
   const weeks = content;
@@ -160,7 +181,7 @@ const CourseLayout = () => {
                           pathname: item.path,
                           search: `?isGraded=${item.isGraded}`,
                         }}
-                        selected={selectedItem === `${week.week}-${idx}`} // Check if selected
+                        selected={selectedItem === `${week.week}-${idx}`}
                         onClick={() => setSelectedItem(`${week.week}-${idx}`)}
                       >
                         <ListItemIcon
@@ -170,6 +191,11 @@ const CourseLayout = () => {
                         </ListItemIcon>
                         <ListItemText
                           primary={item.title}
+                          secondary={
+                            item.type === "Assignment"
+                              ? `${item.questionCount} questions`
+                              : null
+                          }
                           sx={{
                             transition: "opacity 0.2s",
                             opacity: isOpen ? 1 : 0,
@@ -207,7 +233,6 @@ const CourseLayout = () => {
           p: 3,
           mt: "100px",
           mx: "10px",
-          // backgroundColor: 'yellow',
           transition: "margin-left 0.3s ease-in-out",
           width: { sm: `calc(100% - ${isOpen ? drawerWidth : 65}px)` },
         }}
