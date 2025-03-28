@@ -121,7 +121,7 @@ function AppContent() {
               }
             />
             <Route
-              path="/course/:id/programming-assignment"
+              path="/course/:id/programming/:paid"
               element={
                 <PrivateRoute allowedRoles={["student"]}>
                   <ProgrammingAssignment />

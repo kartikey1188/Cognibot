@@ -11,6 +11,8 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../../axiosClient";
 import DownloadIcon from "@mui/icons-material/Download";
 import { CircularProgress } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { clearQuestions } from "../../redux/slice/questionsSlice";
 const styles = {
   container: { mt: 4 },
   videoBox: {
@@ -38,7 +40,7 @@ const styles = {
     boxShadow:
       "inset 0px 1px 2px 1px rgba(0,0,0,0.2), inset 0px 4px 5px 0px rgba(0, 0, 0, 0.03)",
   },
-  chatBox: { display: "flex", mt: 2 },
+  chatBox: { display: "flex", mt: 0 },
   textField: { mr: 1 },
 };
 
@@ -47,11 +49,20 @@ function Lecture() {
   const [comments, setComments] = useState({});
   const [ratings, setRatings] = useState({});
   const [value, setValue] = useState(ratings[lid] || 0);
-  const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [tabIndex, setTabIndex] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState({});
+  const { generatedQuestions, isLoading, error } = useSelector(
+    (state) => state.questions
+  );
+  const dispatch = useDispatch();
+  useEffect(() => {
+    return () => {
+      dispatch(clearQuestions());
+    };
+  }, [lid]);
   const convertToEmbedLink = (url) => {
     const regExp =
       /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
@@ -62,11 +73,13 @@ function Lecture() {
   };
 
   useEffect(() => {
-    setMessages([new Message({
-      id: 1,
-      message:
-       "Welcome! Ask your lecture-related questions here—they'll go straight to the instructor.",
-    }),])
+    setMessages([
+      new Message({
+        id: 1,
+        message:
+          "Welcome! Ask your lecture-related questions here—they'll go straight to the instructor.",
+      }),
+    ]);
     axiosInstance.get(`/get_lecture_by_id/${lid}`).then((response) => {
       setContent((c) => ({
         title: response.data.title,
@@ -78,17 +91,17 @@ function Lecture() {
   useEffect(() => {
     setValue(ratings[lid] || 0);
 
-    setComments(prev => ({...prev, [lid] : prev?.lid || ""}))
+    setComments((prev) => ({ ...prev, [lid]: prev?.lid || "" }));
   }, [lid, ratings]);
 
-  const handleCommentChange = (e) =>{
-    setComments(prev => ({
+  const handleCommentChange = (e) => {
+    setComments((prev) => ({
       ...prev,
-      [lid]: e.target.value
+      [lid]: e.target.value,
     }));
-  }
+  };
 
-  const formatSummary = (text) => {
+  const formatResponse = (text) => {
     if (!text) return "";
 
     return text.split("\n").map((paragraph, pIndex) => (
@@ -107,36 +120,40 @@ function Lecture() {
   };
   const generateSummary = () => {
     setIsLoading(true);
-    axiosInstance.get(`/lecture_summary/${lid}`).then((res) => {
-      setContent((c) => ({
-        ...c,
-        summary: res.data.lecture_summary,
-      }))
-    }).finally(() => {
-      setIsLoading(false);
-    });;
+    axiosInstance
+      .get(`/lecture_summary/${lid}`)
+      .then((res) => {
+        setContent((c) => ({
+          ...c,
+          summary: res.data.lecture_summary,
+        }));
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
-  const summary = formatSummary(content?.summary);
+  const summary = formatResponse(content?.summary);
   const handleSendMessage = useCallback(() => {
     if (newMessage.trim() === "") return;
     const userMessage = new Message({ id: 0, message: newMessage });
     setMessages((prevMessages) => [...prevMessages, userMessage]);
-    
-    axiosInstance.post('/receive_doubt', {
-      lecture_id : lid, 
-      doubt : newMessage
-    }).then(response=>{
-      setTimeout(() => {
-        const responseMessage = new Message({
-          id: 1,
-          message: response.data.Message,
-        });
-        setMessages((prevMessages) => [...prevMessages, responseMessage]);
-      }, 1000);
 
-      setNewMessage("");
-    })
+    axiosInstance
+      .post("/receive_doubt", {
+        lecture_id: lid,
+        doubt: newMessage,
+      })
+      .then((response) => {
+        setTimeout(() => {
+          const responseMessage = new Message({
+            id: 1,
+            message: response.data.Message,
+          });
+          setMessages((prevMessages) => [...prevMessages, responseMessage]);
+        }, 1000);
 
+        setNewMessage("");
+      });
   }, [newMessage]);
 
   const handleTabChange = useCallback((event, newValue) => {
@@ -158,30 +175,151 @@ function Lecture() {
   };
 
   const handleReviewSubmit = () => {
-    axiosInstance.post(`/submit_feedback`, {
-      lecture_id : lid,
-      rating: value,
-      feedback: comments[lid]
-    })
-    .then(response => {
-      setComments(prev=> ({
-        ...prev, 
-        [lid] : ""
-      }));
-    })
-    .catch(error => {
-      console.error('Error submitting review:', error);
-    });
+    axiosInstance
+      .post(`/submit_feedback`, {
+        lecture_id: lid,
+        rating: value,
+        feedback: comments[lid],
+      })
+      .then((response) => {
+        setComments((prev) => ({
+          ...prev,
+          [lid]: "",
+        }));
+      })
+      .catch((error) => {
+        console.error("Error submitting review:", error);
+      });
   };
 
   const handleRatingChange = (event, newValue) => {
     setValue(newValue);
-    setRatings(prev => ({
+    setRatings((prev) => ({
       ...prev,
-      [lid]: newValue
+      [lid]: newValue,
     }));
   };
 
+  const formatQuestions = (questions) => {
+    if (!questions || !questions.questions) return null;
+  
+    const handleOptionClick = (questionIndex, selectedOption) => {
+      setSelectedAnswers(prev => ({
+        ...prev,
+        [questionIndex]: selectedOption
+      }));
+    };
+  
+    return (
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        {questions.questions.map((q, index) => {
+          const selectedOption = selectedAnswers[index];
+          const isAnswered = selectedOption !== undefined;
+  
+          return (
+            <Paper
+              key={index}
+              elevation={1}
+              sx={{
+                p: 2,
+                borderRadius: 2,
+                backgroundColor: "background.paper",
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
+                Question {index + 1}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                {q.question}
+              </Typography>
+  
+              <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 1 }}>
+                {Object.entries(q.options).map(([key, value]) => {
+                  const isSelected = selectedOption === key;
+                  const isCorrect = key === q.correct_answer;
+                  const showCorrect = isAnswered && isCorrect;
+                  const showIncorrect = isAnswered && isSelected && !isCorrect;
+  
+                  return (
+                    <Paper
+                      key={key}
+                      variant="outlined"
+                      onClick={() => !isAnswered && handleOptionClick(index, key)}
+                      sx={{
+                        p: 1.5,
+                        borderRadius: 1,
+                        borderColor: showCorrect 
+                          ? 'success.main'
+                          : showIncorrect 
+                            ? 'error.main' 
+                            : 'divider',
+                        backgroundColor: showCorrect 
+                          ? 'success.light'
+                          : showIncorrect 
+                            ? 'error.light'
+                            : 'background.paper',
+                        "&:hover": {
+                          backgroundColor: !isAnswered && "action.hover",
+                        },
+                        cursor: isAnswered ? "default" : "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        transition: "all 0.2s ease-in-out"
+                      }}
+                    >
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          color: showCorrect 
+                            ? 'success.dark'
+                            : showIncorrect 
+                              ? 'error.dark'
+                              : 'primary.main',
+                          fontWeight: 600,
+                          minWidth: "24px"
+                        }}
+                      >
+                        {key}.
+                      </Typography>
+                      <Typography 
+                        variant="body2"
+                        sx={{
+                          color: showCorrect 
+                            ? 'success.dark'
+                            : showIncorrect 
+                              ? 'error.dark'
+                              : 'text.primary'
+                        }}
+                      >
+                        {value}
+                        {showCorrect && " ✓"}
+                        {showIncorrect && " ✗"}
+                      </Typography>
+                    </Paper>
+                  );
+                })}
+              </Box>
+              {isAnswered && (
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    mt: 2, 
+                    color: selectedOption === q.correct_answer ? 'success.main' : 'error.main',
+                    fontWeight: 500
+                  }}
+                >
+                  {selectedOption === q.correct_answer 
+                    ? "Correct!" 
+                    : `Incorrect. The correct answer is ${q.correct_answer}.`}
+                </Typography>
+              )}
+            </Paper>
+          );
+        })}
+      </Box>
+    );
+  };
   return (
     <Container maxWidth="lg" sx={styles.container}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
@@ -221,7 +359,7 @@ function Lecture() {
               </Typography>
               <Box sx={{ ...styles.summaryBox, overflowY: "auto" }}>
                 <Typography variant="body1" color="text.secondary">
-                  { summary || "Generated summary appears here..."}
+                  {summary || "Generated summary appears here..."}
                 </Typography>
               </Box>
               <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
@@ -229,10 +367,16 @@ function Lecture() {
                   variant="contained"
                   color="primary"
                   fullWidth
-                  startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <OfflineBoltRoundedIcon />}
+                  startIcon={
+                    isLoading ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      <OfflineBoltRoundedIcon />
+                    )
+                  }
                   onClick={generateSummary}
                 >
-                  {isLoading ? 'Generating...' : 'Summarize'}
+                  {isLoading ? "Generating..." : "Summarize"}
                 </Button>
                 <Button
                   variant="outlined"
@@ -297,7 +441,7 @@ function Lecture() {
                   borderRadius: 2,
                   backgroundColor: "#fafafa",
                   p: 3,
-                  pt : 1
+                  pt: 1,
                 }}
               >
                 <Box sx={{ maxHeight: 220, overflowY: "auto" }}>
@@ -340,6 +484,38 @@ function Lecture() {
           )}
         </Grid>
       </Grid>
+      {generatedQuestions && (
+        <Paper
+          elevation={2}
+          sx={{
+            mt: 4,
+            p: 3,
+            borderRadius: 2,
+            backgroundColor: "#fafafa",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              mb: 3,
+            }}
+          >
+            <OfflineBoltRoundedIcon color="primary" />
+            <Typography variant="h5">Practice Questions</Typography>
+          </Box>
+          {isLoading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : error ? (
+            <Typography color="error">{error}</Typography>
+          ) : (
+            formatQuestions(generatedQuestions)
+          )}
+        </Paper>
+      )}
     </Container>
   );
 }
