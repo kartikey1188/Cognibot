@@ -39,7 +39,7 @@ images:
 
 availableSecrets:
   secretManager:
-  - versionName: projects/YOUR_PROJECT_ID/secrets/env/versions/latest
+  - versionName: projects/first-project-8101c/secrets/env/versions/latest
     env: 'ENV_FILE'
 
 options:
