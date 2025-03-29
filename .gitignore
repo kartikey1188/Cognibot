@@ -36,10 +36,6 @@ backend/service-account.json
 
 backend/tests/service-account.json
 
-backend/dockerfile
-
-backend/.dockerignore
-
 backend/logs
 
 .pytest_cache
