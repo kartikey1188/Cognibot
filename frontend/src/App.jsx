@@ -22,6 +22,7 @@ import QueryLimits from "./pages/Admin/QueryLimits";
 import LandingPage from "./pages/Landing";
 import Analytics from "./pages/Admin/Analytics";
 import InstructorDashboard from "./pages/Instructor/InstructorDashboard";
+import Search from "./pages/Search";
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -56,6 +57,14 @@ function AppContent() {
               <PublicRoute>
                 <Signup />
               </PublicRoute>
+            }
+          />
+          <Route
+            path = "/search"
+            element={
+              <PrivateRoute>
+                <Search></Search>
+              </PrivateRoute>
             }
           />
 
