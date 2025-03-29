@@ -1592,8 +1592,6 @@ paths:
         and a textual review. The submitted feedback is stored in the database for further analysis.
       tags:
         - "Non - User Story Related API Endpoints"
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -1610,14 +1608,19 @@ paths:
                 feedback:
                   type: string
                   description: "The feedback text provided by the student."
+                user_id:
+                  type: integer
+                  description: "The user_id of the student."
               required:
                 - lecture_id
                 - rating
                 - feedback
+                - user_id
             example:
               lecture_id: 2
               rating: 4
               feedback: "The lecture was well-structured but could use clearer examples."
+              user_id: 20
       responses:
         "201":
           description: "Feedback submitted successfully."
