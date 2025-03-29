@@ -2,9 +2,9 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build',
-      '-t', 'gcr.io/YOUR_PROJECT_ID/YOUR_IMAGE_NAME',
-      '--cache-from', 'gcr.io/YOUR_PROJECT_ID/YOUR_IMAGE_NAME',
+      '-t', 'us-central1-docker.pkg.dev/first-project-8101c/cloud-run-source-deploy/soft-engg-project-jan-2025-se-jan-11/team-11-backend-v1',
+      '--cache-from', 'us-central1-docker.pkg.dev/first-project-8101c/cloud-run-source-deploy/soft-engg-project-jan-2025-se-jan-11/team-11-backend-v1',
       '.'
     ]
 images:
-  - 'gcr.io/YOUR_PROJECT_ID/YOUR_IMAGE_NAME'
+  - 'us-central1-docker.pkg.dev/first-project-8101c/cloud-run-source-deploy/soft-engg-project-jan-2025-se-jan-11/team-11-backend-v1'
