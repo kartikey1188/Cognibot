@@ -1,7 +1,6 @@
 import os
 import firebase_admin
 from firebase_admin import credentials, firestore
-import redis
 
 if not firebase_admin._apps:
     cred = credentials.Certificate({
@@ -23,7 +22,6 @@ client = firestore.client()
 REDIS_HOST = os.getenv("REDIS_HOST", "10.62.100.100") 
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 
-redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
 
 
