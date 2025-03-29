@@ -15,7 +15,6 @@ def create_app(test_config=None):
     bcrypt.init_app(app)
     api.init_app(app)
     jwt.init_app(app)
-    CORS(app, origins=["http://localhost:5173", "https://team-11-frontend-v1-457986151866.us-central1.run.app"], supports_credentials=True) 
 
     # Add resources
     # api.add_resource(UserLogin, '/login')

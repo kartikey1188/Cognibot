@@ -1,6 +1,7 @@
 import os
 import firebase_admin
 from firebase_admin import credentials, firestore
+import redis
 
 if not firebase_admin._apps:
     cred = credentials.Certificate({
@@ -19,14 +20,10 @@ if not firebase_admin._apps:
 
 client = firestore.client()
 
+REDIS_HOST = os.getenv("REDIS_HOST", "10.62.100.100") 
+REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 
-# import firebase_admin
-# from firebase_admin import credentials, firestore
-
-# if not firebase_admin._apps:
-#     cred = credentials.Certificate("service-account.json")
-#     firebase_admin.initialize_app(cred)
+redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
 
-# client = firestore.client()
 
