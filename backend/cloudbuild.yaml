@@ -6,5 +6,21 @@ steps:
       '--cache-from', 'us-central1-docker.pkg.dev/first-project-8101c/cloud-run-source-deploy/soft-engg-project-jan-2025-se-jan-11/team-11-backend-v1',
       '.'
     ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'push',
+      'us-central1-docker.pkg.dev/first-project-8101c/cloud-run-source-deploy/soft-engg-project-jan-2025-se-jan-11/team-11-backend-v1'
+    ]
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+      'run', 'deploy', 'team-11-backend-v1',
+      '--image', 'us-central1-docker.pkg.dev/first-project-8101c/cloud-run-source-deploy/soft-engg-project-jan-2025-se-jan-11/team-11-backend-v1',
+      '--region', 'us-central1',
+      '--platform', 'managed',
+      '--allow-unauthenticated'
+    ]
+
 images:
   - 'us-central1-docker.pkg.dev/first-project-8101c/cloud-run-source-deploy/soft-engg-project-jan-2025-se-jan-11/team-11-backend-v1'
