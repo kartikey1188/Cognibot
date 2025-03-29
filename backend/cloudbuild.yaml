@@ -1,0 +1,10 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', 'gcr.io/YOUR_PROJECT_ID/YOUR_IMAGE_NAME',
+      '--cache-from', 'gcr.io/YOUR_PROJECT_ID/YOUR_IMAGE_NAME',
+      '.'
+    ]
+images:
+  - 'gcr.io/YOUR_PROJECT_ID/YOUR_IMAGE_NAME'
