@@ -28,9 +28,20 @@ const dispatch = useDispatch();
         if (savedAnswers?.submitted_answers) {
           const restoredAnswers = {};
           savedAnswers.submitted_answers.forEach(answer => {
-            restoredAnswers[answer.qid] = Array.isArray(answer.answer) && answer.answer.length === 1
-              ? answer.answer[0]
-              : answer.answer;
+            // Find corresponding question to check type
+            const question = response.data.find(q => q.qid === answer.qid);
+            
+            if (question?.type === "CAT") {
+              // For CAT questions, always store as array
+              restoredAnswers[answer.qid] = Array.isArray(answer.answer) 
+                ? answer.answer 
+                : [answer.answer];
+            } else {
+              // For MCQ and MSQ, keep existing logic
+              restoredAnswers[answer.qid] = Array.isArray(answer.answer) && answer.answer.length === 1
+                ? answer.answer[0]
+                : answer.answer;
+            }
           });
           setAnswers(restoredAnswers);
           setSubmitted(true);
@@ -63,7 +74,7 @@ const dispatch = useDispatch();
     } else if (type === "CAT") {
       setAnswers(prev => ({
         ...prev,
-        [qid]: value
+        [qid]: [value]
       }));
     }
   };
@@ -81,7 +92,7 @@ const dispatch = useDispatch();
           userAnswer.every(ans => question.answer.includes(ans));
         return score + (isCorrect ? question.points : 0);
       } else if (question.type === "CAT") {
-        return score + (userAnswer?.trim().toLowerCase() === question.answer[0].toLowerCase() ? 1 : 0); // replace with question.points
+        return score + (userAnswer[0]?.trim().toLowerCase() === question.answer[0].toLowerCase() ? 1 : 0); // replace with question.points
       }
       return score;
     }, 0);
@@ -103,7 +114,6 @@ const handleSubmit = async () => {
 
   try {
     setLoading(true);
-    
     dispatch(saveAnswers({
       weekId: aid,
       answers: submittedAnswers
@@ -221,7 +231,7 @@ const handleAnswersReset = () => {
           <Box sx={{ mt: 2, p: 2, bgcolor: "grey.100", borderRadius: 1 }}>
           <Typography variant="body2" color={
            question.type === "CAT"
-           ? (answers[question.qid] && answers[question.qid].trim().toLowerCase() === question.answer[0].trim().toLowerCase())
+           ? (answers[question.qid] && answers[question.qid][0]?.trim().toLowerCase() === question.answer[0]?.trim().toLowerCase())
              ? "success.main"
              : "error.main"
               : question.type === "MCQ"
