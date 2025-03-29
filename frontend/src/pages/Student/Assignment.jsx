@@ -9,7 +9,7 @@ import { saveAnswers, saveFeedback, resetFeedback, resetAnswers, resetWeek } fro
 import AssignmentRecommendations from '@/components/AssignmentRecommend';
 
 function Assignment() {
-  const { id,aid } = useParams();
+  const { id, aid } = useParams();
   const [searchParams] = useSearchParams();
   const isGraded = searchParams.get("isGraded") === "true";
   const [answers, setAnswers] = useState({});
@@ -28,16 +28,13 @@ const dispatch = useDispatch();
         if (savedAnswers?.submitted_answers) {
           const restoredAnswers = {};
           savedAnswers.submitted_answers.forEach(answer => {
-            // Find corresponding question to check type
             const question = response.data.find(q => q.qid === answer.qid);
             
             if (question?.type === "CAT") {
-              // For CAT questions, always store as array
               restoredAnswers[answer.qid] = Array.isArray(answer.answer) 
                 ? answer.answer 
                 : [answer.answer];
             } else {
-              // For MCQ and MSQ, keep existing logic
               restoredAnswers[answer.qid] = Array.isArray(answer.answer) && answer.answer.length === 1
                 ? answer.answer[0]
                 : answer.answer;
@@ -53,7 +50,7 @@ const dispatch = useDispatch();
         setError('Failed to load questions');
         setLoading(false);
       });
-  }, []);
+  }, [aid]);
 
   const handleAnswerChange = (qid, value, type) => {
     if (isSubmitted) return;

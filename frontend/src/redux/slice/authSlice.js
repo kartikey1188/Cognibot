@@ -5,6 +5,7 @@ import axiosInstance from "../../axiosClient";
 export const loginUser = createAsyncThunk("loginUser", async (data, {rejectWithValue}) => { 
         try {
             const response = await axiosInstance.post('/login', data);
+            localStorage.setItem("token", response.data.access_token)
             return response.data;
         } catch (error) {
             console.clear()
@@ -36,6 +37,7 @@ const authSlice = createSlice({
           state.error = action.payload;
         }, 
         logoutUser : (state , action ) =>{
+            localStorage.removeItem("token")
             state.user = null, 
             state.loading = false,
             state.error = action.payload

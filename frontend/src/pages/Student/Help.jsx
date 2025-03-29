@@ -52,10 +52,10 @@ function Help() {
 
   const formatBotResponse = (text) => {
     if (!text) return "";
-  
+
     const sections = [];
     let currentSection = [];
-  
+
     text.split("\n").forEach((paragraph, index) => {
       if (!paragraph.trim()) {
         if (currentSection.length > 0) {
@@ -64,12 +64,16 @@ function Help() {
         }
         return;
       }
-  
+
       // Format headings
       if (paragraph.includes(":")) {
         const [title, ...content] = paragraph.split(":");
         currentSection.push(
-          <Typography variant="h6" sx={{ color: 'primary.main', mb: 1 }} key={`h-${index}`}>
+          <Typography
+            variant="h6"
+            sx={{ color: "primary.main", mb: 1 }}
+            key={`h-${index}`}
+          >
             {title.trim()}
           </Typography>
         );
@@ -84,16 +88,16 @@ function Help() {
         // Format bullet points and regular text
         const formattedText = paragraph
           .trim()
-          .replace(/^\*\s*/, '• ')
-          .replace(/\*\s*/g, '• ');
-  
+          .replace(/^\*\s*/, "• ")
+          .replace(/\*\s*/g, "• ");
+
         currentSection.push(
-          <Typography 
-            variant="body1" 
-            sx={{ 
+          <Typography
+            variant="body1"
+            sx={{
               mb: 1,
-              pl: formattedText.startsWith('•') ? 2 : 0 
-            }} 
+              pl: formattedText.startsWith("•") ? 2 : 0,
+            }}
             key={`p-${index}`}
           >
             {formattedText}
@@ -101,11 +105,11 @@ function Help() {
         );
       }
     });
-  
+
     if (currentSection.length > 0) {
       sections.push([...currentSection]);
     }
-  
+
     return sections.map((section, idx) => (
       <Box key={`section-${idx}`} sx={{ mb: 2 }}>
         {section}
@@ -114,65 +118,99 @@ function Help() {
   };
   const handleSendMessage = async () => {
     if (newMessage.trim() === "") return;
-  
+
     const userMessage = new Message({ id: 0, message: newMessage });
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
     setError(null);
-  
+
     try {
-      const endpoint = queryType === "handbook" ? "/api/handbook/query" : "/api/grading/query";
+      const endpoint =
+        queryType === "handbook" ? "/api/handbook/query" : "/api/grading/query";
       const response = await axiosClient.post(endpoint, {
         query: newMessage,
-        k: 1,
-        score_threshold: 0.6,
+        k: 5,
+        score_threshold: 0.2,
       });
-  
+
       const formattedContent = (
         <Box>
           <Box sx={{ mb: 2 }}>
             {formatBotResponse(response.data.answer)}
           </Box>
-          {response.data.documents?.[0]?.content && (
-            <Box sx={{ mt: 2 }}>
-              <Typography 
-                variant="body2" 
+          {response?.data?.documents?.map((document, index) => {
+            
+            return document?.content.trim() && (
+              <Box 
+                key={index} 
                 sx={{ 
+                  mt: 2,
                   p: 2,
                   bgcolor: 'rgba(0,0,0,0.03)',
-                  borderRadius: 1,
-                  color: 'text.secondary',
-                  fontFamily: 'monospace'
+                  borderRadius: 2,
+                  border: '1px solid rgba(0,0,0,0.1)'
                 }}
               >
-                {response.data.documents[0].content}
-              </Typography>
-            </Box>
-          )}
-          {response.data.documents?.[0]?.source && (
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                mt: 2,
-                pt: 1,
-                borderTop: '1px solid rgba(0,0,0,0.1)',
-                color: 'text.secondary',
-                fontStyle: 'italic'
-              }}
-            >
-              Source: {response.data.documents[0].source}
-            </Typography>
-          )}
+                <Typography
+                  variant="body2"
+                  sx={{
+                    p: 2,
+                    borderRadius: 1,
+                    color: 'text.secondary',
+                    fontFamily: 'monospace',
+                    whiteSpace: 'pre-wrap'
+                  }}
+                >
+                  {document.content}
+                </Typography>
+                {(document.source || document.page_number) && (
+                  <Box 
+                    sx={{ 
+                      mt: 1,
+                      pt: 1,
+                      borderTop: '1px solid rgba(0,0,0,0.1)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 'text.secondary',
+                        fontStyle: 'italic'
+                      }}
+                    >
+                      Source: {document.source}
+                    </Typography>
+                    {document?.page_number && (
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: 'text.secondary',
+                          fontWeight: 'medium',
+                          bgcolor: 'rgba(0,0,0,0.05)',
+                          px: 1,
+                          py: 0.5,
+                          borderRadius: 1
+                        }}
+                      >
+                        Page {document.page_number}
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+              </Box>
+            );
+          })}
         </Box>
       );
-  
       const botResponse = new Message({
         id: 1,
-        message: formattedContent
+        message: formattedContent,
       });
-  
+
       setMessages((prev) => [...prev, botResponse]);
-  
     } catch (err) {
       setError("Failed to get response. Please try again.");
       console.error("Bot response error:", err);
@@ -318,7 +356,6 @@ function Help() {
                         mb: 0.5,
                       },
                     }}
-                  
                   >
                     {props.message.message}
                     {props.message.source && (

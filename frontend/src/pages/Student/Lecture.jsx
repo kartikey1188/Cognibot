@@ -176,12 +176,14 @@ function Lecture() {
   };
 
   const handleReviewSubmit = () => {
+    console.log(localStorage.getItem('token'))
     axiosInstance
-      .post(`/submit_feedback`, {
+      .post('/submit_feedback', {
         lecture_id: lid,
         rating: value,
         feedback: comments[lid],
-      })
+      },
+      )
       .then((response) => {
         setComments((prev) => ({
           ...prev,
@@ -189,7 +191,11 @@ function Lecture() {
         }));
       })
       .catch((error) => {
-        console.error("Error submitting review:", error);
+        console.error('Submission error:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message
+        });
       });
   };
 

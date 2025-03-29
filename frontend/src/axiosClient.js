@@ -2,22 +2,25 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: "https://team-11-backend-v1-457986151866.us-central1.run.app", 
-  withCredentials: true, //     Allows sending cookies (HTTP-only)
+  withCredentials: true, 
   headers: {
-    "Content-Type": "application/json" // Explicitly set JSON content type
+    "Content-Type": "application/json" 
   }
 });
 
-// Request Interceptor: Logs outgoing requests
-// axiosInstance.interceptors.request.use(
-//   (config) => {
-//     console.log(`Sending request to: ${config.url}`);
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // Response Interceptor: Handles unauthorized (401) responses
 // axiosInstance.interceptors.response.use(
