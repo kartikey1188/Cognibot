@@ -1,21 +1,12 @@
 steps:
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: [
-      'secrets', 'versions', 'access', 'latest',
-      '--secret', 'env'
-    ]
-    id: 'fetch-secret'
-    secretEnv: ['ENV_FILE']
-
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build',
       '-t', 'us-central1-docker.pkg.dev/first-project-8101c/cloud-run-source-deploy/soft-engg-project-jan-2025-se-jan-11/team-11-backend-v1',
       '--cache-from', 'us-central1-docker.pkg.dev/first-project-8101c/cloud-run-source-deploy/soft-engg-project-jan-2025-se-jan-11/team-11-backend-v1',
       '-f', 'backend/Dockerfile',
-      'backend/'  
+      'backend/'
     ]
-    secretEnv: ['ENV_FILE']
 
   - name: 'gcr.io/cloud-builders/docker'
     args: [
@@ -32,16 +23,11 @@ steps:
       '--allow-unauthenticated',
       '--set-secrets', 'ENV_FILE=env:latest',
       '--port', '5000',
-      '--memory', '4Gi'  
+      '--memory', '4Gi'
     ]
 
 images:
   - 'us-central1-docker.pkg.dev/first-project-8101c/cloud-run-source-deploy/soft-engg-project-jan-2025-se-jan-11/team-11-backend-v1'
-
-availableSecrets:
-  secretManager:
-  - versionName: projects/first-project-8101c/secrets/env/versions/latest
-    env: 'ENV_FILE'
 
 options:
   logging: CLOUD_LOGGING_ONLY
