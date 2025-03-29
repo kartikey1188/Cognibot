@@ -27,6 +27,7 @@ import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import { CircularProgress } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
+import GraphicEqIcon from '@mui/icons-material/GraphicEq';
 import {
   setGeneratedQuestions,
   setLoading,
@@ -34,7 +35,7 @@ import {
 } from "../redux/slice/questionsSlice";
 
 import MicIcon from "@mui/icons-material/Mic";
-import MicOffIcon from "@mui/icons-material/MicOff";
+import PauseIcon from "@mui/icons-material/Pause";
 import ImageIcon from "@mui/icons-material/Image";
 import { styled } from "@mui/material/styles";
 const CourseLayout = () => {
@@ -46,6 +47,9 @@ const CourseLayout = () => {
   const drawerWidth = 280;
   const [selectedItem, setSelectedItem] = useState(null);
   const [content, setContent] = useState([]);
+  const [audioChunks, setAudioChunks] = useState([]);
+  const [audioPreviewUrl, setAudioPreviewUrl] = useState(null);
+  const [audioBlob, setAudioBlob] = useState(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([
@@ -70,6 +74,7 @@ const CourseLayout = () => {
 
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [activeMediaType, setActiveMediaType] = useState(null);
 
   useEffect(() => {
     Promise.all([
@@ -186,29 +191,38 @@ const CourseLayout = () => {
   };
 
   const startRecording = async () => {
+    if (selectedImage) return;
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
-      const audioChunks = [];
+      const chunks = [];
 
       recorder.ondataavailable = (event) => {
-        audioChunks.push(event.data);
+        chunks.push(event.data);
       };
 
-      recorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-        await handleSubmission(audioBlob, "audio");
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "audio/wav" });
+        const audioFile = new File([blob], "recording.wav", {
+          type: "audio/wav",
+          lastModified: Date.now(),
+        });
+        setAudioBlob(audioFile);
+        setAudioPreviewUrl(URL.createObjectURL(audioFile));
         stream.getTracks().forEach((track) => track.stop());
+        setActiveMediaType("audio");
       };
 
+      setAudioChunks([]);
       recorder.start();
       setMediaRecorder(recorder);
       setIsRecording(true);
+      setActiveMediaType("audio");
     } catch (err) {
       console.error("Error accessing microphone:", err);
     }
   };
-
   const stopRecording = () => {
     if (mediaRecorder && mediaRecorder.state === "recording") {
       mediaRecorder.stop();
@@ -220,15 +234,35 @@ const CourseLayout = () => {
     const file = event.target.files[0];
     if (file && file.type.startsWith("image/")) {
       setSelectedImage(file);
+      setActiveMediaType("image");
     }
   };
 
   const handleSubmission = async (content, type = "quest") => {
     const formData = new FormData();
     formData.append("user_id", user.id);
-    formData.append("type", type);
-    if (selectedImage) {
+    if (type === "audio") {
+      formData.append("audio", audioBlob);
+
+      formData.append("quest", content || "");
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          role: "user",
+          content: {
+            text: content,
+            audio: audioPreviewUrl,
+          },
+          type: "audio-with-text",
+        },
+      ]);
+      setChatMessage("")
+      setAudioBlob(null);
+      setAudioPreviewUrl(null);
+      setActiveMediaType(null);
+    } else if (selectedImage) {
       formData.append("image", selectedImage);
+      console.log(selectedImage);
       formData.append("quest", content || "");
       const userMessage = {
         role: "user",
@@ -240,10 +274,10 @@ const CourseLayout = () => {
       };
       setChatHistory((prev) => [...prev, userMessage]);
 
-      setChatMessage("")
+      setChatMessage("");
       setSelectedImage(null);
     } else {
-      setChatMessage("")
+      setChatMessage("");
       formData.append("quest", content);
       setChatHistory((prev) => [
         ...prev,
@@ -267,6 +301,7 @@ const CourseLayout = () => {
     ]);
 
     try {
+      console.log(audioBlob);
       const response = await axiosClient.post("/clarification", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -298,7 +333,9 @@ const CourseLayout = () => {
   };
 
   const handleChatMessage = () => {
-    if (selectedImage) {
+    if (audioBlob) {
+      handleSubmission(chatMessage || null, "audio");
+    } else if (selectedImage) {
       handleSubmission(chatMessage || null, "image");
     } else if (chatMessage.trim()) {
       handleSubmission(chatMessage, "quest");
@@ -510,39 +547,62 @@ const CourseLayout = () => {
                   </Box>
                 ) : (
                   <Box>
-                    {msg.type === "image" ? (
-                      <Box
-                        component="img"
-                        src={
-                          typeof msg.content === "string"
-                            ? msg.content
-                            : URL.createObjectURL(msg.content)
-                        }
-                        sx={{ maxWidth: "100%", borderRadius: 1 }}
-                      />
-                    ) : msg.type === "image-with-text" ? (
-                      <Box>
-                        {msg.content.text && (
-                          <Typography variant="body2" sx={{ mb: 1 }}>
-                            {msg.content.text}
-                          </Typography>
-                        )}
-                        <Box
-                          component="img"
-                          src={msg.content.image}
-                          sx={{ maxWidth: "100%", borderRadius: 1 }}
-                        />
-                      </Box>
-                    ) : msg.type === "audio" ? (
-                      <Box
-                        component="audio"
-                        controls
-                        src={URL.createObjectURL(msg.content)}
-                        sx={{ width: "100%" }}
-                      />
-                    ) : (
-                      <Typography variant="body2">{msg.content}</Typography>
-                    )}
+                    {(() => {
+                      switch (msg.type) {
+                        case "image":
+                          return (
+                            <Box
+                              component="img"
+                              src={
+                                typeof msg.content === "string"
+                                  ? msg.content
+                                  : URL.createObjectURL(msg.content)
+                              }
+                              sx={{ maxWidth: "100%" }}
+                            />
+                          );
+                        case "image-with-text":
+                          return (
+                            <Box>
+                              <Typography variant="body2" sx={{ mb: 1 }}>
+                                {msg.content.text}
+                              </Typography>
+                              <Box
+                                component="img"
+                                src={msg.content.image}
+                                sx={{ maxWidth: "100%" }}
+                              />
+                            </Box>
+                          );
+                        case "audio":
+                          return (
+                            <Box>
+                              <GraphicEqIcon></GraphicEqIcon>
+                            </Box>
+                          );
+                        case "audio-with-text":
+                          return (
+                            <Box>
+                              <Typography variant="body2" sx={{ mb: 1 }}>
+                                {msg.content.text}
+                              </Typography>
+                              <GraphicEqIcon></GraphicEqIcon>
+                            </Box>
+                          );
+                        case "error":
+                          return (
+                            <Typography variant="body2" color="error">
+                              {msg.content}
+                            </Typography>
+                          );
+                        default:
+                          return (
+                            <Typography variant="body2">
+                              {msg.content}
+                            </Typography>
+                          );
+                      }
+                    })()}
                     {msg.source && (
                       <Typography
                         variant="caption"
@@ -589,67 +649,105 @@ const CourseLayout = () => {
           </Box>
 
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-  {selectedImage && (
-    <Box sx={{ position: 'relative', mb: 1 }}>
-      <Box
-        component="img"
-        src={URL.createObjectURL(selectedImage)}
-        sx={{ 
-          maxHeight: '100px', 
-          borderRadius: 1,
-          objectFit: 'cover'
-        }}
-      />
-      <IconButton
-        size="small"
-        sx={{ 
-          position: 'absolute',
-          top: -8,
-          right: -8,
-          bgcolor: 'background.paper'
-        }}
-        onClick={() => setSelectedImage(null)}
-      >
-        <CloseIcon fontSize="small" />
-      </IconButton>
-    </Box>
-  )}
-  <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-    <IconButton
-      color={isRecording ? "error" : "default"}
-      onClick={() => (isRecording ? stopRecording() : startRecording())}
-    >
-      {isRecording ? <MicOffIcon /> : <MicIcon />}
-    </IconButton>
+            {selectedImage && (
+              <Box sx={{ position: "relative", mb: 1 }}>
+                <Box
+                  component="img"
+                  src={URL.createObjectURL(selectedImage)}
+                  sx={{
+                    maxHeight: "100px",
+                    borderRadius: 1,
+                  }}
+                />
+                <IconButton
+                  size="small"
+                  sx={{
+                    position: "absolute",
+                    top: -8,
+                    right: -8,
+                    bgcolor: "background.paper",
+                  }}
+                  onClick={() => setSelectedImage(null)}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            )}
+            {audioPreviewUrl && !isRecording && (
+              <Box sx={{ position: "relative", mb: 1 }}>
+                <Box
+                  component="audio"
+                  controls
+                  src={audioPreviewUrl}
+                  sx={{ width: "100%" }}
+                />
+                <IconButton
+                  size="small"
+                  sx={{
+                    position: "absolute",
+                    top: -8,
+                    right: -8,
+                    bgcolor: "background.paper",
+                  }}
+                  onClick={() => {
+                    setAudioBlob(null);
+                    setAudioPreviewUrl(null);
+                    setActiveMediaType(null);
+                  }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            )}
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <IconButton
+                color={isRecording ? "error" : "default"}
+                onClick={() =>
+                  isRecording ? stopRecording() : startRecording()
+                }
+                disabled={!!selectedImage}
+              >
+                {isRecording ? <PauseIcon /> : <MicIcon />}
+              </IconButton>
 
-    <IconButton component="label" color="primary">
-      <ImageIcon />
-      <VisuallyHiddenInput
-        type="file"
-        accept="image/*"
-        onChange={handleImageUpload}
-      />
-    </IconButton>
+              <IconButton
+                component="label"
+                color="primary"
+                disabled={isRecording || !!audioPreviewUrl}
+              >
+                <ImageIcon />
+                <VisuallyHiddenInput
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                />
+              </IconButton>
 
-    <TextField
-      fullWidth
-      size="small"
-      value={chatMessage}
-      onChange={(e) => setChatMessage(e.target.value)}
-      onKeyPress={(e) => e.key === "Enter" && handleChatMessage()}
-      placeholder={selectedImage ? "Add a question about this image..." : "Type your message..."}
-    />
+              <TextField
+                fullWidth
+                size="small"
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleChatMessage()}
+                placeholder={
+                  activeMediaType === "audio"
+                    ? "Add a question about this audio..."
+                    : selectedImage
+                    ? "Add a question about this image..."
+                    : "Type your message..."
+                }
+              />
 
-    <IconButton
-      color="primary"
-      onClick={handleChatMessage}
-      disabled={!chatMessage.trim() && !selectedImage}
-    >
-      <SendIcon />
-    </IconButton>
-  </Box>
-</Box>
-      </Box>
+              <IconButton
+                color="primary"
+                onClick={handleChatMessage}
+                disabled={!chatMessage.trim() && !selectedImage && !audioBlob}
+              >
+                <SendIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </Box>
       </Drawer>
     </Box>
   );
