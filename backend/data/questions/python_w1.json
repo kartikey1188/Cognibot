@@ -87,7 +87,8 @@
       ],
       "qid": 6,
       "type": "CAT",
-      "answer": ["1020"]
+      "answer": ["1020"],
+      "points" : 1
     }
   ]
 }

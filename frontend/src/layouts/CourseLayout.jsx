@@ -156,7 +156,7 @@ const CourseLayout = () => {
         lecture_id: lid,
       });
       dispatch(setGeneratedQuestions(response.data));
-      console.log(response.data);
+      
       setChatOpen(false);
     } catch (error) {
       dispatch(setError("Failed to generate questions"));
@@ -262,7 +262,7 @@ const CourseLayout = () => {
       setActiveMediaType(null);
     } else if (selectedImage) {
       formData.append("image", selectedImage);
-      console.log(selectedImage);
+     
       formData.append("quest", content || "");
       const userMessage = {
         role: "user",
@@ -301,7 +301,7 @@ const CourseLayout = () => {
     ]);
 
     try {
-      console.log(audioBlob);
+      
       const response = await axiosClient.post("/clarification", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -351,7 +351,7 @@ const CourseLayout = () => {
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: isOpen ? drawerWidth : 65,
-            top: "68px",
+            top: "75px",
             zIndex: 0,
             height: "calc(100% - 64px)",
             transition: "width 0.3s ease-out",

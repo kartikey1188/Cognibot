@@ -1,22 +1,21 @@
 import React from 'react';
 import { Typography, Card, CardContent, Avatar, Button, List, ListItem, ListItemText } from '@mui/material';
-
+import { useSelector } from 'react-redux';
 function StudentProfile() {
+  const user = useSelector((state)=>state.auth.user)
   return (
     <section className="flex flex-col gap-6 p-6 max-w-2xl mx-auto">
-      {/* Profile Header */}
       <Card className="p-6 shadow-md flex flex-col items-center text-center">
         <Avatar sx={{ width: 100, height: 100 }} src="https://via.placeholder.com/100" alt="Rashmi" />
         <Typography variant="h5" className="mt-4 font-bold">
-          Rashmi 
+          {user.name}
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          rashmi@example.com
+          {user.email}
         </Typography>
         <Typography variant="body2" className="mt-2">
           Enthusiastic learner passionate about Python and Machine Learning.
         </Typography>
-        <Button variant="contained" color="primary" className="mt-4">Edit Profile</Button>
       </Card>
 
       <Card className="shadow-md">

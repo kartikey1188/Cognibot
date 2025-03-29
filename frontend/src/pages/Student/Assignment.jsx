@@ -20,7 +20,7 @@ function Assignment() {
     axiosInstance.get('/api/questions')
       .then(response => {
         setQuestions(c=>response.data);
-        console.log(questions)
+       
         setLoading(false);
       })
       .catch(error => {
@@ -66,7 +66,7 @@ function Assignment() {
           userAnswer.every(ans => question.answer.includes(ans));
         return score + (isCorrect ? question.points : 0);
       } else if (question.type === "CAT") {
-        return score + (userAnswer.trim() === question.answer[0] ? question.points : 0);
+        return score + (userAnswer.trim() === question.answer[0] ? 1 : 0); // replace with question.points
       }
       return score;
     }, 0);
