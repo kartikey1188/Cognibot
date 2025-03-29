@@ -24,3 +24,6 @@ steps:
 
 images:
   - 'us-central1-docker.pkg.dev/first-project-8101c/cloud-run-source-deploy/soft-engg-project-jan-2025-se-jan-11/team-11-backend-v1'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
