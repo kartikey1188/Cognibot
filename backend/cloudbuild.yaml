@@ -23,7 +23,7 @@ steps:
       '--allow-unauthenticated',
       '--port', '5000',
       '--memory', '4Gi',
-      '--set-secrets', 'ENV_FILE=env:latest:/backend/.env'  
+      '--update-secrets', '/backend/.env=env:latest'
     ]
 
 images:
