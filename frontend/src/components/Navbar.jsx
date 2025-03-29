@@ -1,24 +1,50 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../redux/slice/authSlice";
-import { Button } from "@mui/material";
+import { Button, TextField, InputAdornment } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
 import { useMediaQuery } from "@mui/material";
 import { IconButton } from "@mui/material";
 import { toggleSidebar } from "../redux/slice/uiSlice";
-
+import { useState, useEffect } from "react";
 export const Navbar = () => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const isMobile = useMediaQuery("(max-width: 900px)");
   const location = useLocation();
-  
-  const dashboardPaths = ['/dashboard', '/recommendations', '/profile','/admin'];
-  const isDashboardRoute = dashboardPaths.some(path => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    if (e.key === "Enter") {
+    const query = e.target.value;
+    
+    setSearchQuery(query);
+    if (query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query)}`);
+    }else{
+      navigate(`/search`)
+    }
+  }
+  };
+
+  useEffect(() => {
+    if (!location.pathname.includes('/search')) {
+      setSearchQuery('');
+    }
+  }, [location.pathname]);
+  const dashboardPaths = [
+    "/dashboard",
+    "/recommendations",
+    "/profile",
+    "/admin",
+  ];
+  const isDashboardRoute = dashboardPaths.some((path) => {
     const pattern = new RegExp(`^${path}`);
     return pattern.test(location.pathname);
-});
+  });
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -82,6 +108,34 @@ export const Navbar = () => {
             </>
           ) : (
             <>
+              <div className="flex-1 mx-1 w-full max-w-[500px]">
+                <TextField
+                fullWidth
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={handleSearch}
+                  placeholder="Topic Search"
+                  variant = "outlined"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                    sx: {
+                      backgroundColor: 'background.paper',
+                      borderRadius: 50,
+                    py : 0,
+                      '&:hover': {
+                        backgroundColor: 'action.hover',
+                      }
+                    }
+                  }}
+                  sx={{
+                    width: '100%'
+                  }}
+                />
+              </div>
               <div className="text-lg font-bold">Welcome, {user.name}!</div>
               {getNavLinks().map((link) => (
                 <Link key={link.to} to={link.to} className="text-white">

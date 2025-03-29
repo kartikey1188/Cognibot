@@ -27,20 +27,29 @@ import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import { CircularProgress } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { 
-  setGeneratedQuestions, 
-  setLoading, 
-  setError 
-} from '../redux/slice/questionsSlice';
+import GraphicEqIcon from '@mui/icons-material/GraphicEq';
+import {
+  setGeneratedQuestions,
+  setLoading,
+  setError,
+} from "../redux/slice/questionsSlice";
 
+import MicIcon from "@mui/icons-material/Mic";
+import PauseIcon from "@mui/icons-material/Pause";
+import ImageIcon from "@mui/icons-material/Image";
+import { styled } from "@mui/material/styles";
 const CourseLayout = () => {
   const [isOpen, setIsOpen] = useState(true);
   const { id, lid } = useParams();
+  const [selectedImage, setSelectedImage] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [openWeek, setOpenWeek] = useState(null);
   const drawerWidth = 280;
   const [selectedItem, setSelectedItem] = useState(null);
   const [content, setContent] = useState([]);
+  const [audioChunks, setAudioChunks] = useState([]);
+  const [audioPreviewUrl, setAudioPreviewUrl] = useState(null);
+  const [audioBlob, setAudioBlob] = useState(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([
@@ -51,6 +60,21 @@ const CourseLayout = () => {
   ]);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const VisuallyHiddenInput = styled("input")({
+    clip: "rect(0 0 0 0)",
+    clipPath: "inset(50%)",
+    height: 1,
+    overflow: "hidden",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    whiteSpace: "nowrap",
+    width: 1,
+  });
+
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [activeMediaType, setActiveMediaType] = useState(null);
 
   useEffect(() => {
     Promise.all([
@@ -131,8 +155,8 @@ const CourseLayout = () => {
       const response = await axiosClient.post("/extra_questions", {
         lecture_id: lid,
       });
-      dispatch(setGeneratedQuestions(response.data))
-      console.log(response.data)
+      dispatch(setGeneratedQuestions(response.data));
+      
       setChatOpen(false);
     } catch (error) {
       dispatch(setError("Failed to generate questions"));
@@ -166,29 +190,118 @@ const CourseLayout = () => {
     ));
   };
 
-  const handleChatMessage = async () => {
-    if (!chatMessage.trim()) return;
-    setChatHistory((prev) => [
-      ...prev,
-      {
+  const startRecording = async () => {
+    if (selectedImage) return;
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks = [];
+
+      recorder.ondataavailable = (event) => {
+        chunks.push(event.data);
+      };
+
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "audio/wav" });
+        const audioFile = new File([blob], "recording.wav", {
+          type: "audio/wav",
+          lastModified: Date.now(),
+        });
+        setAudioBlob(audioFile);
+        setAudioPreviewUrl(URL.createObjectURL(audioFile));
+        stream.getTracks().forEach((track) => track.stop());
+        setActiveMediaType("audio");
+      };
+
+      setAudioChunks([]);
+      recorder.start();
+      setMediaRecorder(recorder);
+      setIsRecording(true);
+      setActiveMediaType("audio");
+    } catch (err) {
+      console.error("Error accessing microphone:", err);
+    }
+  };
+  const stopRecording = () => {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+      mediaRecorder.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setSelectedImage(file);
+      setActiveMediaType("image");
+    }
+  };
+
+  const handleSubmission = async (content, type = "quest") => {
+    const formData = new FormData();
+    formData.append("user_id", user.id);
+    if (type === "audio") {
+      formData.append("audio", audioBlob);
+
+      formData.append("quest", content || "");
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          role: "user",
+          content: {
+            text: content,
+            audio: audioPreviewUrl,
+          },
+          type: "audio-with-text",
+        },
+      ]);
+      setChatMessage("")
+      setAudioBlob(null);
+      setAudioPreviewUrl(null);
+      setActiveMediaType(null);
+    } else if (selectedImage) {
+      formData.append("image", selectedImage);
+     
+      formData.append("quest", content || "");
+      const userMessage = {
         role: "user",
-        content: chatMessage,
-      },
-    ]);
+        content: {
+          text: content,
+          image: URL.createObjectURL(selectedImage),
+        },
+        type: "image-with-text",
+      };
+      setChatHistory((prev) => [...prev, userMessage]);
+
+      setChatMessage("");
+      setSelectedImage(null);
+    } else {
+      setChatMessage("");
+      formData.append("quest", content);
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          role: "user",
+          content: content,
+          type: "quest",
+        },
+      ]);
+    }
+
+    const loadingId = Date.now();
     setChatHistory((prev) => [
       ...prev,
       {
+        id: loadingId,
         role: "system",
-        content: "Thinking...",
+        content: "Processing your request...",
         loading: true,
       },
     ]);
 
     try {
-      const formData = new FormData();
-      formData.append("user_id", user.id);
-      formData.append("quest", chatMessage);
-
+      
       const response = await axiosClient.post("/clarification", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -196,28 +309,38 @@ const CourseLayout = () => {
       });
 
       setChatHistory((prev) => [
-        ...prev.filter((msg) => !msg.loading),
+        ...prev.filter((msg) => msg.id !== loadingId),
         {
           role: "system",
-          content: response.data.response
-            ? formatResponse(response.data.response)
-            : "I couldn't process your request. Please try again.",
+          content: formatResponse(response.data.response),
+          type: response.data.type || "text",
+          source: response.data.source,
         },
       ]);
+
       setChatMessage("");
     } catch (error) {
-      console.error("Chat error:", error);
+      console.error("Submission error:", error);
       setChatHistory((prev) => [
-        ...prev.filter((msg) => !msg.loading),
+        ...prev.filter((msg) => msg.id !== loadingId),
         {
           role: "system",
           content: "Sorry, I encountered an error. Please try again.",
+          type: "error",
         },
       ]);
-      setChatMessage("");
     }
   };
 
+  const handleChatMessage = () => {
+    if (audioBlob) {
+      handleSubmission(chatMessage || null, "audio");
+    } else if (selectedImage) {
+      handleSubmission(chatMessage || null, "image");
+    } else if (chatMessage.trim()) {
+      handleSubmission(chatMessage, "quest");
+    }
+  };
   return (
     <Box sx={{ display: "flex" }}>
       <Drawer
@@ -228,7 +351,7 @@ const CourseLayout = () => {
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: isOpen ? drawerWidth : 65,
-            top: "68px",
+            top: "75px",
             zIndex: 0,
             height: "calc(100% - 64px)",
             transition: "width 0.3s ease-out",
@@ -406,16 +529,98 @@ const CourseLayout = () => {
               <Paper
                 key={index}
                 sx={{
-                  p: 1,
+                  p: 2,
                   bgcolor:
                     msg.role === "user" ? "primary.light" : "background.paper",
                   alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
                   maxWidth: "80%",
+                  borderRadius: 2,
+                  boxShadow: 1,
                 }}
               >
-                <Typography variant="body2">
-                  {msg.loading ? <CircularProgress size={20} /> : msg.content}
-                </Typography>
+                {msg.loading ? (
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <CircularProgress size={16} />
+                    <Typography variant="body2" color="text.secondary">
+                      {msg.content}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Box>
+                    {(() => {
+                      switch (msg.type) {
+                        case "image":
+                          return (
+                            <Box
+                              component="img"
+                              src={
+                                typeof msg.content === "string"
+                                  ? msg.content
+                                  : URL.createObjectURL(msg.content)
+                              }
+                              sx={{ maxWidth: "100%" }}
+                            />
+                          );
+                        case "image-with-text":
+                          return (
+                            <Box>
+                              <Typography variant="body2" sx={{ mb: 1 }}>
+                                {msg.content.text}
+                              </Typography>
+                              <Box
+                                component="img"
+                                src={msg.content.image}
+                                sx={{ maxWidth: "100%" }}
+                              />
+                            </Box>
+                          );
+                        case "audio":
+                          return (
+                            <Box>
+                              <GraphicEqIcon></GraphicEqIcon>
+                            </Box>
+                          );
+                        case "audio-with-text":
+                          return (
+                            <Box>
+                              <Typography variant="body2" sx={{ mb: 1 }}>
+                                {msg.content.text}
+                              </Typography>
+                              <GraphicEqIcon></GraphicEqIcon>
+                            </Box>
+                          );
+                        case "error":
+                          return (
+                            <Typography variant="body2" color="error">
+                              {msg.content}
+                            </Typography>
+                          );
+                        default:
+                          return (
+                            <Typography variant="body2">
+                              {msg.content}
+                            </Typography>
+                          );
+                      }
+                    })()}
+                    {msg.source && (
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          display: "block",
+                          mt: 1,
+                          pt: 1,
+                          borderTop: "1px solid",
+                          borderColor: "divider",
+                          color: "text.secondary",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        Source: {msg.source}
+                      </Typography>
+                    )}
+                  </Box>
+                )}
               </Paper>
             ))}
             {lid && (
@@ -443,22 +648,104 @@ const CourseLayout = () => {
             )}
           </Box>
 
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <TextField
-              fullWidth
-              size="small"
-              value={chatMessage}
-              onChange={(e) => setChatMessage(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleChatMessage()}
-              placeholder="Type your message..."
-            />
-            <IconButton
-              color="primary"
-              onClick={handleChatMessage}
-              disabled={!chatMessage.trim()}
-            >
-              <SendIcon />
-            </IconButton>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            {selectedImage && (
+              <Box sx={{ position: "relative", mb: 1 }}>
+                <Box
+                  component="img"
+                  src={URL.createObjectURL(selectedImage)}
+                  sx={{
+                    maxHeight: "100px",
+                    borderRadius: 1,
+                  }}
+                />
+                <IconButton
+                  size="small"
+                  sx={{
+                    position: "absolute",
+                    top: -8,
+                    right: -8,
+                    bgcolor: "background.paper",
+                  }}
+                  onClick={() => setSelectedImage(null)}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            )}
+            {audioPreviewUrl && !isRecording && (
+              <Box sx={{ position: "relative", mb: 1 }}>
+                <Box
+                  component="audio"
+                  controls
+                  src={audioPreviewUrl}
+                  sx={{ width: "100%" }}
+                />
+                <IconButton
+                  size="small"
+                  sx={{
+                    position: "absolute",
+                    top: -8,
+                    right: -8,
+                    bgcolor: "background.paper",
+                  }}
+                  onClick={() => {
+                    setAudioBlob(null);
+                    setAudioPreviewUrl(null);
+                    setActiveMediaType(null);
+                  }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            )}
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <IconButton
+                color={isRecording ? "error" : "default"}
+                onClick={() =>
+                  isRecording ? stopRecording() : startRecording()
+                }
+                disabled={!!selectedImage}
+              >
+                {isRecording ? <PauseIcon /> : <MicIcon />}
+              </IconButton>
+
+              <IconButton
+                component="label"
+                color="primary"
+                disabled={isRecording || !!audioPreviewUrl}
+              >
+                <ImageIcon />
+                <VisuallyHiddenInput
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                />
+              </IconButton>
+
+              <TextField
+                fullWidth
+                size="small"
+                value={chatMessage}
+                onChange={(e) => setChatMessage(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleChatMessage()}
+                placeholder={
+                  activeMediaType === "audio"
+                    ? "Add a question about this audio..."
+                    : selectedImage
+                    ? "Add a question about this image..."
+                    : "Type your message..."
+                }
+              />
+
+              <IconButton
+                color="primary"
+                onClick={handleChatMessage}
+                disabled={!chatMessage.trim() && !selectedImage && !audioBlob}
+              >
+                <SendIcon />
+              </IconButton>
+            </Box>
           </Box>
         </Box>
       </Drawer>

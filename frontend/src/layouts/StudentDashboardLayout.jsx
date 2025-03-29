@@ -45,7 +45,7 @@ export default function StudentDashboardLayout() {
 
   const drawerContent = (
     <Box sx={{ width: 'fit-content' }}>
-      <Typography variant="h6" sx={{ p: 2, textAlign: "center"}}>
+      <Typography variant="h6" sx={{ p: 3, textAlign: "center"}}>
         STUDENT
       </Typography>
       <Divider />
@@ -103,7 +103,6 @@ export default function StudentDashboardLayout() {
         {drawerContent}
       </Drawer>
 
-      {/* Main Content */}
       <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
         <Outlet></Outlet>
       </Box>

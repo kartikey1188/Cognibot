@@ -52,6 +52,7 @@ function Lecture() {
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState(null);
   const [newMessage, setNewMessage] = useState("");
+  const [Loading, setIsLoading] = useState(false)
   const [tabIndex, setTabIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const { generatedQuestions, isLoading, error } = useSelector(
@@ -368,7 +369,7 @@ function Lecture() {
                   color="primary"
                   fullWidth
                   startIcon={
-                    isLoading ? (
+                    Loading ? (
                       <CircularProgress size={20} color="inherit" />
                     ) : (
                       <OfflineBoltRoundedIcon />
@@ -376,7 +377,7 @@ function Lecture() {
                   }
                   onClick={generateSummary}
                 >
-                  {isLoading ? "Generating..." : "Summarize"}
+                  {Loading ? "Generating..." : "Summarize"}
                 </Button>
                 <Button
                   variant="outlined"

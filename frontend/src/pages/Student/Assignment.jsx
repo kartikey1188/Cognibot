@@ -4,9 +4,12 @@ import { useSearchParams, useParams } from "react-router-dom";
 import axiosInstance from "../../axiosClient";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useDispatch, useSelector } from 'react-redux';
+import { saveAnswers, saveFeedback, resetFeedback, resetAnswers, resetWeek } from '@/redux/slice/assignmentSlice';
+import AssignmentRecommendations from '@/components/AssignmentRecommend';
 
 function Assignment() {
-  const { aid } = useParams();
+  const { id,aid } = useParams();
   const [searchParams] = useSearchParams();
   const isGraded = searchParams.get("isGraded") === "true";
   const [answers, setAnswers] = useState({});
@@ -14,13 +17,24 @@ function Assignment() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const savedAnswers = useSelector(state => state.assignment.weeklyAnswers[aid]);
+  const isSubmitted = useSelector(state => state.assignment.isSubmitted[aid]);
+const dispatch = useDispatch();
   useEffect(() => {
     setLoading(true);
     axiosInstance.get('/api/questions')
       .then(response => {
         setQuestions(c=>response.data);
-        console.log(questions)
+        if (savedAnswers?.submitted_answers) {
+          const restoredAnswers = {};
+          savedAnswers.submitted_answers.forEach(answer => {
+            restoredAnswers[answer.qid] = Array.isArray(answer.answer) && answer.answer.length === 1
+              ? answer.answer[0]
+              : answer.answer;
+          });
+          setAnswers(restoredAnswers);
+          setSubmitted(true);
+        }
         setLoading(false);
       })
       .catch(error => {
@@ -31,6 +45,7 @@ function Assignment() {
   }, []);
 
   const handleAnswerChange = (qid, value, type) => {
+    if (isSubmitted) return;
     if (type === "MCQ") {
       setAnswers(prev => ({
         ...prev,
@@ -66,25 +81,57 @@ function Assignment() {
           userAnswer.every(ans => question.answer.includes(ans));
         return score + (isCorrect ? question.points : 0);
       } else if (question.type === "CAT") {
-        return score + (userAnswer.trim() === question.answer[0] ? question.points : 0);
+        return score + (userAnswer?.trim().toLowerCase() === question.answer[0].toLowerCase() ? 1 : 0); // replace with question.points
       }
       return score;
     }, 0);
   };
 
-  const handleSubmit = () => {
-    setLoading(true);
-    // Here you can add API call to submit answers
-    setTimeout(() => {
-      setSubmitted(true);
-      setLoading(false);
-    }, 1000);
+  // Update the handleSubmit function
+const handleSubmit = async () => {
+  if (isSubmitted) return;
+  const submittedAnswers = {
+    submitted_answers: questions.map(q => ({
+      qid: q.qid,
+      answer: answers[q.qid] 
+        ? Array.isArray(answers[q.qid]) 
+          ? answers[q.qid] 
+          : [answers[q.qid]]
+        : []
+    }))
   };
 
-  const handleReset = () => {
-    setAnswers({});
+  try {
+    setLoading(true);
+    
+    dispatch(saveAnswers({
+      weekId: aid,
+      answers: submittedAnswers
+    }));
+
+    const response = await axiosInstance.post('/api/feedback-recommendations', submittedAnswers);
+    dispatch(saveFeedback({
+      weekId: aid,
+      feedback: response.data?.comprehensive_feedback,
+      performanceSummary: response.data?.performance_summary,
+      questionAssessments: response.data?.question_assessments
+    }));
+
+    setSubmitted(true);
+  } catch (error) {
+    console.error('Error submitting assignment:', error);
+    setError('Failed to submit assignment');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+const handleAnswersReset = () => {
+  dispatch(resetAnswers(aid));
+  setAnswers({});
     setSubmitted(false);
-  };
+};
 
   const renderQuestion = (question) => (
     <Paper 
@@ -172,17 +219,23 @@ function Assignment() {
 
         {submitted && (
           <Box sx={{ mt: 2, p: 2, bgcolor: "grey.100", borderRadius: 1 }}>
-            <Typography variant="body2" color={
-              question.type === "CAT" 
-                ? answers[question.qid]?.trim() === question.answer[0] ? "success.main" : "error.main"
-                : question.type === "MCQ"
-                ? answers[question.qid] === question.answer[0] ? "success.main" : "error.main"
-                : JSON.stringify(answers[question.qid]?.sort()) === JSON.stringify(question.answer.sort())
-                ? "success.main" : "error.main"
-            }>
-              Correct answer{question.answer.length > 1 ? 's' : ''}: {question.answer.join(", ")}
-            </Typography>
-          </Box>
+          <Typography variant="body2" color={
+           question.type === "CAT"
+           ? (answers[question.qid] && answers[question.qid].trim().toLowerCase() === question.answer[0].trim().toLowerCase())
+             ? "success.main"
+             : "error.main"
+              : question.type === "MCQ"
+              ? answers[question.qid] === question.answer[0] 
+                ? "success.main" 
+                : "error.main"
+              : (answers[question.qid] && 
+                  JSON.stringify([...answers[question.qid]].sort()) === JSON.stringify([...question.answer].sort())) 
+                ? "success.main" 
+                : "error.main"
+          }>
+            Correct answer{question.answer.length > 1 ? 's' : ''}: {question.answer.join(", ")}
+          </Typography>
+        </Box>
         )}
       </FormControl>
     </Paper>
@@ -227,8 +280,9 @@ function Assignment() {
         <Button
           variant="outlined"
           color="secondary"
-          onClick={handleReset}
+          onClick={handleAnswersReset}
           disabled={!submitted}
+
           sx={{ flexGrow: 1, ml: 1 }}
         >
           Reset
@@ -242,6 +296,7 @@ function Assignment() {
           </Typography>
         </Paper>
       )}
+       <AssignmentRecommendations weekId={aid} />
     </Box>
   );
 }
