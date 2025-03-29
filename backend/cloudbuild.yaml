@@ -31,7 +31,9 @@ steps:
       '--region', 'us-central1',
       '--platform', 'managed',
       '--allow-unauthenticated',
-      '--set-secrets', 'ENV_FILE=env:latest'
+      '--set-secrets', 'ENV_FILE=env:latest',
+      '--port', '5000',
+      '--memory', '4Gi'  
     ]
 
 images:
