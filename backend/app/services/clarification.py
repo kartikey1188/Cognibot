@@ -81,6 +81,13 @@ class Clarification(Resource):
 
             if user_id is None:
                 return {"error": "The user_id is required"}, 400
+            
+            if quest:
+                response = check_integrity(quest)
+                if response["flag"]=="Yes":
+                    quest = response["ai_response"]
+                    retrieved_chunks = response["retrieved_chunks"]
+                    app.logger.info(f"quest after integrity check: {quest}\nretrieved chunks: {retrieved_chunks}")
 
             written_query = "No written query provided" 
             image_description = "No Image Provided"

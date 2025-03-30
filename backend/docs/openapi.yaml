@@ -227,13 +227,56 @@ paths:
                     type: array
                     items:
                       type: object
-                      description: Metadata of relevant retrieved chunks.
+                      description: Metadata of relevant retrieved lectures.
+                      properties:
+                        Course ID:
+                          type: integer
+                          description: Unique identifier for the course.
+                        Lecture ID:
+                          type: integer
+                          description: Unique identifier for the lecture.
+                        Lecture Link:
+                          type: string
+                          format: uri
+                          description: URL of the lecture video.
+                        Lecture Title:
+                          type: string
+                          description: Title of the lecture.
+                        Name Of Course:
+                          type: string
+                          description: Name of the course the lecture belongs to.
+                        Week Number:
+                          type: string
+                          description: Week number in which the lecture is conducted.
+                        nature:
+                          type: string
+                          description: Type of content (e.g., lecture).
               example:
-                search_query: "Explain machine learning models"
+                search_query: "agile"
                 results:
-                  - { "title": "Introduction to ML", "source": "lecture_notes.pdf", "page": 12 }
-                  - { "title": "Supervised Learning", "source": "ml_book.pdf", "page": 45 }
-                  - { "title": "Neural Networks", "source": "deep_learning_notes.txt", "page": 8 }
+                  - Course ID: 2
+                    Lecture ID: 51
+                    Lecture Link: "https://www.youtube.com/watch?v=_KH9dSFVYTs"
+                    Lecture Title: "Behaviour Driven Design - User StoriesBehaviour Driven Design - User Stories"
+                    Name Of Course: "Software Engineering"
+                    Week Number: "2"
+                    nature: "lecture"
+                  - Course ID: 2
+                    Lecture ID: 46
+                    Lecture Link: "https://www.youtube.com/watch?v=nQzRUGuEDXs"
+                    Lecture Title: "Software Development - Agile"
+                    Name Of Course: "Software Engineering"
+                    Week Number: "1"
+                    nature: "lecture"
+                  - Course ID: 2
+                    Lecture ID: 40
+                    Lecture Link: "https://www.youtube.com/watch?v=hKm_rh1RTJQ"
+                    Lecture Title: "Week 1_ Deconstructing the Software Development Process - Introduction"
+                    Name Of Course: "Software Engineering"
+                    Week Number: "1"
+                    nature: "lecture"
+
+
         "400":
           description: Bad request, usually due to missing parameters.
           content:
@@ -1549,8 +1592,6 @@ paths:
         and a textual review. The submitted feedback is stored in the database for further analysis.
       tags:
         - "Non - User Story Related API Endpoints"
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -1567,14 +1608,19 @@ paths:
                 feedback:
                   type: string
                   description: "The feedback text provided by the student."
+                user_id:
+                  type: integer
+                  description: "The user_id of the student."
               required:
                 - lecture_id
                 - rating
                 - feedback
+                - user_id
             example:
               lecture_id: 2
               rating: 4
               feedback: "The lecture was well-structured but could use clearer examples."
+              user_id: 20
       responses:
         "201":
           description: "Feedback submitted successfully."
