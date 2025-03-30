@@ -5,6 +5,7 @@ import axiosInstance from "../../axiosClient";
 export const loginUser = createAsyncThunk("loginUser", async (data, {rejectWithValue}) => { 
         try {
             const response = await axiosInstance.post('/login', data);
+           
             return response.data;
         } catch (error) {
             console.clear()
