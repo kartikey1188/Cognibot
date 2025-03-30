@@ -64,8 +64,14 @@ function Lecture() {
   useEffect(() => {
     return () => {
       dispatch(clearQuestions());
+      setSelectedAnswers({});
     };
-  }, [lid]);
+  }, []);
+  useEffect(() => {
+    if (generatedQuestions) {
+      setSelectedAnswers({});
+    }
+  }, [generatedQuestions]);
   const convertToEmbedLink = (url) => {
     const regExp =
       /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
@@ -83,6 +89,8 @@ function Lecture() {
           "Welcome! Ask your lecture-related questions here—they'll go straight to the instructor.",
       }),
     ]);
+    dispatch(clearQuestions());
+    setSelectedAnswers({});
     axiosInstance.get(`/get_lecture_by_id/${lid}`).then((response) => {
       setContent((c) => ({
         title: response.data.title,

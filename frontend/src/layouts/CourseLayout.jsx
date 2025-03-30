@@ -31,6 +31,7 @@ import GraphicEqIcon from '@mui/icons-material/GraphicEq';
 import {
   setGeneratedQuestions,
   setLoading,
+  clearQuestions,
   setError,
 } from "../redux/slice/questionsSlice";
 
@@ -155,11 +156,11 @@ const CourseLayout = () => {
       const response = await axiosClient.post("/extra_questions", {
         lecture_id: lid,
       });
+      dispatch(clearQuestions())
+      dispatch(setError(""))
       dispatch(setGeneratedQuestions(response.data));
-      
       setChatOpen(false);
     } catch (error) {
-      dispatch(setError("Failed to generate questions"));
       setChatHistory((prev) => [
         ...prev.filter((msg) => !msg.loading),
         {
