@@ -1,151 +1,106 @@
-import React, { useState, useCallback } from "react";
-//prettier-ignore
-import { Typography, Box, TextField, Button, Paper, CircularProgress, Alert, Divider, Grow, IconButton, } from "@mui/material";
+import React, { useState } from "react";
+import axiosInstance from "../../axiosClient";
+import {
+  Typography,
+  Box,
+  TextField,
+  Button,
+  Paper,
+  CircularProgress,
+  Alert,
+  Divider,
+} from "@mui/material";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { materialDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { ChatFeed, Message } from "react-chat-ui";
-import ChatIcon from "@mui/icons-material/Chat";
-import CloseIcon from "@mui/icons-material/Close";
-import { useSearchParams } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 
 function ProgrammingAssignment() {
-  const [searchParams] = useSearchParams();
-  const isGraded = searchParams.get("isGraded") === "true";
   const [code, setCode] = useState("# Write your solution here\n");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-  const [messages, setMessages] = useState([
-    new Message({
-      id: 1,
-      message:
-        "Welcome to the assignment chat! Feel free to discuss the questions here.",
-      senderName: "System",
-      timestamp: new Date().toLocaleTimeString(),
-    }),
-  ]);
-  const [newMessage, setNewMessage] = useState("");
-  const [chatOpen, setChatOpen] = useState(false);
+  const [compileError, setCompileError] = useState(null);
 
   const sampleQuestion = {
     title: "Sum of Two Numbers",
-    description:
-      "Write a function `sum(a, b)` that takes two numbers as input and returns their sum.",
+    description: "Write a function `sum(a, b)` that takes two numbers as input and returns their sum.",
     example: "Input: a = 5, b = 3\nOutput: 8",
   };
 
+  const validateCode = () => {
+    if (!code || typeof code !== "string" || code.trim() === "" || code.trim() === "# Write your solution here") {
+      setError("Code cannot be empty.");
+      return false;
+    }
+    return true;
+  };
+
+  const handleCompile = () => {
+    setCompileError(null);
+    if (!validateCode()) return;
+
+    const outputElement = document.getElementById("python-output");
+    if (outputElement) outputElement.innerHTML = "";
+
+    const outf = (text) => {
+      outputElement.innerHTML += text + "<br />";
+    };
+
+    Sk.configure({
+      output: outf,
+      read: (x) => {
+        if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
+          throw "File not found: '" + x + "'";
+        }
+        return Sk.builtinFiles["files"][x];
+      },
+    });
+
+    Sk.misceval
+      .asyncToPromise(() => Sk.importMainWithBody("<stdin>", false, code, true))
+      .catch((err) => {
+        console.error("Skulpt Error:", err);
+        setCompileError(err.toString());
+      });
+  };
+
   const handleSubmit = async () => {
+    if (!validateCode()) return;
+
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("https://api.jdoodle.com/v1/execute", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin":"*"
-        },
-        body: JSON.stringify({
-          clientId: "514340096b7d08d71eed22c3506b9174",
-          clientSecret:
-            "439ff241408faf10fce13ea51295d1f3f3b3817f542578aabe67a412d4600f24",
-          script: code,
-          language: "python3",
-          versionIndex: "3",
-        }),
+      const response = await axiosInstance.post("/assignment_feedback", {
+        user_id: 1,
+        code,
       });
-
-      const data = await response.json();
-      setResult(data.output);
+      setResult(response.data);
       setSubmitted(true);
     } catch (err) {
-      setError("An error occurred while submitting your code.");
+      console.error("Submission error:", err);
+      const errMsg = err?.response?.data?.message;
+      setError(typeof errMsg === "string" ? errMsg : "An error occurred while submitting your code.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleReset = () => {
-    setCode("# Write your solution here\n");
-    setSubmitted(false);
-    setResult(null);
-    setError(null);
-  };
-
-  const ResultMessage = () => (
-    <Paper
-      sx={{
-        mt: 3,
-        p: 2,
-        bgcolor: "primary.light",
-        color: "primary.contrastText",
-      }}
-      aria-live="polite"
-    >
-      <Typography variant="h6">Output:</Typography>
-      <Typography variant="body1">{result}</Typography>
-    </Paper>
-  );
-
-  const ErrorMessage = () => (
-    <Alert severity="error" sx={{ mt: 3 }} aria-live="assertive">
-      {error}
-    </Alert>
-  );
-
-  const handleSendMessage = useCallback(() => {
-    if (newMessage.trim() === "") return;
-
-    const userMessage = new Message({
-      id: 0,
-      message: newMessage,
-      senderName: "You",
-      timestamp: new Date().toLocaleTimeString(),
-    });
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-
-    setTimeout(() => {
-      const responseMessage = new Message({
-        id: 1,
-        message: "Thank you for your message. We will get back to you shortly.",
-        senderName: "System",
-        timestamp: new Date().toLocaleTimeString(),
-      });
-      setMessages((prevMessages) => [...prevMessages, responseMessage]);
-    }, 1000);
-
-    setNewMessage("");
-  }, [newMessage]);
-
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", pb: 8 }}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
-        {isGraded ? "Graded " : "Practice "}Programming Assignment
+        Programming Assignment
       </Typography>
 
-      <Paper
-        sx={{
-          p: 3,
-          mb: 3,
-          backgroundColor: "background.paper",
-          borderRadius: 2,
-        }}
-      >
+      <Paper sx={{ p: 3, mb: 3, backgroundColor: "background.paper", borderRadius: 2 }}>
         <Typography variant="h6">{sampleQuestion.title}</Typography>
-        <Typography variant="body1" sx={{ mb: 1 }}>
-          {sampleQuestion.description}
-        </Typography>
+        <Typography variant="body1" sx={{ mb: 1 }}>{sampleQuestion.description}</Typography>
         <Typography variant="body2" sx={{ fontStyle: "italic", mb: 2 }}>
           Example: {sampleQuestion.example}
         </Typography>
-
         <Divider sx={{ mb: 2 }} />
 
-        <Typography variant="h6" gutterBottom>
-          Write your Python code below:
-        </Typography>
-
+        <Typography variant="h6" gutterBottom>Write your Python code below:</Typography>
         <TextField
           fullWidth
           multiline
@@ -155,52 +110,77 @@ function ProgrammingAssignment() {
           onChange={(e) => setCode(e.target.value)}
           placeholder="Write your Python code here..."
           sx={{ mb: 2 }}
-          aria-label="Python code editor"
         />
 
-        <SyntaxHighlighter
-          language="python"
-          style={materialDark}
-          showLineNumbers
-        >
+        <SyntaxHighlighter language="python" style={materialDark} showLineNumbers>
           {code}
         </SyntaxHighlighter>
 
-        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-          Character count: {code.length}
-        </Typography>
-
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            disabled={loading}
-            sx={{ flexGrow: 1, mr: 1 }}
-            aria-label="Submit code"
-          >
-            {loading ? (
-              <CircularProgress size={24} aria-label="Loading" />
-            ) : (
-              "Run Code"
-            )}
+          <Button variant="contained" color="primary" onClick={handleCompile}>
+            Compile
           </Button>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={handleReset}
-            disabled={loading}
-            sx={{ flexGrow: 1, ml: 1 }}
-            aria-label="Reset code"
-          >
-            Reset
+          <Button variant="contained" color="secondary" onClick={handleSubmit} disabled={loading}>
+            {loading ? <CircularProgress size={24} /> : "Submit"}
           </Button>
         </Box>
 
-        {submitted && result && <ResultMessage />}
-        {error && <ErrorMessage />}
-      </Paper>
+        {compileError && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {compileError}
+          </Alert>
+        )}
 
+        <Typography variant="h6" sx={{ mt: 3 }}>Output:</Typography>
+        <div
+          id="python-output"
+          style={{
+            backgroundColor: "#f5f5f5",
+            padding: "10px",
+            borderRadius: "4px",
+            marginTop: "10px",
+            minHeight: "100px",
+            maxHeight: "200px",
+            overflowY: "auto",
+            fontFamily: "monospace",
+          }}
+        ></div>
+
+        {submitted && result && (
+          <Paper sx={{ mt: 3, p: 2, bgcolor: "primary.light", color: "primary.contrastText" }}>
+            <Typography variant="h6">Execution Output:</Typography>
+            <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
+              {result.execution_result || "No output."}
+            </Typography>
+
+            {result.error && (
+              <>
+                <Divider sx={{ my: 2 }} />
+                <Typography variant="h6" color="error">Error:</Typography>
+                <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
+                  {result.error.type}: {result.error.message}
+                </Typography>
+              </>
+            )}
+
+            {result.feedback && (
+              <>
+                <Divider sx={{ my: 2 }} />
+                <Typography variant="h6">AI Feedback:</Typography>
+                <Box sx={{ mt: 1, pl: 1 }}>
+                  <ReactMarkdown>{result.feedback}</ReactMarkdown>
+                </Box>
+              </>
+            )}
+          </Paper>
+        )}
+
+        {error && (
+          <Alert severity="error" sx={{ mt: 3 }}>
+            {error}
+          </Alert>
+        )}
+      </Paper>
     </Box>
   );
 }
