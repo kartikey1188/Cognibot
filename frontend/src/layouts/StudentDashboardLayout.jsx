@@ -34,17 +34,17 @@ export default function StudentDashboardLayout() {
 
   const items = [
     { icon: <BookIcon />, text: "Current Courses", path: "/dashboard" },
-    {
-      icon: <RecommendIcon />,
-      text: "Study Recommendations",
-      path: "/dashboard/recommendations",
-    },
+    // {
+    //   icon: <RecommendIcon />,
+    //   text: "Study Recommendations",
+    //   path: "/dashboard/recommendations",
+    // },
     { icon: <AccountCircleRoundedIcon />, text: "Profile", path: "/dashboard/profile" },
     { icon: <HelpIcon/> , text: "Help", path: "/dashboard/help" },
   ];
 
   const drawerContent = (
-    <Box sx={{ width: 'fit-content' }}>
+    <Box>
       <Typography variant="h6" sx={{ p: 3, textAlign: "center"}}>
         STUDENT
       </Typography>
