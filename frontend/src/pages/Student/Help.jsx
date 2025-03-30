@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Typography,
   TextField,
@@ -12,43 +12,31 @@ import {
   Avatar,
   CircularProgress,
   Alert,
+  Stack,
 } from "@mui/material";
 import AssistantIcon from "@mui/icons-material/Assistant";
-import { ChatFeed, Message } from "react-chat-ui";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import GradingIcon from "@mui/icons-material/Grading";
-import ReactMarkdown from "react-markdown";
 import axiosClient from "../../axiosClient";
 
 function Help() {
   const [messages, setMessages] = useState([
-    new Message({
+    {
       id: 1,
-      message:
+      type: "bot",
+      content:
         "Hi, I am CogniBot! I can help you with handbook and grading related queries. Please select a category to get started.",
-    }),
+    },
   ]);
   const [newMessage, setNewMessage] = useState("");
   const [queryType, setQueryType] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const chatEndRef = useRef(null);
 
-  const handleQueryTypeChange = (_, newType) => {
-    if (newType !== null) {
-      setQueryType(newType);
-      setMessages([
-        new Message({
-          id: 1,
-          message:
-            "Hi, I am CogniBot! I can help you with handbook and grading related queries.",
-        }),
-        new Message({
-          id: 2,
-          message: `I'll help you with ${newType} related questions. What would you like to know?`,
-        }),
-      ]);
-    }
-  };
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const formatBotResponse = (text) => {
     if (!text) return "";
@@ -65,7 +53,6 @@ function Help() {
         return;
       }
 
-      // Format headings
       if (paragraph.includes(":")) {
         const [title, ...content] = paragraph.split(":");
         currentSection.push(
@@ -85,7 +72,6 @@ function Help() {
           );
         }
       } else {
-        // Format bullet points and regular text
         const formattedText = paragraph
           .trim()
           .replace(/^\*\s*/, "• ")
@@ -116,11 +102,39 @@ function Help() {
       </Box>
     ));
   };
+
+  const handleQueryTypeChange = (_, newType) => {
+    if (newType !== null) {
+      setQueryType(newType);
+      setMessages([
+        {
+          id: 1,
+          type: "bot",
+          content:
+            "Hi, I am CogniBot! I can help you with handbook and grading related queries.",
+        },
+        {
+          id: 2,
+          type: "bot",
+          content: `I'll help you with ${newType} related questions. What would you like to know?`,
+        },
+      ]);
+    }
+  };
+
   const handleSendMessage = async () => {
     if (newMessage.trim() === "") return;
 
-    const userMessage = new Message({ id: 0, message: newMessage });
-    setMessages((prev) => [...prev, userMessage]);
+    // Add user message
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        type: "user",
+        content: newMessage,
+      },
+    ]);
+
     setIsLoading(true);
     setError(null);
 
@@ -135,82 +149,18 @@ function Help() {
 
       const formattedContent = (
         <Box>
-          <Box sx={{ mb: 2 }}>
-            {formatBotResponse(response.data.answer)}
-          </Box>
-          {response?.data?.documents?.map((document, index) => {
-            
-            return document?.content.trim() && (
-              <Box 
-                key={index} 
-                sx={{ 
-                  mt: 2,
-                  p: 2,
-                  bgcolor: 'rgba(0,0,0,0.03)',
-                  borderRadius: 2,
-                  border: '1px solid rgba(0,0,0,0.1)'
-                }}
-              >
-                <Typography
-                  variant="body2"
-                  sx={{
-                    p: 2,
-                    borderRadius: 1,
-                    color: 'text.secondary',
-                    fontFamily: 'monospace',
-                    whiteSpace: 'pre-wrap'
-                  }}
-                >
-                  {document.content}
-                </Typography>
-                {(document.source || document.page_number) && (
-                  <Box 
-                    sx={{ 
-                      mt: 1,
-                      pt: 1,
-                      borderTop: '1px solid rgba(0,0,0,0.1)',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color: 'text.secondary',
-                        fontStyle: 'italic'
-                      }}
-                    >
-                      Source: {document.source}
-                    </Typography>
-                    {document?.page_number && (
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color: 'text.secondary',
-                          fontWeight: 'medium',
-                          bgcolor: 'rgba(0,0,0,0.05)',
-                          px: 1,
-                          py: 0.5,
-                          borderRadius: 1
-                        }}
-                      >
-                        Page {document.page_number}
-                      </Typography>
-                    )}
-                  </Box>
-                )}
-              </Box>
-            );
-          })}
+          <Box sx={{ mb: 2 }}>{formatBotResponse(response.data.answer)}</Box>
         </Box>
       );
-      const botResponse = new Message({
-        id: 1,
-        message: formattedContent,
-      });
 
-      setMessages((prev) => [...prev, botResponse]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          type: "bot",
+          content: formattedContent,
+        },
+      ]);
     } catch (err) {
       setError("Failed to get response. Please try again.");
       console.error("Bot response error:", err);
@@ -219,6 +169,31 @@ function Help() {
       setNewMessage("");
     }
   };
+
+  const MessageBubble = ({ message }) => (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: message.type === "user" ? "flex-end" : "flex-start",
+        mb: 2,
+        px: 2,
+      }}
+    >
+      <Box
+        sx={{
+          maxWidth: "80%",
+          p: 2,
+          borderRadius: 2,
+          bgcolor:
+            message.type === "user" ? "primary.main" : "background.paper",
+          color: message.type === "user" ? "white" : "text.primary",
+          boxShadow: 1,
+        }}
+      >
+        {message.content}
+      </Box>
+    </Box>
+  );
 
   return (
     <Container maxWidth="lg" sx={{ height: "85vh" }}>
@@ -296,6 +271,7 @@ function Help() {
                 </ToggleButtonGroup>
               </Box>
             </Box>
+
             <Box
               sx={{
                 flex: 1,
@@ -304,68 +280,9 @@ function Help() {
                 minHeight: 0,
               }}
             >
-              <ChatFeed
-                messages={messages}
-                showSenderName
-                bubblesCentered={false}
-                bubbleStyles={{
-                  text: {
-                    fontSize: 16,
-                  },
-                  chatbubble: {
-                    borderRadius: 16,
-                    padding: 16,
-                    maxWidth: "80%",
-                    whiteSpace: "pre-wrap",
-                    "& p": {
-                      margin: "8px 0",
-                    },
-                    "& strong": {
-                      color: "primary.main",
-                    },
-                  },
-                }}
-                customBubble={(props) => (
-                  <Box
-                    sx={{
-                      p: 2,
-                      borderRadius: 2,
-                      bgcolor:
-                        props.message.id === 0
-                          ? "primary.main"
-                          : "background.paper",
-                      color: props.message.id === 0 ? "white" : "text.primary",
-                      maxWidth: "80%",
-                      alignSelf:
-                        props.message.id === 0 ? "flex-end" : "flex-start",
-                      boxShadow: 1,
-                      "& .section": {
-                        mb: 2,
-                      },
-                      "& h3": {
-                        fontSize: "1.2rem",
-                        fontWeight: 600,
-                        mb: 1,
-                        color: "primary.main",
-                      },
-                      "& ul": {
-                        ml: 2,
-                        mb: 1,
-                      },
-                      "& li": {
-                        mb: 0.5,
-                      },
-                    }}
-                  >
-                    {props.message.message}
-                    {props.message.source && (
-                      <Typography className="source" variant="body2">
-                        Source: {props.message.source}
-                      </Typography>
-                    )}
-                  </Box>
-                )}
-              />
+              {messages.map((message) => (
+                <MessageBubble key={message.id} message={message} />
+              ))}
               {isLoading && (
                 <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
                   <CircularProgress size={32} />
@@ -376,7 +293,9 @@ function Help() {
                   {error}
                 </Alert>
               )}
+              <div ref={chatEndRef} />
             </Box>
+
             <Box sx={{ display: "flex", gap: 2 }}>
               <TextField
                 fullWidth
@@ -420,4 +339,5 @@ function Help() {
     </Container>
   );
 }
+
 export default Help;

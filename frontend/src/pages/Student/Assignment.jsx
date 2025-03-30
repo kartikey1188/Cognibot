@@ -17,7 +17,7 @@ function Assignment() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const savedAnswers = useSelector(state => state.assignment.weeklyAnswers[aid]);
+  const savedAnswers = useSelector(state => state.assignment.weeklyAnswers);
   const isSubmitted = useSelector(state => state.assignment.isSubmitted[aid]);
 const dispatch = useDispatch();
   useEffect(() => {
@@ -25,9 +25,9 @@ const dispatch = useDispatch();
     axiosInstance.get('/api/questions')
       .then(response => {
         setQuestions(c=>response.data);
-        if (savedAnswers?.submitted_answers) {
+        if (savedAnswers[aid]?.submitted_answers) {
           const restoredAnswers = {};
-          savedAnswers.submitted_answers.forEach(answer => {
+          savedAnswers[aid].submitted_answers.forEach(answer => {
             const question = response.data.find(q => q.qid === answer.qid);
             
             if (question?.type === "CAT") {
@@ -42,6 +42,9 @@ const dispatch = useDispatch();
           });
           setAnswers(restoredAnswers);
           setSubmitted(true);
+        }else {
+          setAnswers({});
+          setSubmitted(false);
         }
         setLoading(false);
       })
