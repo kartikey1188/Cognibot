@@ -148,7 +148,7 @@ const CourseLayout = () => {
       ...prev,
       {
         role: "user",
-        content: "Generate extra questions for this lecture",
+        content: "Generate extra questions for this lecture.",
       },
     ]);
 
@@ -159,6 +159,13 @@ const CourseLayout = () => {
       dispatch(clearQuestions())
       dispatch(setError(""))
       dispatch(setGeneratedQuestions(response.data));
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          role: "system",
+          content: "Extra questions generated for this lecture.",
+        },
+      ]);
       setChatOpen(false);
     } catch (error) {
       setChatHistory((prev) => [
