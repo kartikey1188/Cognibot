@@ -51,13 +51,15 @@ function Lecture() {
   const [value, setValue] = useState(ratings[lid] || 0);
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState(null);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [newMessage, setNewMessage] = useState("");
-  const [Loading, setIsLoading] = useState(false)
+  const [Loading, setIsLoading] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const { generatedQuestions, isLoading, error } = useSelector(
     (state) => state.questions
   );
+  const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   useEffect(() => {
     return () => {
@@ -177,23 +179,34 @@ function Lecture() {
 
   const handleReviewSubmit = () => {
     axiosInstance
-      .post('/submit_feedback', {
+      .post("/submit_feedback", {
         lecture_id: lid,
         rating: value,
         feedback: comments[lid],
-      },
-      )
+        user_id: user.id,
+      })
       .then((response) => {
         setComments((prev) => ({
           ...prev,
           [lid]: "",
         }));
+        setRatings((prev) => ({
+          ...prev,
+          [lid]: 0,
+        }));
+        setReviewSubmitted(true);
+
+        // Hide success message after 3 seconds
+        setTimeout(() => {
+          setReviewSubmitted(false);
+        }, 3000);
       })
+
       .catch((error) => {
-        console.error('Submission error:', {
+        console.error("Submission error:", {
           status: error.response?.status,
           data: error.response?.data,
-          message: error.message
+          message: error.message,
         });
       });
   };
@@ -208,20 +221,20 @@ function Lecture() {
 
   const formatQuestions = (questions) => {
     if (!questions || !questions.questions) return null;
-  
+
     const handleOptionClick = (questionIndex, selectedOption) => {
-      setSelectedAnswers(prev => ({
+      setSelectedAnswers((prev) => ({
         ...prev,
-        [questionIndex]: selectedOption
+        [questionIndex]: selectedOption,
       }));
     };
-  
+
     return (
       <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
         {questions.questions.map((q, index) => {
           const selectedOption = selectedAnswers[index];
           const isAnswered = selectedOption !== undefined;
-  
+
           return (
             <Paper
               key={index}
@@ -238,32 +251,36 @@ function Lecture() {
               <Typography variant="body1" gutterBottom>
                 {q.question}
               </Typography>
-  
-              <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 1 }}>
+
+              <Box
+                sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 1 }}
+              >
                 {Object.entries(q.options).map(([key, value]) => {
                   const isSelected = selectedOption === key;
                   const isCorrect = key === q.correct_answer;
                   const showCorrect = isAnswered && isCorrect;
                   const showIncorrect = isAnswered && isSelected && !isCorrect;
-  
+
                   return (
                     <Paper
                       key={key}
                       variant="outlined"
-                      onClick={() => !isAnswered && handleOptionClick(index, key)}
+                      onClick={() =>
+                        !isAnswered && handleOptionClick(index, key)
+                      }
                       sx={{
                         p: 1.5,
                         borderRadius: 1,
-                        borderColor: showCorrect 
-                          ? 'success.main'
-                          : showIncorrect 
-                            ? 'error.main' 
-                            : 'divider',
-                        backgroundColor: showCorrect 
-                          ? 'success.light'
-                          : showIncorrect 
-                            ? 'error.light'
-                            : 'background.paper',
+                        borderColor: showCorrect
+                          ? "success.main"
+                          : showIncorrect
+                          ? "error.main"
+                          : "divider",
+                        backgroundColor: showCorrect
+                          ? "success.light"
+                          : showIncorrect
+                          ? "error.light"
+                          : "background.paper",
                         "&:hover": {
                           backgroundColor: !isAnswered && "action.hover",
                         },
@@ -271,31 +288,31 @@ function Lecture() {
                         display: "flex",
                         alignItems: "center",
                         gap: 1,
-                        transition: "all 0.2s ease-in-out"
+                        transition: "all 0.2s ease-in-out",
                       }}
                     >
                       <Typography
                         variant="subtitle2"
                         sx={{
-                          color: showCorrect 
-                            ? 'success.dark'
-                            : showIncorrect 
-                              ? 'error.dark'
-                              : 'primary.main',
+                          color: showCorrect
+                            ? "success.dark"
+                            : showIncorrect
+                            ? "error.dark"
+                            : "primary.main",
                           fontWeight: 600,
-                          minWidth: "24px"
+                          minWidth: "24px",
                         }}
                       >
                         {key}.
                       </Typography>
-                      <Typography 
+                      <Typography
                         variant="body2"
                         sx={{
-                          color: showCorrect 
-                            ? 'success.dark'
-                            : showIncorrect 
-                              ? 'error.dark'
-                              : 'text.primary'
+                          color: showCorrect
+                            ? "success.dark"
+                            : showIncorrect
+                            ? "error.dark"
+                            : "text.primary",
                         }}
                       >
                         {value}
@@ -307,16 +324,19 @@ function Lecture() {
                 })}
               </Box>
               {isAnswered && (
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    mt: 2, 
-                    color: selectedOption === q.correct_answer ? 'success.main' : 'error.main',
-                    fontWeight: 500
+                <Typography
+                  variant="body2"
+                  sx={{
+                    mt: 2,
+                    color:
+                      selectedOption === q.correct_answer
+                        ? "success.main"
+                        : "error.main",
+                    fontWeight: 500,
                   }}
                 >
-                  {selectedOption === q.correct_answer 
-                    ? "Correct!" 
+                  {selectedOption === q.correct_answer
+                    ? "Correct!"
                     : `Incorrect. The correct answer is ${q.correct_answer}.`}
                 </Typography>
               )}
@@ -426,6 +446,19 @@ function Lecture() {
                     },
                   }}
                 />
+                {reviewSubmitted && (
+                  <Typography
+                    color="success.main"
+                    sx={{
+                      mt: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                    }}
+                  >
+                    ✓ Review submitted successfully!
+                  </Typography>
+                )}
                 <Button
                   variant="outlined"
                   color="primary"
