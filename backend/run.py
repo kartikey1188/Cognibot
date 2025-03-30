@@ -66,7 +66,7 @@ if __name__ == "__main__":
             app.logger.info(f"Transcript folder is not empty. Skipping transcript generation.")
 
         # Checking if the vector database folder is empty
-        if not os.listdir(vectordb_folder):
+        if len(os.listdir(vectordb_folder)) < 2:
             # Generating database and add lecture chunks
             generator1 = GenerateLectureVectorDB()
             generator1.get()
