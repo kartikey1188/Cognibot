@@ -176,7 +176,6 @@ function Lecture() {
   };
 
   const handleReviewSubmit = () => {
-    console.log(localStorage.getItem('token'))
     axiosInstance
       .post('/submit_feedback', {
         lecture_id: lid,
