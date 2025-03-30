@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axiosInstance from "../../axiosClient";
 import {
   Typography,
@@ -21,12 +21,33 @@ function ProgrammingAssignment() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [compileError, setCompileError] = useState(null);
+  const [skulptReady, setSkulptReady] = useState(false);
 
-  const sampleQuestion = {
-    title: "Sum of Two Numbers",
-    description: "Write a function `sum(a, b)` that takes two numbers as input and returns their sum.",
-    example: "Input: a = 5, b = 3\nOutput: 8",
-  };
+  // Dynamically load Skulpt from public folder
+  useEffect(() => {
+    const loadScript = (src) =>
+      new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.body.appendChild(script);
+      });
+
+    const loadSkulpt = async () => {
+      try {
+        await loadScript("/skulpt.min.js");
+        await loadScript("/skulpt-stdlib.js");
+        console.log("✅ Skulpt loaded");
+        setSkulptReady(true);
+      } catch (err) {
+        console.error("❌ Failed to load Skulpt", err);
+        setCompileError("Failed to load Python engine. Please refresh or try again.");
+      }
+    };
+
+    loadSkulpt();
+  }, []);
 
   const validateCode = () => {
     if (!code || typeof code !== "string" || code.trim() === "" || code.trim() === "# Write your solution here") {
@@ -47,18 +68,18 @@ function ProgrammingAssignment() {
       outputElement.innerHTML += text + "<br />";
     };
 
-    Sk.configure({
+    window.Sk.configure({
       output: outf,
       read: (x) => {
-        if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined) {
+        if (window.Sk.builtinFiles === undefined || window.Sk.builtinFiles["files"][x] === undefined) {
           throw "File not found: '" + x + "'";
         }
-        return Sk.builtinFiles["files"][x];
+        return window.Sk.builtinFiles["files"][x];
       },
     });
 
-    Sk.misceval
-      .asyncToPromise(() => Sk.importMainWithBody("<stdin>", false, code, true))
+    window.Sk.misceval
+      .asyncToPromise(() => window.Sk.importMainWithBody("<stdin>", false, code, true))
       .catch((err) => {
         console.error("Skulpt Error:", err);
         setCompileError(err.toString());
@@ -110,6 +131,19 @@ function ProgrammingAssignment() {
           onChange={(e) => setCode(e.target.value)}
           placeholder="Write your Python code here..."
           sx={{ mb: 2 }}
+          onKeyDown={(e) => {
+            if (e.key === "Tab") {
+              e.preventDefault();
+              const textarea = e.target;
+              const start = textarea.selectionStart;
+              const end = textarea.selectionEnd;
+              const updatedCode = code.substring(0, start) + "\t" + code.substring(end);
+              setCode(updatedCode);
+              setTimeout(() => {
+                textarea.selectionStart = textarea.selectionEnd = start + 1;
+              }, 0);
+            }
+          }}
         />
 
         <SyntaxHighlighter language="python" style={materialDark} showLineNumbers>
@@ -117,13 +151,19 @@ function ProgrammingAssignment() {
         </SyntaxHighlighter>
 
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-          <Button variant="contained" color="primary" onClick={handleCompile}>
+          <Button variant="contained" color="primary" onClick={handleCompile} disabled={!skulptReady}>
             Compile
           </Button>
           <Button variant="contained" color="secondary" onClick={handleSubmit} disabled={loading}>
             {loading ? <CircularProgress size={24} /> : "Submit"}
           </Button>
         </Box>
+
+        {!skulptReady && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            Loading Python environment...
+          </Alert>
+        )}
 
         {compileError && (
           <Alert severity="error" sx={{ mt: 2 }}>
@@ -184,5 +224,11 @@ function ProgrammingAssignment() {
     </Box>
   );
 }
+
+const sampleQuestion = {
+  title: "Sum of Two Numbers",
+  description: "Write a function `sum(a, b)` that takes two numbers as input and returns their sum.",
+  example: "Input: a = 5, b = 3\nOutput: 8",
+};
 
 export default ProgrammingAssignment;
