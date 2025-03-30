@@ -45,3 +45,5 @@ backend/data/grading_document_vector_db
 backend/data/handbook_vector_db
 
 env.yaml
+
+cloudbuild.yaml

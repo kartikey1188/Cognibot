@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://team-11-backend-v1-457986151866.us-central1.run.app", 
+  baseURL: "http://127.0.0.1:5000/", 
   withCredentials: true, //     Allows sending cookies (HTTP-only)
   headers: {
     "Content-Type": "application/json" // Explicitly set JSON content type
