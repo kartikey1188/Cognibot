@@ -4,6 +4,7 @@ const initialState = {
   sidebarOpen: true,
   isLoading: false,
   theme: 'light',
+  rateLimit: null,
 };
 
 const uiSlice = createSlice({
@@ -19,8 +20,12 @@ const uiSlice = createSlice({
     toggleTheme: (state) => {
       state.theme = state.theme === 'light' ? 'dark' : 'light';
     },
+    setRateLimit: (state, action) => {
+      state.rateLimit = action.payload;
+    },
+    
   },
 });
 
-export const { toggleSidebar, setLoading, toggleTheme } = uiSlice.actions;
+export const { toggleSidebar, setLoading, toggleTheme, setRateLimit } = uiSlice.actions;
 export default uiSlice.reducer;

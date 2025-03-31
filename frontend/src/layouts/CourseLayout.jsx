@@ -27,7 +27,7 @@ import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import { CircularProgress } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import GraphicEqIcon from '@mui/icons-material/GraphicEq';
+import GraphicEqIcon from "@mui/icons-material/GraphicEq";
 import {
   setGeneratedQuestions,
   setLoading,
@@ -53,6 +53,7 @@ const CourseLayout = () => {
   const [audioBlob, setAudioBlob] = useState(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
+  const rateLimit = useSelector(state => state.ui.rateLimit);
   const [chatHistory, setChatHistory] = useState([
     {
       role: "system",
@@ -156,8 +157,8 @@ const CourseLayout = () => {
       const response = await axiosClient.post("/extra_questions", {
         lecture_id: lid,
       });
-      dispatch(clearQuestions())
-      dispatch(setError(""))
+      dispatch(clearQuestions());
+      dispatch(setError(""));
       dispatch(setGeneratedQuestions(response.data));
       setChatHistory((prev) => [
         ...prev,
@@ -264,13 +265,13 @@ const CourseLayout = () => {
           type: "audio-with-text",
         },
       ]);
-      setChatMessage("")
+      setChatMessage("");
       setAudioBlob(null);
       setAudioPreviewUrl(null);
       setActiveMediaType(null);
     } else if (selectedImage) {
       formData.append("image", selectedImage);
-     
+
       formData.append("quest", content || "");
       const userMessage = {
         role: "user",
@@ -309,7 +310,6 @@ const CourseLayout = () => {
     ]);
 
     try {
-      
       const response = await axiosClient.post("/clarification", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -328,12 +328,16 @@ const CourseLayout = () => {
 
       setChatMessage("");
     } catch (error) {
-      console.error("Submission error:", error);
+      const errorMessage =
+        error.response?.status === 429
+          ? "Too many requests, try again after a while"
+          : "Sorry, I encountered an error. Please try again.";
+
       setChatHistory((prev) => [
         ...prev.filter((msg) => msg.id !== loadingId),
         {
           role: "system",
-          content: "Sorry, I encountered an error. Please try again.",
+          content: errorMessage,
           type: "error",
         },
       ]);
@@ -516,12 +520,42 @@ const CourseLayout = () => {
         }}
       >
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-            <Typography variant="h6">CogniBot</Typography>
-            <IconButton onClick={() => setChatOpen(false)}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
+           <Box
+    sx={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      mb: 2,
+      pb: 2,
+      borderBottom: 1,
+      borderColor: "divider",
+    }}
+  >
+    <Box>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <AssistantIcon color="primary" sx={{ fontSize: 32 }} />
+        <Typography variant="h5" fontWeight="medium">
+          CogniBot
+        </Typography>
+      </Box>
+      {rateLimit && (
+        <Typography 
+          variant="caption" 
+          sx={{ 
+            display: 'block',
+            color: 'text.secondary',
+            ml: 5,
+            mt: 0.5 
+          }}
+        >
+          Limit: {rateLimit} requests per hour
+        </Typography>
+      )}
+    </Box>
+    <IconButton onClick={() => setChatOpen(false)}>
+      <CloseIcon />
+    </IconButton>
+  </Box>
 
           <Box
             sx={{

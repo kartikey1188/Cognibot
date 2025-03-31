@@ -23,6 +23,8 @@ import LandingPage from "./pages/Landing";
 import Analytics from "./pages/Admin/Analytics";
 import InstructorDashboard from "./pages/Instructor/InstructorDashboard";
 import Search from "./pages/Search";
+import Unauthorized from './components/Unauthorized';
+
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -64,6 +66,14 @@ function AppContent() {
             element={
               <PrivateRoute>
                 <Search></Search>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path = "/unauthorized"
+            element={
+              <PrivateRoute>
+                <Unauthorized></Unauthorized>
               </PrivateRoute>
             }
           />

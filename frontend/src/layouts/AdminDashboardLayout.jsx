@@ -20,11 +20,6 @@ export default function AdminDashboardLayout() {
 
   const items = [
     { icon: <DataUsageIcon />, text: "Query limits", path: "/admin" },
-    {
-      icon: <AnalyticsIcon />,
-      text: "User Analytics",
-      path: "/admin/analytics",
-    },
     // {
     //   icon: <AccountCircleRoundedIcon />,
     //   text: "User Management",
@@ -34,7 +29,7 @@ export default function AdminDashboardLayout() {
   ];
 
   const drawerContent = (
-    <Box sx={{ width: "fit-content" }}>
+    <Box sx={{ }}>
       <Typography variant="h6" sx={{ p: 2, textAlign: "center" }}>
         ADMIN
       </Typography>
