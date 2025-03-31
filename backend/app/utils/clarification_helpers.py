@@ -12,6 +12,11 @@ from dotenv import load_dotenv # To securely load GOOGLE_API_KEY from .env
 from app.services import *
 from app.utils.custom_templates import *
 from app.utils.vdb import vector_db
+from datetime import datetime, timezone, timedelta
+from app.apis import *
+from flask_restful import Resource
+from flask import request
+from flask import current_app as app
 
 COLLECTION_NAME = "doubts_clarification_history"
 
@@ -253,3 +258,58 @@ def check_integrity(quest):
         "retrieved_chunks": retrieved_chunks,
         "ai_response": clean_text(response.text),
     }
+
+# ----------------------------------- Rate Limit: ----------------------------------------------------
+
+def get_rate_limit():
+    """Fetches the current RATE_LIMIT from Firestore."""
+    doc_ref = client.collection("config").document("rate_limit")
+    doc = doc_ref.get()
+    
+    if doc.exists:
+        return doc.to_dict().get("value", 300)  # Default to 300 if not set
+    return 300
+
+RATE_LIMIT_COLLECTION = "rate_limits"  # Collection for tracking API usage
+TIME_WINDOW = timedelta(hours=1)
+
+def is_rate_limited(user_id):
+    user_doc = client.collection(RATE_LIMIT_COLLECTION).document(str(user_id))
+    user_data = user_doc.get()
+
+    now = datetime.now(timezone.utc)
+    RATE_LIMIT = get_rate_limit()
+    app.logger.info(f"RATE_LIMIT:{RATE_LIMIT}")
+    if user_data.exists:
+        request_times = user_data.to_dict().get("timestamps", [])
+        # Removing timestamps older than 1 hour
+        request_times = [t for t in request_times if datetime.fromisoformat(t) > now - TIME_WINDOW]
+
+        if len(request_times) >= RATE_LIMIT:
+            return True  # Rate limit exceeded
+
+        request_times.append(now.isoformat())  # Adding new request time
+        user_doc.set({"timestamps": request_times})  # Updating Firestore
+    else:
+        user_doc.set({"timestamps": [now.isoformat()]})  # Creating a new record
+
+    return False
+
+class UpdateRateLimit(Resource):
+    def post(self):
+        try:
+            new_limit = request.json.get("rate_limit")
+            
+            if not isinstance(new_limit, int) or new_limit <= 0:
+                return {"error": "Invalid rate limit value. Must be a positive integer."}, 400
+            
+            # Update Firestore
+            doc_ref = client.collection("config").document("rate_limit")
+            doc_ref.set({"value": new_limit})
+
+            return {"message": f"RATE_LIMIT updated to {new_limit}"}, 200
+
+        except Exception as e:
+            return {"error": str(e)}, 500
+
+api.add_resource(UpdateRateLimit, "/admin/update_rate_limit")

@@ -82,6 +82,9 @@ class Clarification(Resource):
             if user_id is None:
                 return {"error": "The user_id is required"}, 400
             
+            if is_rate_limited(user_id):
+                return {"error": "Rate limit exceeded. Try again later."}, 429
+            
             if quest:
                 response = check_integrity(quest)
                 if response["flag"]=="Yes":
