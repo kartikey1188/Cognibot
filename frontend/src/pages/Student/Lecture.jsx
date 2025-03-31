@@ -56,6 +56,7 @@ function Lecture() {
   const [Loading, setIsLoading] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [reviewError, setReviewError] = useState("");
   const { generatedQuestions, isLoading, error } = useSelector(
     (state) => state.questions
   );
@@ -203,8 +204,6 @@ function Lecture() {
           [lid]: 0,
         }));
         setReviewSubmitted(true);
-
-        // Hide success message after 3 seconds
         setTimeout(() => {
           setReviewSubmitted(false);
         }, 3000);
@@ -446,8 +445,10 @@ function Lecture() {
                   label="Your Review"
                   multiline
                   rows={3}
-                  value={comments[lid]}
+                  value={comments[lid] || ""}
                   onChange={handleCommentChange}
+                  error={!!reviewError}
+                  helperText={reviewError}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       backgroundColor: "background.paper",
@@ -473,6 +474,7 @@ function Lecture() {
                   fullWidth
                   sx={{ mt: 2 }}
                   onClick={handleReviewSubmit}
+                  disabled={!value || !comments[lid]?.trim()}
                 >
                   Submit Review
                 </Button>

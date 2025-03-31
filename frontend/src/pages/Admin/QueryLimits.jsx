@@ -6,187 +6,165 @@ import {
   Box,
   Card,
   CardContent,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
+  Alert,
+  CircularProgress,
 } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import axiosClient from '@/axiosClient';
+import { setRateLimit } from '@/redux/slice/uiSlice';
 
 function QueryLimits() {
-  const [studentId, setStudentId] = useState('');
   const [queryLimit, setQueryLimit] = useState('');
-  const [timePeriod, setTimePeriod] = useState('day');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState('');
-  const [usageData, setUsageData] = useState([]); 
-
-  // Dummy usage data (replace with your actual API endpoint)
-  const dummyUsageData = [
-    { id: 1, name: 'Alice Wonderland', email: 'alice@example.com', queries: 5, limit: 10, timePeriod: 'day' },
-    { id: 2, name: 'Bob The Builder', email: 'bob@example.com', queries: 12, limit: 10, timePeriod: 'day' },
-    { id: 3, name: 'Charlie Chaplin', email: 'charlie@example.com', queries: 3, limit: 5, timePeriod: 'week' },
-  ];
+  const dispatch = useDispatch();
+  const currentLimit = useSelector(state => state.ui.rateLimit);
 
   useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        // will add logic later
-      } catch (error) {
-        setError('');// no error for now
-      }
-    };
-
-    const fetchUsageData = async () => {
-      // will add actual logic later
-      setUsageData(dummyUsageData); // Using dummy data for now
-    };
-
-    fetchStudents();
-    fetchUsageData();
-  }, []);
+    if (currentLimit){
+      setQueryLimit(currentLimit)
+    }
+    setLoading(false)
+  }, [dispatch]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!studentId || !queryLimit || !timePeriod) {
-      setSuccessMessage('')
-      setError('Please fill in all fields.');
+    if (!queryLimit) {
+      setError('Please enter a query limit');
+      setSuccessMessage('');
+      return;
+    }
+
+    const limit = parseInt(queryLimit);
+    if (isNaN(limit) || limit < 1) {
+      setError('Please enter a valid number greater than 0');
+      setSuccessMessage('');
       return;
     }
 
     try {
-
-      setTimePeriod('day');
+      await axiosClient.post('/admin/update_rate_limit', {
+        rate_limit: limit
+      });
       
+      dispatch(setRateLimit(limit));
       setError('');
-      setQueryLimit('');
-      setSuccessMessage('Query limits updated successfully!');
-      setStudentId('');
-    }
-    catch (error) {
-      console.error('Error updating query limits:', error);
-      setError('Failed to update query limits.');
+      setSuccessMessage('Rate limit updated successfully!');
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
+    } catch (error) {
+      console.error('Error updating rate limit:', error);
+      setError('Failed to update rate limit');
       setSuccessMessage('');
     }
   };
 
+  if (loading) {
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh' 
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
-    <section className="p-6">
-      <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
-        QUERY LIMITS
+    <Box sx={{ maxWidth: 600, mx: 'auto', p: 3 }}>
+      <Typography 
+        variant="h4" 
+        component="h1" 
+        gutterBottom
+        sx={{ 
+          fontWeight: 'bold',
+          color: 'primary.main',
+          mb: 3 
+        }}
+      >
+        Hourly Rate Limit Settings
       </Typography>
 
-      <Card sx={{ mb: 4 }}>
+      <Card elevation={3}>
         <CardContent>
+          {currentLimit && (
+            <Alert 
+              severity="info" 
+              sx={{ 
+                mb: 2,
+                '& .MuiAlert-message': {
+                  fontSize: '1.1rem'
+                }
+              }}
+            >
+              Current rate limit: {currentLimit} requests per hour
+            </Alert>
+          )}
+          
           {error && (
-            <Typography color="error" className="mb-3">
+            <Alert 
+              severity="error" 
+              sx={{ mb: 2 }}
+              onClose={() => setError('')}
+            >
               {error}
-            </Typography>
+            </Alert>
           )}
+          
           {successMessage && (
-            <Typography color="success" className="mb-3">
+            <Alert 
+              severity="success" 
+              sx={{ mb: 2 }}
+              onClose={() => setSuccessMessage('')}
+            >
               {successMessage}
-            </Typography>
+            </Alert>
           )}
+          
           <form onSubmit={handleSubmit}>
-            <Grid container spacing={3} alignItems="center">
-              <Grid item xs={12} md={4}>
-                <FormControl fullWidth>
-                  <InputLabel id="student-id-label">Select Student</InputLabel>
-                  <Select
-                    labelId="student-id-label"
-                    id="student-id"
-                    value={studentId}
-                    label="Select Student"
-                    onChange={(e) => setStudentId(e.target.value)}
-                  >
-                    {dummyUsageData.map((student) => (
-                      <MenuItem key={student.id} value={student.id}>
-                        {student.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  fullWidth
-                  label="Query Limit"
-                  type="number"
-                  value={queryLimit}
-                  onChange={(e) => setQueryLimit(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <FormControl fullWidth>
-                  <InputLabel id="time-period-label">Time Period</InputLabel>
-                  <Select
-                    labelId="time-period-label"
-                    id="time-period"
-                    value={timePeriod}
-                    label="Time Period"
-                    onChange={(e) => setTimePeriod(e.target.value)}
-                  >
-                    <MenuItem value="hour">Hour</MenuItem>
-                    <MenuItem value="day">Day</MenuItem>
-                    <MenuItem value="week">Week</MenuItem>
-                    <MenuItem value="month">Month</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button variant="contained" color="primary" type="submit">
-                    Update Limits
-                  </Button>
-                </Box>
-              </Grid>
-            </Grid>
+            <TextField
+              fullWidth
+              label="Queries Per Hour"
+              type="number"
+              value={queryLimit}
+              onChange={(e) => {
+                setQueryLimit(e.target.value);
+                setError('');
+              }}
+              inputProps={{ 
+                min: 1,
+                step: 1
+              }}
+              required
+              sx={{ mb: 3 }}
+              error={!!error}
+              helperText={error || 'Enter the number of queries allowed per hour'}
+            />
+            
+            <Button 
+              variant="contained" 
+              color="primary" 
+              type="submit"
+              fullWidth
+              sx={{
+                py: 1.5,
+                fontSize: '1.1rem',
+                fontWeight: 'medium'
+              }}
+            >
+              Update Rate Limit
+            </Button>
           </form>
         </CardContent>
       </Card>
-
-      <Typography variant="h5" component="h2" fontWeight="bold" gutterBottom>
-        Student Query Usage
-      </Typography>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="student query usage">
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Queries Used</TableCell>
-              <TableCell>Limit</TableCell>
-              <TableCell>Time Period</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {usageData.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.name}
-                </TableCell>
-                <TableCell>{row.email}</TableCell>
-                <TableCell>{row.queries}</TableCell>
-                <TableCell>{row.limit}</TableCell>
-                <TableCell>{row.timePeriod}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </section>
+    </Box>
   );
 }
 
