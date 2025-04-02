@@ -25,7 +25,7 @@ function Help() {
       id: 1,
       type: "bot",
       content:
-        "Hi, I am CogniBot! I can help you with handbook and grading related queries. Please select a category to get started.",
+        "Hi! I can help you with handbook and grading related queries. Please select a category to get started.",
     },
   ]);
   const [newMessage, setNewMessage] = useState("");
@@ -111,7 +111,7 @@ function Help() {
           id: 1,
           type: "bot",
           content:
-            "Hi, I am CogniBot! I can help you with handbook and grading related queries.",
+            "Hi! I can help you with handbook and grading related queries.",
         },
         {
           id: 2,
@@ -250,7 +250,7 @@ function Help() {
                   Help and Documentation
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
-                  using CogniBot
+                  For Handbook/Grading Document
                 </Typography>
               </Box>
               <Box sx={{ ml: "auto" }}>
