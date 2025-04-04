@@ -108,6 +108,7 @@ export const Navbar = () => {
             </>
           ) : (
             <>
+            {user.role === "student" && (
               <div className="flex-1 mx-1 w-full max-w-[500px]">
                 <TextField
                 fullWidth
@@ -136,6 +137,7 @@ export const Navbar = () => {
                   }}
                 />
               </div>
+            )}
               <div className="text-lg font-bold">Welcome, {user.name}!</div>
               {getNavLinks().map((link) => (
                 <Link key={link.to} to={link.to} className="text-white">

@@ -22,6 +22,7 @@ class Config:
     JWT_COOKIE_HTTPONLY = True  
     TRANSCRIPT_FOLDER = "./data/transcripts"
     VECTORDB_FOLDER = "./data/vector_database"
+    JWT_COOKIE_SECURE = True
     # It does not really matter whether you store your JSON Web Tokens in a cookie or localStorage.
     # If your site is vulnerable to XSS, an attacker can steal the JWT from a cookie or localStorage.
     # The HttpOnly flag prevents the cookie from being accessed through JavaScript.

@@ -36,10 +36,6 @@ backend/service-account.json
 
 backend/tests/service-account.json
 
-backend/dockerfile
-
-backend/.dockerignore
-
 backend/logs
 
 .pytest_cache
@@ -49,3 +45,5 @@ backend/data/grading_document_vector_db
 backend/data/handbook_vector_db
 
 env.yaml
+
+cloudbuild.yaml

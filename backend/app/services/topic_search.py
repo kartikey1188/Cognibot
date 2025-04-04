@@ -9,6 +9,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 import google.generativeai as genai
 import json 
+import re
 
 # Defining the embedding model
 embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en")
@@ -51,8 +52,8 @@ class TopicSearch(Resource):
                 Your role as a tool is to evaluate the relevance of the vector database search results to the user query. You are NOT the function, only a tool used within it.
 
                 You must return a JSON object with two fields:
-                1. "Bool": A boolean value — either True or False (with capital T or F) — indicating whether the search results are related to the user query.
-                2. "Reason": A brief explanation justifying why "Bool" is either True or False.
+                1. "Bool": A boolean value — either true or false (with smallercase t or f) — indicating whether the search results are related to the user query.
+                2. "Reason": A brief explanation justifying why "Bool" is either true or false.
 
                 You must use your critical thinking skills to make this judgment. The results do not need to match the query word-for-word — if they are conceptually or contextually related, you should return "Bool": True. 
 
@@ -76,7 +77,7 @@ class TopicSearch(Resource):
             ])
             app.logger.info(f"check_if_related: {check_if_related.text}")
 
-            cleaned_response = check_if_related.text.strip("```json").strip("```").strip()
+            cleaned_response = re.sub(r"```(json)?", "", check_if_related.text).strip()
             response_data = json.loads(cleaned_response)
 
             relation = str(response_data["Bool"]).strip()
