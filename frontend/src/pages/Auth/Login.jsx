@@ -36,7 +36,18 @@ function Login() {
 
   return (
     <>
-      <AuthForm title="LOG IN" fields={fields} buttonText="LOG IN" onSubmit={formik.handleSubmit} />
+      <AuthForm
+  title="LOG IN"
+  fields={fields}
+  buttonText="LOG IN"
+  onSubmit={formik.handleSubmit}
+  redirectLink={{
+    text: "Don’t have an account?",
+    linkText: "Sign Up",
+    href: "/signup"
+  }}
+/>
+
     </>
   );
 }

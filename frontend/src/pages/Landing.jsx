@@ -31,7 +31,7 @@ const LandingPage = () => {
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
               <MessageCircle className="w-5 h-5 text-white" />
             </div>
-            <span className="font-medium">AI Assistant</span>
+            <span className="font-medium">CogniBot</span>
           </div>
           
           <div className="space-y-4 mb-4">
@@ -48,6 +48,7 @@ const LandingPage = () => {
               type="text" 
               placeholder="Ask anything..."
               className="flex-1 bg-transparent outline-none px-2"
+              disabled
             />
             <button className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
               <Send className="w-4 h-4 text-white" />

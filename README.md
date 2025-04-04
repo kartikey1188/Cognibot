@@ -1,154 +1,148 @@
-# Team 11 - Software Engineering Project
+# 🚀 **Team 11 - Software Engineering Project**
 
-This repository contains the entire application (backend and frontend) for the Team 11 Software Engineering Project. The backend is built using Flask and integrates with Firebase and Google Cloud’s Gemini API (Generative Language API) to implement all the user stories, while the frontend is built separately using ReactJS and interacts with the backend.
+This repository contains the **complete application** (backend and frontend) for **Team 11 Software Engineering Project**. 
 
-This README provides detailed, step-by-step instructions for setting up and running the full application, as well as configuring Firebase and the Gemini API.
+![Python](https://img.shields.io/badge/Python-3.11-blue?style=flat&logo=python)
+![Flask](https://img.shields.io/badge/Flask-Framework-black?style=flat&logo=flask)
+![Firebase](https://img.shields.io/badge/Firebase-Firestore-orange?style=flat&logo=firebase)
+![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Gemini%20API-blue?style=flat&logo=googlecloud)
+![React](https://img.shields.io/badge/React-Frontend-blue?style=flat&logo=react)
+
+🔹 **Backend**: Built with **Flask**, integrating **Firebase** and **Google Cloud’s Gemini API** (Generative Language API).  
+🔹 **Frontend**: Developed using **ReactJS**, interacting seamlessly with the backend.
+
+This guide provides step-by-step instructions to **set up and run the application**, including **Firebase** and the **Gemini API** configuration.
 
 ---
 
-## Prerequisites
+## 📌 **Prerequisites**
 
 Ensure you have the following installed on your machine:
 
-- **Python Version 3.11 or lower (If you have a Python version higher than 3.11, uninstall it before installing Python 3.11 or lower)**
-- A terminal (Command Prompt, PowerShell, or Git Bash)
-- An internet connection
+✅ **Python 3.11 or lower** *(If you have a higher version, uninstall it before installing Python 3.11 or lower)*  
+✅ A terminal (**Command Prompt, PowerShell, or Git Bash**)  
+✅ A stable **internet connection**  
 
 ---
 
-## How to Use the Application
+## 🔥 **How to Use the Application**
 
-**You have two options to run and use the application:**
-1) Use the Deployed Application
-2) Manually Set Up and Run Backend and Frontend
+You have **two options** to access and use the application:
 
-# **Option 1: Use the Deployed Application**
-The easiest way to access the application is through the fully deployed version available at:
+### 🏆 **Option 1: Use the Deployed Application** *(Recommended - No Setup Required!)*
+The easiest way to access the application is through the **fully deployed version**:
 
-🔗 **[https://team-11-frontend-v1-457986151866.us-central1.run.app/](https://team-11-frontend-v1-457986151866.us-central1.run.app/)**
+🔗 **[Team 11 Application](https://team-11-frontend-v1-457986151866.us-central1.run.app/)**  
+Simply **open the link in your browser** – no installation required! 🎉
 
-Simply open the link in your browser - no setup required.
+### ⚙️ **Option 2: Manually Set Up Backend & Frontend**
+Follow the instructions below to set up the application on your local machine.
 
 ---
 
-## Firebase Firestore Setup (Required for Option 2)
+## 🔧 **Firebase Firestore Setup (Required for Option 2)**
 
-1. **Create a Firebase Project:**
-   - Go to [Firebase Console](https://console.firebase.google.com/u/0/).
-   - Click **"Create a project"** and follow the on-screen instructions to create a new project.
+### 🏗 **Step 1: Create a Firebase Project**
+1. Visit [Firebase Console](https://console.firebase.google.com/u/0/).
+2. Click **"Create a project"** and follow the on-screen instructions.
 
-2. **Create a Firestore Database:**
-   - Go to **Project Overview → Cloud Firestore → Create Database** and follow the on-screen instructions to create a new Firestore Database (Test Mode).
+### 🔥 **Step 2: Create a Firestore Database**
+1. Navigate to **Project Overview → Cloud Firestore → Create Database**.
+2. Choose **Test Mode** and complete the setup.
 
-3. **Update .env with Firebase Credentials:**
-   - In the Firebase Console, go to **Project Settings (the Settings Icon next to Project Overview) → Service accounts**.
-   - Under 'Admin SDK configuration snippet' select Python, click on **"Generate new private key"**.
-   - Copy the following fields from the downloaded file and add them to your `.env` file (**IMPORTANT: Rename `.env.example` to `.env` for this, if not already done**):
+### 🔑 **Step 3: Update `.env` with Firebase Credentials**
+1. In Firebase Console, go to **Project Settings → Service Accounts**.
+2. Click **"Generate new private key"** (under 'Admin SDK configuration snippet' for Python).
+3. Copy the following details from the downloaded JSON file into your `.env` file:
 
-```
+```ini
 FIREBASE_PROJECT_ID=your_firebase_project_id
 FIREBASE_PRIVATE_KEY=your_firebase_private_key
 FIREBASE_CLIENT_EMAIL=your_firebase_client_email
 ```
 
+🔹 **Rename `.env.example` to `.env`** before proceeding.
+
 ---
 
-## Google Cloud Gemini API & Firestore API Setup (Required for Option 2)
+## ⚡ **Google Cloud Gemini API & Firestore API Setup (Required for Option 2)**
 
-1. **Select Your Project:**
-   - Visit [Google Cloud Console](https://console.cloud.google.com/).
-   - Select the project you created in Firebase using the Project ID (located beside the Google Cloud icon).
+### 🌐 **Step 1: Select Your Firebase Project**
+1. Visit [Google Cloud Console](https://console.cloud.google.com/).
+2. Select your project using the **Project ID**.
 
-2. **Enable the Google Cloud Firestore API:**
-   - Go to the [Google Cloud Firestore API page](https://console.cloud.google.com/apis/api/firestore.googleapis.com/).
-   - Click **"Enable"**.
+### 🔥 **Step 2: Enable Required APIs**
+✅ **[Enable Firestore API](https://console.cloud.google.com/apis/api/firestore.googleapis.com/)**  
+✅ **[Enable Gemini API](https://console.cloud.google.com/apis/api/generativelanguage.googleapis.com/)**
 
-3. **Enable the Gemini API:**
-   - Go to the [Gemini API page](https://console.cloud.google.com/apis/api/generativelanguage.googleapis.com/).
-   - Click **"Enable"**.
+### 🗝 **Step 3: Create API Credentials**
+1. Go to **APIs & Services → Credentials**.
+2. Click **"Create Credentials" → "API Key"**.
+3. Copy and add the key to your `.env` file:
 
-4. **Create Credentials:**
-   - Go to **APIs & Services → Credentials**.
-   - Click **"Create Credentials"** and select **"API Key"**.
-   - Copy the created API key.
-
-5. **Update Environment Variables:**
-   - In the `.env` file, add:
-
-```
+```ini
 GOOGLE_API_KEY=your_google_gemini_api_key
 ```
 
 ---
 
-# **Option 2: Manually Set Up Backend and Frontend**
+## 🛠 **Option 2: Manually Set Up Backend & Frontend**
 
-If you prefer, you can manually set up both the backend and frontend by following these steps:
-(Make sure the .env file is fully ready as per the instructions before moving forward)
+🚀 **Ensure your `.env` file is correctly configured before proceeding.**
 
-#### **Setting Up and Running the Backend**
+### 🎯 **Setting Up and Running the Backend**
 
-1. **Clone or Copy the Project Folder:**
-   - Ensure you have the complete project folder.
-
-2. **Create and Activate a Virtual Environment:**
-   - Navigate to the backend folder:
-     
+1️⃣ **Navigate to the Backend Folder:**
 ```bash
 cd backend
 ```
-   
-   - Create a virtual environment:
-     
+
+2️⃣ **Create & Activate a Virtual Environment:**
 ```bash
 python -m venv .venv
-```
-   
-   - Activate the virtual environment:
-       
-```bash
+# Activate virtual environment (Windows)
 .venv\Scripts\activate
+# Activate virtual environment (Mac/Linux)
+source .venv/bin/activate
 ```
 
-3. **Install Dependencies:**
-   - Install required packages:
-     
+3️⃣ **Install Dependencies:**
 ```bash
 pip install -r requirements.txt
 ```
 
-4. **Run the Backend Application:**
-   - Start the Flask server:
-     
+4️⃣ **Run the Backend Application:**
 ```bash
 python run.py
 ```
-   
+
 ---
 
-#### **Setting Up and Running the Frontend**
+### 🎨 **Setting Up and Running the Frontend**
 
-1. **Navigate to the frontend folder:**
-   
+1️⃣ **Navigate to the Frontend Folder:**
 ```bash
 cd frontend
 ```
 
-2. **Install dependencies using Yarn:**
-   
+2️⃣ **Install Dependencies:**
 ```bash
 yarn
 ```
 
-3. **Start the frontend application:**
-   
+3️⃣ **Start the Frontend Application:**
 ```bash
 yarn dev
 ```
 
-4. **Access the Application:**
-   - Open http://localhost:5173/ in your browser to use the full application.
-   - **Note:** The backend must be up and running before starting the frontend.
+4️⃣ **Access the Application:**
+   - Open **[http://localhost:5173/](http://localhost:5173/)** in your browser.
+   - **Note:** The backend **must** be running before starting the frontend.
 
 ---
 
+## 🎯 **Conclusion**
+
+🎉 Congratulations! You have successfully set up the **Team 11 Software Engineering Project**.
+
+💡 **Need Help?** Feel free to reach out for assistance! 🚀
