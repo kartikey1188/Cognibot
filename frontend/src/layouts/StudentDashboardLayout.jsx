@@ -44,7 +44,7 @@ export default function StudentDashboardLayout() {
   ];
 
   const drawerContent = (
-    <Box sx={{ width: 'fit-content' }}>
+    <Box>
       <Typography variant="h6" sx={{ p: 3, textAlign: "center"}}>
         STUDENT
       </Typography>

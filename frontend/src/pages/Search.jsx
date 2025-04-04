@@ -26,7 +26,7 @@ const Search = () => {
         });
         setResults(response.data.results || []);
       } catch (err) {
-        setError('Failed to fetch search results');
+        setError('No results found');
         console.error('Search error:', err);
       } finally {
         setIsLoading(false);
@@ -65,8 +65,9 @@ const Search = () => {
           <CircularProgress size={40} />
         </Box>
       ) : error ? (
-        <Paper sx={{ p: 3, bgcolor: 'error.light', color: 'error.dark' }}>
-          <Typography>{error}</Typography>
+        <Paper sx={{ p: 3}}>
+          <Typography variant='h4' sx={{ color: 'primary.main' }} >{error}</Typography>          
+          <Typography variant='p'>No related topics found in any of the subjects or lectures</Typography>
         </Paper>
       ) : results.length === 0 ? (
         <Paper sx={{ p: 4, textAlign: 'center', bgcolor: 'grey.50' }}>
