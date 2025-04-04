@@ -10,28 +10,25 @@ import {
   CircularProgress,
   Typography,
   Box,
-  Paper,
 } from "@mui/material";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 
-function AuthForm({ title, fields, buttonText, onSubmit }) {
+function AuthForm({ title, fields, buttonText, onSubmit, redirectLink }) {
   const error = useSelector((state) => state.auth.error);
   const loading = useSelector((state) => state.auth.loading);
 
   return (
-    <section className="min-h-screen w-full flex justify-center items-center bg-gradient-to-br from-gray-100 to-gray-300 px-4">
+    <section className="w-full min-h-[100vh] flex justify-center items-start pt-[80px] px-4 bg-gradient-to-br from-gray-100 to-gray-300 overflow-hidden pb-10">
       <div className="backdrop-blur-xl bg-white/70 w-full max-w-md rounded-2xl shadow-xl p-8 sm:p-10 animate-fade-in">
         <form className="flex flex-col gap-6" onSubmit={onSubmit}>
-          {/* Logo or Icon */}
+          {/* Logo */}
           <div className="flex justify-center mb-4">
-          <img
-  src="/graduation-cap-circular-button-svgrepo-com.svg"
-  alt="logo"
-  className="h-16 w-16 object-contain bg-black rounded-full border border-2"
-/>
-
-
+            <img
+              src="/graduation-cap-circular-button-svgrepo-com.svg"
+              alt="logo"
+              className="h-16 w-16 object-contain bg-black rounded-full border border-2"
+            />
           </div>
 
           {/* Title */}
@@ -46,17 +43,19 @@ function AuthForm({ title, fields, buttonText, onSubmit }) {
             </Typography>
           )}
 
-          {/* Optional Subtitle */}
+          {/* Subtitle */}
           <Typography
             variant="body2"
             align="center"
             color="text.secondary"
             sx={{ mt: "-0.5rem" }}
           >
-            Enter your credentials to access your account
+            {title === "SIGN UP"
+              ? "Create your account to get started"
+              : "Enter your credentials to access your account"}
           </Typography>
 
-          {/* Global error */}
+          {/* Error */}
           {error && (
             <Box
               sx={{
@@ -100,7 +99,7 @@ function AuthForm({ title, fields, buttonText, onSubmit }) {
             </FormControl>
           ))}
 
-          {/* Button */}
+          {/* Submit Button */}
           <Button
             variant="contained"
             type="submit"
@@ -115,15 +114,33 @@ function AuthForm({ title, fields, buttonText, onSubmit }) {
             }}
             disabled={loading}
           >
-            {loading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              buttonText
-            )}
+            {loading ? <CircularProgress size={24} color="inherit" /> : buttonText}
           </Button>
 
-          {/* Footer text */}
-          <Typography variant="caption" align="center" color="text.secondary" mt={2}>
+          {/* Redirect Link */}
+          {redirectLink && (
+            <Typography variant="body2" align="center" sx={{ mt: 1 }}>
+              {redirectLink.text}{" "}
+              <a
+                href={redirectLink.href}
+                style={{
+                  color: "#3b82f6",
+                  fontWeight: 500,
+                  textDecoration: "none",
+                }}
+              >
+                {redirectLink.linkText}
+              </a>
+            </Typography>
+          )}
+
+          {/* Footer */}
+          <Typography
+            variant="caption"
+            align="center"
+            color="text.secondary"
+            sx={{ mt: 2 }}
+          >
             © {new Date().getFullYear()} CogniBot. All rights reserved.
           </Typography>
         </form>
