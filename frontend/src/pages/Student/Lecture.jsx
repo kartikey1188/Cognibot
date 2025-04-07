@@ -82,8 +82,17 @@ function Lecture() {
     return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
   };
 
-  const formatResponse = (text) => text?.split("\n").map((line, i) => <p key={i}>{line}</p>);
-
+  const formatResponse = (text) =>
+    text?.split("\n").map((line, i) => (
+      <Typography key={i} component="div" sx={{ mb: 1 }}>
+        {line.split('**').map((part, j) => {
+          const formatted = part.split('*').map((segment, k) =>
+            k % 2 === 1 ? <em key={`em-${i}-${j}-${k}`}>{segment}</em> : segment
+          );
+          return j % 2 === 1 ? <strong key={`str-${i}-${j}`}>{formatted}</strong> : formatted;
+        })}
+      </Typography>
+    ));
   const handleGenerateSummary = () => {
     setSummaryLoading(true);
     axiosInstance.get(`/lecture_summary/${lid}`).then((res) => {
@@ -168,8 +177,8 @@ function Lecture() {
                           backgroundColor: showCorrect
                             ? "success.light"
                             : showIncorrect
-                            ? "error.light"
-                            : "background.paper",
+                              ? "error.light"
+                              : "background.paper",
                         }}
                       >
                         <Typography fontWeight={600}>{key}. {value}</Typography>
