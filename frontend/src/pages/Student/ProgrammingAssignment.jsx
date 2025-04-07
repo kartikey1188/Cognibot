@@ -193,15 +193,6 @@ function ProgrammingAssignment() {
               {result.execution_result || "No output."}
             </Typography>
 
-            {result.error && (
-              <>
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="h6" color="error">Error:</Typography>
-                <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
-                  {result.error.type}: {result.error.message}
-                </Typography>
-              </>
-            )}
 
             {result.feedback && (
               <>

@@ -142,7 +142,10 @@ function Help() {
       const endpoint =
         queryType === "handbook" ? "/api/handbook/query" : "/api/grading/query";
       const response = await axiosClient.post(endpoint, {
-        query: `Carefully analyze the following query and provide a clear, accurate, and well-reasoned answer. Do not refer to or mention any specific documents, sources, or materials used to formulate your response. Focus solely on delivering a direct, comprehensive, and self-contained explanation.\n\nQuery:\n${newMessage}`,
+        query:
+          queryType === "handbook"
+            ? `Carefully analyze the following query and provide a clear, accurate, and well-reasoned answer. Do not refer to or mention any specific documents, sources, or materials used to formulate your response. Focus solely on delivering a direct, comprehensive, and self-contained explanation.\n\nQuery:\n${newMessage}`
+            : `You will be provided with detailed course-related documents that include information such as exam schedules, OPPE dates, grading policies, assignment deadlines, bonus criteria, course eligibility rules, and other academic procedures. Each course entry begins with the course title and includes relevant structured content.\n\nYour task is to answer the query using **only** the relevant information from the provided content. Do **not** mention the document or its structure in your response. Your response should be accurate, self-contained, and focused entirely on the information retrieved from the content.\n\nPlease follow these rules when answering:\n- Use only verifiable information from the text.\n- Do not speculate or include information not present in the content.\n- If the answer cannot be derived from the content, clearly state that. Do not refer to or mention any specific documents, sources.\n\nQuery:\n${newMessage}`,
         k: 20,
         score_threshold: 0.2,
       });

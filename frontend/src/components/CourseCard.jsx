@@ -28,7 +28,7 @@ export default function ImgMediaCard({course}) {
           component="img"
           alt="course image"
           height="140"
-          image="/Solid_blue.svg"
+          image="/card-image.jpg"
           sx={{
             "&::after": {
               content: '""',
@@ -38,24 +38,21 @@ export default function ImgMediaCard({course}) {
             },
           }}
         />
+      </Box>
+      <CardContent>
         <Typography
-          gutterBottom
           variant="h6"
           component="div"
+          
           sx={{
-            position: "absolute",
-            bottom: 10,
-            left: 10,
-            color: "white",
+           
             textShadow: "1px 1px 2px rgba(0,0,0,0.6)",
           }}
         >
           {course.course_name}
         </Typography>
-      </Box>
-      <CardContent>
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Instructor : Sudarshan Iyenagar
+         {course.type}
         </Typography>
       </CardContent>
       <CardActions>
