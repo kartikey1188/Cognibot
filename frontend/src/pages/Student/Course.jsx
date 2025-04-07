@@ -30,8 +30,8 @@ function Course() {
 
   return (
     <section>
-      <Typography variant="h3">{course.course_name}</Typography>
-      <Typography variant="body1">
+      <Typography variant="h3" gutterBottom>{course.course_name}</Typography>
+      <Typography variant="body1" >
         This course provides a comprehensive introduction to Python programming,
         covering fundamental concepts and advanced techniques. Whether you're a
         beginner or have prior coding experience, this course will equip you
