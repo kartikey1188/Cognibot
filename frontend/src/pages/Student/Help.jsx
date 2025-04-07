@@ -142,8 +142,8 @@ function Help() {
       const endpoint =
         queryType === "handbook" ? "/api/handbook/query" : "/api/grading/query";
       const response = await axiosClient.post(endpoint, {
-        query: newMessage,
-        k: 5,
+        query: `Carefully analyze the following query and provide a clear, accurate, and well-reasoned answer. Do not refer to or mention any specific documents, sources, or materials used to formulate your response. Focus solely on delivering a direct, comprehensive, and self-contained explanation.\n\nQuery:\n${newMessage}`,
+        k: 20,
         score_threshold: 0.2,
       });
 
