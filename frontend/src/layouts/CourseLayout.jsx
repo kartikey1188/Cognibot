@@ -181,23 +181,17 @@ const CourseLayout = () => {
     }
   };
 
-  const formatResponse = (text) => {
-    if (!text) return "";
-
-    return text.split("\n").map((paragraph, pIndex) => (
-      <React.Fragment key={`p-${pIndex}`}>
-        {paragraph.split(/(\*\*.*?\*\*)/).map((part, index) => {
-          if (part.startsWith("**") && part.endsWith("**")) {
-            return (
-              <strong key={`${pIndex}-${index}`}>{part.slice(2, -2)}</strong>
-            );
-          }
-          return part;
+  const formatResponse = (text) =>
+    text?.split("\n").map((line, i) => (
+      <Typography key={i} component="div" sx={{ mb: 1 }}>
+        {line.split('**').map((part, j) => {
+          const formatted = part.split('*').map((segment, k) =>
+            k % 2 === 1 ? <em key={`em-${i}-${j}-${k}`}>{segment}</em> : segment
+          );
+          return j % 2 === 1 ? <strong key={`str-${i}-${j}`}>{formatted}</strong> : formatted;
         })}
-        <br />
-      </React.Fragment>
+      </Typography>
     ));
-  };
 
   const startRecording = async () => {
     if (selectedImage) return;
@@ -520,42 +514,42 @@ const CourseLayout = () => {
         }}
       >
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-           <Box
-    sx={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "flex-start",
-      mb: 2,
-      pb: 2,
-      borderBottom: 1,
-      borderColor: "divider",
-    }}
-  >
-    <Box>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <AssistantIcon color="primary" sx={{ fontSize: 32 }} />
-        <Typography variant="h5" fontWeight="medium">
-          CogniBot
-        </Typography>
-      </Box>
-      {rateLimit && (
-        <Typography 
-          variant="caption" 
-          sx={{ 
-            display: 'block',
-            color: 'text.secondary',
-            ml: 5,
-            mt: 0.5 
-          }}
-        >
-          Limit: {rateLimit} requests per hour
-        </Typography>
-      )}
-    </Box>
-    <IconButton onClick={() => setChatOpen(false)}>
-      <CloseIcon />
-    </IconButton>
-  </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              mb: 2,
+              pb: 2,
+              borderBottom: 1,
+              borderColor: "divider",
+            }}
+          >
+            <Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <AssistantIcon color="primary" sx={{ fontSize: 32 }} />
+                <Typography variant="h5" fontWeight="medium">
+                  CogniBot
+                </Typography>
+              </Box>
+              {rateLimit && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    display: 'block',
+                    color: 'text.secondary',
+                    ml: 5,
+                    mt: 0.5
+                  }}
+                >
+                  Limit: {rateLimit} requests per hour
+                </Typography>
+              )}
+            </Box>
+            <IconButton onClick={() => setChatOpen(false)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
 
           <Box
             sx={{
@@ -775,8 +769,8 @@ const CourseLayout = () => {
                   activeMediaType === "audio"
                     ? "Add a question about this audio..."
                     : selectedImage
-                    ? "Add a question about this image..."
-                    : "Type your message..."
+                      ? "Add a question about this image..."
+                      : "Type your message..."
                 }
               />
 
