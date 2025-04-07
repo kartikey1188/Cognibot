@@ -1,15 +1,33 @@
 import { useState, useEffect } from "react";
-import { Typography } from "@mui/material";
+import { Typography, CircularProgress, Box } from "@mui/material";
 import CourseCard from "../../components/CourseCard";
 import { Link } from "react-router-dom";
 import axiosClient from "@/axiosClient";
+
 function Courses() {
   const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    axiosClient.get("/all_courses").then((response) => {
-      setCourses((c) => response.data);
-    });
+    axiosClient.get("/all_courses")
+      .then((response) => {
+        setCourses(response.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching courses:', error);
+        setLoading(false);
+      });
   }, []);
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <section className="flex flex-col gap-4 p-3">
       <Typography
@@ -26,8 +44,7 @@ function Courses() {
               <CourseCard course={course}/>
             </div>
           </Link>
-        )
-        )}
+        ))}
       </div>
     </section>
   );
